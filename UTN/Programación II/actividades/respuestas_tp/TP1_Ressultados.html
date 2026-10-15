@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II · Resumen interactivo en PHP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;--code-gutter:#A2A6C0;--code-hl:#E9ECF8;
+  --t-kw:#6A3DB8;--t-var:#B3332A;--t-str:#7F5300;--t-num:#9A4F00;--t-fn:#0A6A94;--t-cls:#136B4C;--t-com:#7D819C;--t-this:#C0306A;
+  --term-bg:#1C1D2B;--term-text:#E7E7F1;--term-muted:#8C8FB0;
+  --shadow:0 1px 0 rgba(30,32,60,.04),0 18px 40px -24px rgba(30,32,60,.45);
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+    --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+    --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+    --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+    --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+    --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+  --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+  --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100%;overflow:hidden}
+
+/* ---------- Top bar ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-bottom:1px solid var(--line);background:var(--surface)}
+.iconbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);transition:background .2s,border-color .2s}
+.iconbtn:hover{background:var(--surface-2);border-color:var(--line-strong)}
+.iconbtn svg{width:20px;height:20px}
+.brand{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:0 1 auto}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.elephant{width:38px;height:24px;flex:none}
+.modname{margin-left:auto;margin-right:auto;font-weight:600;color:var(--muted);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.right{display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}
+.modname+.right{margin-left:0}
+.score{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;background:var(--accent-soft);color:var(--text);font-weight:600;font-size:.88rem;border:0}
+.score svg{width:16px;height:16px;color:var(--accent)}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.theme-ico .moon{display:none}
+:root[data-theme="dark"] .theme-ico .sun{display:none}
+:root[data-theme="dark"] .theme-ico .moon{display:block}
+
+/* ---------- Stage / frame ---------- */
+.stage{position:relative;overflow:hidden;padding:clamp(8px,2vw,22px);min-height:0}
+.frame{position:relative;height:100%;max-width:1240px;margin:0 auto;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tabbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:42px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
+.tab{display:inline-flex;align-items:center;gap:8px;height:100%;padding:0 12px;font-family:var(--mono);font-size:.8rem;color:var(--text);background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);position:relative;top:1px}
+.tab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.crumb{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slide-wrap{position:relative;flex:1;min-height:0}
+.slide{position:absolute;inset:0;overflow:auto;padding:clamp(18px,3.6vw,46px) clamp(16px,4vw,56px) clamp(24px,3.6vw,46px);scrollbar-gutter:stable}
+.slide.enter{animation:slideIn .42s cubic-bezier(.2,.8,.2,1) both}
+.slide.leave{animation:slideOut .22s ease both;pointer-events:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(calc(var(--dir,1)*36px))}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(calc(var(--dir,1)*-24px))}}
+.rv{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*70ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.stitle{font-size:clamp(1.55rem,3.1vw,2.5rem);line-height:1.12;letter-spacing:-.02em;font-weight:700;margin:0 0 .5em;max-width:28ch}
+.stitle .brace,.cbrace{font-family:var(--mono);font-weight:400;color:var(--accent);opacity:.7}
+.stitle .brace{margin-left:.35em}
+.cbrace{font-size:clamp(1.4rem,2.6vw,2rem);margin-top:22px;line-height:1}
+.lead{font-size:clamp(1.02rem,1.5vw,1.22rem);max-width:68ch;margin:0 0 1.1em;color:var(--text)}
+.lead b,.pts b,.card b{font-weight:650}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.85em;padding:0 .45em;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+.pts{list-style:none;padding:0;margin:0 0 1em;display:grid;gap:10px;max-width:72ch}
+.pts li{position:relative;padding-left:22px}
+.pts li::before{content:"";position:absolute;left:2px;top:.62em;width:9px;height:9px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.pts li b{color:var(--text)}
+.ptitle{font-size:.95rem;font-weight:700;margin:1.2em 0 .6em;color:var(--muted)}
+.analogy{display:flex;gap:14px;align-items:flex-start;max-width:72ch;margin:1.2em 0 0;padding:16px 18px;border-radius:12px;background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent)}
+.analogy svg{flex:none;width:24px;height:24px;color:var(--amber);margin-top:2px}
+.analogy p{margin:0}
+.analogy strong{display:block;font-size:.85rem;color:var(--amber);margin-bottom:2px}
+.note{max-width:76ch;margin:1.2em 0 0;padding:14px 18px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 10px 10px 0}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;margin:0 0 1em}
+.group{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.group h3{margin:0 0 6px;font-size:1.1rem}
+.group p{margin:0}
+.group .pts{margin:8px 0 0}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,220px)),1fr));gap:14px;margin:0 0 .5em}
+.card{position:relative;padding:18px 18px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:left}
+.card h3{margin:0 0 6px;font-size:1.08rem;letter-spacing:-.01em}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.card .ex{margin-top:12px;font-family:var(--mono);font-size:.78rem;padding:8px 10px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;white-space:pre}
+.cards.flow{grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}
+.cards.flow .card::after{content:"";position:absolute;right:-26px;top:50%;width:18px;height:18px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);transform:translateY(-50%) rotate(45deg)}
+.cards.flow .card:last-child::after{display:none}
+.cards.flow .card h3{color:var(--accent)}
+@media (max-width:720px){.cards.flow{grid-template-columns:1fr;gap:30px}.cards.flow .card::after{right:50%;top:auto;bottom:-24px;transform:translateX(50%) rotate(135deg)}}
+.flip{perspective:900px;padding:0;border:0;background:none;min-height:190px}
+.flip-in{position:relative;height:100%;min-height:190px;transition:transform .6s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.face h3{margin:0 0 6px;font-size:1.15rem}
+.face p{margin:0;color:var(--muted)}
+.face.back p{color:var(--text)}
+.face small{margin-top:auto;color:var(--accent);font-weight:600;font-size:.8rem}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;counter-reset:st}
+.steps>li{counter-increment:st;position:relative;padding:54px 16px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.steps>li::before{content:counter(st);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.9rem}
+.steps h3{margin:0 0 4px;font-size:1.02rem}
+.steps p{margin:0;color:var(--muted);font-size:.95rem}
+.steps ul{margin:8px 0 0;padding-left:18px;font-size:.92rem}
+
+/* tables */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 1em}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--surface-2);font-weight:700}
+tbody th{font-weight:700;color:var(--accent);white-space:nowrap;background:var(--surface-2);width:1%}
+tbody tr:last-child>*{border-bottom:0}
+td code{background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+
+/* cover */
+.cover{min-height:100%;display:grid;align-content:center;gap:10px;max-width:900px}
+.cover .unit{font-family:var(--mono);color:var(--accent);font-size:.95rem}
+.cover h1{font-size:clamp(2.4rem,7vw,5.2rem);line-height:.98;letter-spacing:-.035em;margin:0;font-weight:700}
+.cover h1 .brace{font-family:var(--mono);font-weight:400;color:var(--accent);font-size:.6em;vertical-align:.15em;margin-left:.15em}
+.cover .sub{font-size:clamp(1.05rem,1.8vw,1.35rem);color:var(--muted);max-width:52ch;margin:6px 0 10px}
+.topics{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:8px 0 0;list-style:none}
+.topics button{border:1px solid var(--line);background:var(--surface-2);padding:8px 14px;border-radius:999px;font-size:.92rem;transition:border-color .2s,background .2s}
+.topics button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.cover .start{justify-self:start;margin-top:18px}
+
+/* buttons / controls */
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;transition:transform .15s,filter .2s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn svg{width:16px;height:16px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ctrls{display:grid;gap:12px;margin:0 0 14px}
+.ctrl{display:grid;gap:5px;font-size:.88rem;color:var(--muted);font-weight:500}
+.ctrl input[type=text],.ctrl input[type=number],.ctrl select{height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.9rem;width:100%}
+.ctrl input:focus,.ctrl select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctrl output{font-family:var(--mono);color:var(--text);font-weight:600}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font-family:var(--mono);font-size:.82rem;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;color:var(--text)}
+.switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;transition:background .2s;cursor:pointer;margin:0;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(18px)}
+
+/* code */
+.code-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.code-layout{grid-template-columns:minmax(0,1fr)}}
+.code{position:relative;margin:0;font-family:var(--mono);font-size:clamp(.74rem,1.02vw,.86rem);line-height:1.65;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;overflow:auto;padding:14px 0;counter-reset:l;tab-size:4}
+.code.flash{animation:flash .6s ease}
+@keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}to{box-shadow:0 0 0 0 transparent}}
+.ln{display:block;padding:0 18px 0 0;white-space:pre;min-height:1.65em}
+.ln::before{counter-increment:l;content:counter(l);display:inline-block;width:2.4em;margin-right:1.1em;text-align:right;color:var(--code-gutter);user-select:none}
+.ln.hl{background:var(--code-hl)}
+.ln.click{cursor:pointer;transition:background .15s}
+.ln.click:hover{background:var(--code-hl)}
+.ln.bad{background:var(--coral-soft)}
+.ln.good{background:var(--mint-soft)}
+.t-kw{color:var(--t-kw);font-weight:600}.t-var{color:var(--t-var)}.t-str{color:var(--t-str)}.t-num{color:var(--t-num)}.t-fn{color:var(--t-fn)}.t-cls{color:var(--t-cls)}.t-com{color:var(--t-com);font-style:italic}.t-this{color:var(--t-this);font-weight:600}.t-tag{color:var(--t-kw)}
+.side{display:grid;gap:14px}
+.term{background:var(--term-bg);color:var(--term-text);border-radius:12px;overflow:hidden;font-family:var(--mono);font-size:.84rem;border:1px solid #2c2e44}
+.term-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #2c2e44;color:var(--term-muted);font-size:.78rem}
+.term-h .p{color:#A3ACE6}
+.term-out{margin:0;padding:14px;min-height:96px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term-out .e{color:#FF8E82}.term-out .w{color:#F2C15F}.term-out .ok{color:#7FDDB2}.term-out .dim{color:var(--term-muted)}
+.caret{display:inline-block;width:8px;height:1.05em;background:#A3ACE6;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.extra{margin-top:4px}
+
+/* quiz */
+.quiz{max-width:780px}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+.qdots{display:flex;gap:6px}
+.qdots i{width:26px;height:6px;border-radius:3px;background:var(--line)}
+.qdots i.cur{background:var(--accent)}
+.qdots i.ok{background:var(--mint)}
+.qdots i.ko{background:var(--coral)}
+.qtext{font-size:clamp(1.1rem,1.8vw,1.35rem);font-weight:600;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);transition:border-color .2s,background .2s,transform .15s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt .k{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-family:var(--mono);font-weight:600;font-size:.85rem}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--mint);background:var(--mint-soft)}
+.opt.right .k{background:var(--mint);color:#fff;border-color:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.opt.wrong .k{background:var(--coral);color:#fff;border-color:var(--coral)}
+.opt.dim{opacity:.55}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.why{margin:14px 0 0;padding:14px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);animation:rise .35s both}
+.why b{display:block;margin-bottom:2px}
+.why.ok b{color:var(--mint)}.why.ko b{color:var(--coral)}
+.qnav{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.result{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+@media (max-width:560px){.result{grid-template-columns:1fr;justify-items:start}}
+.ring{width:132px;height:132px}
+.ring circle{fill:none;stroke-width:10}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring text{font-family:var(--sans);font-weight:700;fill:var(--text)}
+.result h3{margin:0 0 4px;font-size:1.4rem}
+
+/* footer */
+.foot{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-top:1px solid var(--line);background:var(--surface)}
+.foot .pos{font-size:.88rem;color:var(--muted);margin:0 auto;text-align:center;white-space:nowrap}
+.foot .pos b{color:var(--text)}
+.navbtn{height:42px}
+@media (max-width:560px){.top{gap:8px}#fsBtn{display:none!important}.elephant{width:32px}.frow{grid-template-columns:minmax(0,1fr) 48px;gap:6px 12px}.frow>span{grid-column:1/-1}.refs{grid-template-columns:1fr;gap:6px}.navbtn span{display:none}.navbtn{padding:0 14px}.modname{display:none}.brand span{display:none}.score{padding:0 10px}}
+
+/* drawer */
+.backdrop{position:fixed;inset:0;background:rgba(10,10,25,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.backdrop.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,92vw);background:var(--surface);border-right:1px solid var(--line);z-index:21;transform:translateX(-102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead h2{margin:0;font-size:1.05rem}
+.dlist{overflow:auto;padding:8px 8px 24px}
+.dmod{margin:4px 0}
+.dmod>button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:10px;border:0;background:transparent}
+.dmod>button:hover{background:var(--surface-2)}
+.dmod .num{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);font-family:var(--mono);font-weight:600;font-size:.82rem}
+.dmod .mt{flex:1;min-width:0}
+.dmod .mt b{display:block;font-size:.95rem}
+.dmod .mt span{font-size:.78rem;color:var(--muted)}
+.dmod .chev{width:16px;height:16px;transition:transform .2s;color:var(--muted)}
+.dmod.open .chev{transform:rotate(90deg)}
+.dslides{list-style:none;margin:0 0 6px 50px;padding:0;display:none}
+.dmod.open .dslides{display:block}
+.dslides button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:7px;font-size:.88rem;color:var(--muted)}
+.dslides button:hover{background:var(--surface-2);color:var(--text)}
+.dslides button.cur{background:var(--accent-soft);color:var(--text);font-weight:600}
+.dslides .qb{margin-left:auto;font-family:var(--mono);font-size:.74rem;padding:1px 6px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line)}
+.dslides .qb.done{background:var(--mint-soft);border-color:var(--mint);color:var(--text)}
+
+/* demos */
+.demo{display:grid;gap:16px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface-2)}
+.panel h4{margin:0 0 10px;font-size:.9rem;color:var(--muted);font-weight:600}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);text-align:left;transition:transform .15s,border-color .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.order{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:o;min-height:44px}
+.order li button{width:100%;counter-increment:o;justify-content:flex-start}
+.order li button::before{content:counter(o);display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.8rem;flex:none}
+.order li.bad button{border-color:var(--coral);background:var(--coral-soft)}
+.order li.good button{border-color:var(--mint);background:var(--mint-soft)}
+.msg{padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);animation:rise .3s both}
+.msg.ok{background:var(--mint-soft);border-color:var(--mint)}
+.msg.ko{background:var(--coral-soft);border-color:var(--coral)}
+.cells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{position:relative;width:46px;height:52px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;font-family:var(--mono);font-weight:600;transition:all .25s}
+.cell small{position:absolute;bottom:-17px;font-size:.66rem;color:var(--muted);font-weight:400}
+.cell.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-4px)}
+.cell.seen{opacity:.45}
+.cell.out{opacity:.22}
+.cell.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-4px) scale(1.06)}
+.status{font-family:var(--mono);font-size:.85rem;min-height:1.6em;color:var(--text)}
+.bars{display:flex;align-items:flex-end;gap:clamp(4px,1vw,10px);height:200px;padding:10px 4px 0}
+.bar{flex:1;border-radius:7px 7px 0 0;background:var(--accent);opacity:.85;display:flex;align-items:flex-start;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--accent-ink);padding-top:4px;transition:height .25s ease,background .2s}
+.bar.cmp{background:var(--amber)}
+.bar.swp{background:var(--coral)}
+.bar.done{background:var(--mint)}
+.counters{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.counters b{color:var(--text);font-family:var(--mono)}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:260px;justify-content:flex-start}
+.frame-c{padding:9px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);font-family:var(--mono);font-size:.82rem;animation:rise .3s both;display:flex;justify-content:space-between;gap:10px}
+.frame-c.top{border-color:var(--amber);background:var(--amber-soft)}
+.frame-c.ret{border-color:var(--mint);background:var(--mint-soft)}
+.inspect{font-family:var(--mono);font-size:.86rem;display:grid;gap:8px}
+.attr{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.attr span:first-child{color:var(--t-var)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter.h i{background:var(--amber)}
+.pop{animation:pop .45s}
+@keyframes pop{40%{transform:scale(1.08)}}
+.log{font-family:var(--mono);font-size:.82rem;background:var(--term-bg);color:var(--term-text);border-radius:10px;padding:12px;height:180px;overflow:auto}
+.log div{animation:rise .25s both}
+.log .c{color:#A3ACE6}
+.objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.obj{border:1px solid var(--line-strong);border-radius:12px;padding:12px;background:var(--surface);font-family:var(--mono);font-size:.78rem;animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}}
+.obj b{color:var(--t-var)}
+.obj svg{width:100%;height:56px;margin:4px 0}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-strong)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
+.refs{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;align-items:center}
+.vbox{font-family:var(--mono);padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--surface);white-space:nowrap}
+.objbox{padding:12px 14px;border-radius:12px;border:2px solid;font-family:var(--mono);font-size:.85rem}
+.o1{border-color:var(--accent);background:var(--accent-soft)}
+.o2{border-color:var(--amber);background:var(--amber-soft)}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.two>*,.panel,.side,.demo>*{min-width:0}
+.slide{overflow-x:hidden}
+.matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcell{padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:.85rem;transition:all .25s}
+.mcell b{display:block;font-size:1.1rem}
+.mcell.yes{border-color:var(--mint);background:var(--mint-soft)}
+.mcell.no{border-color:var(--coral);background:var(--coral-soft)}
+.mcell.sel{outline:2px solid var(--accent);outline-offset:2px}
+.bigo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:8px}
+.lg{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);border-left-width:4px}
+.lg b{font-family:var(--mono)}
+.lg span{font-size:.8rem;color:var(--muted)}
+.lg em{font-style:normal;font-family:var(--mono);font-size:.85rem;color:var(--text)}
+.bigo-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(200px,1fr);gap:14px;align-items:start}.bigo-grid .bigo-legend{grid-template-columns:1fr}@media (max-width:820px){.bigo-grid{grid-template-columns:1fr}.bigo-grid .bigo-legend{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+.chart{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.chart path{fill:none;stroke-width:3;stroke-linecap:round;transition:d .4s}
+.chart .ax{stroke:var(--line-strong);stroke-width:1}
+.chart text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+.cmpbars{display:grid;gap:10px}
+.cmpbars .row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;font-size:.85rem}
+.cmpbars .track{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.cmpbars .track i{display:block;height:100%;border-radius:7px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.final{display:grid;gap:12px;max-width:780px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) 140px 60px;gap:12px;align-items:center}
+.frow .meter{height:12px;width:100%}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="iconbtn" id="menuBtn" aria-label="Abrir índice" aria-controls="drawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <svg class="elephant" viewBox="0 0 76 48" aria-hidden="true"><ellipse cx="38" cy="24" rx="37" ry="23" fill="var(--accent)"/><text x="38" y="31" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="21" fill="var(--accent-ink)">php</text></svg>
+    <div class="brand"><b>Programación II</b><span>UTN Facultad Regional Resistencia</span></div>
+    <div class="modname" id="modName"></div>
+    <div class="right">
+      <button class="score" id="scoreBtn" title="Respuestas correctas en los cuestionarios"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg><span id="scoreTxt">0</span></button>
+      <button class="iconbtn theme-ico" id="themeBtn" aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="iconbtn" id="fsBtn" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <main class="stage" id="stage">
+    <div class="frame">
+      <div class="tabbar"><span class="tab" id="tabName">inicio.php</span><span class="crumb" id="crumb"></span></div>
+      <div class="slide-wrap" id="wrap" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="foot">
+    <button class="btn ghost navbtn" id="prev" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button>
+    <div class="pos" id="pos"></div>
+    <button class="btn navbtn" id="next" aria-label="Diapositiva siguiente"><span>Siguiente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  </footer>
+</div>
+<div class="backdrop" id="backdrop"></div>
+<nav class="drawer" id="drawer" aria-label="Índice de temas">
+  <div class="dhead"><h2>Índice del resumen</h2><button class="iconbtn" id="closeDrawer" aria-label="Cerrar índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlist" id="dlist"></div>
+</nav>
+<script>
+/* ============ Utilidades para los ejemplos ============ */
+const P = String.raw;
+const clean = (s, d='') => { const r = String(s ?? '').replace(/["'\\$`{}<>]/g, '').trim().slice(0, 40); return r || d; };
+const ident = (s, d) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(String(s).trim()) ? String(s).trim() : d;
+const pn = x => { if (!isFinite(x)) return x > 0 ? 'INF' : 'NAN'; return Number.isInteger(x) ? String(x) : String(parseFloat(x.toPrecision(14))); };
+const nums = s => String(s).split(',').map(t => t.trim()).filter(t => t !== '' && !isNaN(Number(t))).map(Number);
+const ints = s => nums(s).filter(Number.isInteger);
+const r2 = x => Math.round(x * 100) / 100;
+const FE = (cls, msg) => `Fatal error: Uncaught ${cls}: ${msg}`;
+
+/* ============ Contenido ============ */
+const MODULES = [
+/* ---------------------------------------------------------------- 1 */
+{ title:'Algoritmos', unit:'Unidad I', part:'Parte I', slides:[
+ {type:'cover', title:'Algoritmos', file:'algoritmos.php', sub:'Qué son, de qué están hechos y cómo se construyen, se prueban y se depuran.', topics:['¿Qué es un algoritmo?','Componentes','Características','Fases de desarrollo','Prueba y depuración']},
+ {type:'concept', title:'¿Qué es un algoritmo?', file:'algoritmo.php',
+  lead:'Un algoritmo es una <b>serie de pasos ordenados y precisos</b> que nos llevan de un punto <span class="tag">A</span> (el problema) a un punto <span class="tag">B</span> (la solución).',
+  points:[['Ordenados:','el orden de los pasos importa.'],['Precisos:','cada paso dice exactamente qué hacer.'],['Con un objetivo:','siempre buscan llegar a un resultado.']],
+  analogy:'Es como una <b>receta de cocina</b>, pero para resolver problemas. La computadora es un cocinero muy obediente: hace exactamente lo que dice la receta, ni más ni menos.'},
+ {type:'demo', demo:'mate', title:'Armá tu primer algoritmo', file:'mate.php', lead:'Tocá los pasos en el orden correcto para preparar un mate. Si un paso queda fuera de lugar, el algoritmo no funciona.'},
+ {type:'cards', flow:true, title:'Componentes de un algoritmo', file:'componentes.php', lead:'Todo algoritmo recibe datos, los transforma y entrega un resultado.',
+  cards:[{t:'Entrada',d:'Los datos del problema a resolver.',ex:'$notas = [7, 8, 10];'},{t:'Proceso',d:'Los pasos que se siguen para resolverlo.',ex:'$suma / count($notas)'},{t:'Salida',d:'El resultado de la resolución.',ex:'echo $promedio;'}]},
+ {type:'code', title:'Ejemplo: promedio de notas', file:'promedio.php',
+  lead:'Cambiá las notas y ejecutá. Después probá dejar la lista vacía: ¿qué pasa cuando el algoritmo no contempla ese caso?',
+  controls:[{k:'notas',label:'Notas separadas por coma',type:'text',value:'7, 8.5, 10, 6'}],
+  code:v=>P`<?php
+$notas = [${nums(v.notas).join(', ')}];       // Entrada
+
+$suma = 0;                           // Proceso
+foreach ($notas as $nota) {
+    $suma += $nota;
+}
+$promedio = $suma / count($notas);
+
+echo "Promedio: " . round($promedio, 2);   // Salida`,
+  run:v=>{ const a=nums(v.notas); if(!a.length) return FE('DivisionByZeroError','Division by zero in promedio.php:8'); return 'Promedio: '+pn(r2(a.reduce((x,y)=>x+y,0)/a.length)); }},
+ {type:'cards', title:'Características principales', file:'caracteristicas.php', lead:'Para que una serie de pasos sea un buen algoritmo tiene que cumplir con tres condiciones.',
+  cards:[{t:'Precisión',d:'Cada paso debe ser claro y sin ambigüedades.'},{t:'Finitud',d:'Tiene una cantidad limitada de pasos y termina en algún momento.'},{t:'Eficiencia',d:'Resuelve el problema rápido y con la menor cantidad de recursos posible.'}],
+  note:'<b>¿Por qué son importantes?</b> Permiten <b>automatizar</b> tareas repetitivas, ayudan a <b>resolver problemas complejos</b> y son la base de la <b>innovación</b> tecnológica. Cuando buscás algo en internet, un algoritmo analiza millones de páginas en fracciones de segundo.'},
+ {type:'cards', title:'Algoritmos en la vida diaria', file:'ejemplos.php', lead:'Están presentes en muchas más situaciones de las que imaginamos.',
+  cards:[{t:'Armar un mueble',d:'El manual de instrucciones es un algoritmo para armarlo correctamente.'},{t:'Promedio de notas',d:'Sumás todas las notas y las dividís por la cantidad.',ex:'array_sum($n) / count($n)'},{t:'Buscar en una lista',d:'Revisás cada elemento hasta encontrar el buscado o llegar al final.',ex:'in_array(7, $lista)'}],
+  note:'La <b>algoritmia</b> es la ciencia de diseñar algoritmos. Así como un chef sigue una receta, un programador usa algoritmos para decirle a la computadora cómo realizar una tarea.'},
+ {type:'quiz', title:'Cuestionario: algoritmos', file:'quiz_algoritmos.php', questions:[
+  {q:'¿Qué es un algoritmo?',o:['Un lenguaje de programación','Una serie de pasos ordenados y precisos para resolver un problema','Un programa ya instalado','Un componente de hardware'],a:1,why:'El algoritmo es la "receta". Después se implementa en un lenguaje como PHP.'},
+  {q:'En el ejemplo del promedio, ¿qué rol cumple el array $notas?',o:['Entrada','Proceso','Salida','Depuración'],a:0,why:'Son los datos del problema: la entrada. El foreach y la división son el proceso, y el echo es la salida.'},
+  {q:'Un algoritmo que nunca termina no cumple con la característica de...',o:['Precisión','Finitud','Eficiencia','Innovación'],a:1,why:'Un algoritmo debe ser finito: tener un número de pasos limitado y terminar en algún momento.'},
+  {q:'¿Qué significa que un algoritmo sea preciso?',o:['Que se ejecuta muy rápido','Que cada paso es claro y sin ambigüedades','Que usa poca memoria','Que tiene pocos pasos'],a:1,why:'Precisión es claridad: cada paso indica exactamente qué hacer, sin dobles interpretaciones.'}]},
+ {type:'steps', title:'Fases en el desarrollo de un algoritmo', file:'fases.php', lead:'Desarrollar un algoritmo es un proceso en cuatro etapas, que se recorren en orden.',
+  steps:[{t:'Comprensión del problema',d:'El paso más crucial. Como en un rompecabezas: sin entender la imagen completa, las piezas no encajan.'},
+   {t:'Diseño del algoritmo',d:'Un proceso creativo con tres etapas:',sub:['Definir el problema','Elegir una estructura de datos','Diseñar y analizar el algoritmo']},
+   {t:'Implementación',d:'Traducir los pasos a un lenguaje que la computadora entienda.',sub:['Elegir el lenguaje (PHP)','Escribir el código','Interpretarlo: php archivo.php']},
+   {t:'Prueba y depuración',d:'Garantizar que el programa funcione y produzca los resultados esperados.'}]},
+ {type:'concept', title:'Prueba y depuración', file:'pruebas.php',
+  groups:[{h:'Prueba',p:'Ejecutar el programa con <b>distintos datos de entrada</b> para verificar que la salida sea correcta. Busca errores en el diseño o en el código.'},{h:'Depuración',p:'El proceso de <b>encontrar y corregir</b> los errores (bugs) detectados en la prueba, usando herramientas y técnicas específicas.'}],
+  ptitle:'¿Por qué son importantes?',
+  points:[['Confiabilidad:','el programa funciona en todas las circunstancias posibles.'],['Calidad:','cumple con los requisitos del usuario.'],['Mantenibilidad:','facilita futuras modificaciones y actualizaciones.']]},
+ {type:'cards', title:'Tipos de pruebas', file:'tipos_pruebas.php', min:'230px', lead:'Van de lo más pequeño (una función) a lo más grande (el sistema completo en manos del usuario).',
+  cards:[{t:'Unitarias',d:'Se prueban individualmente las funciones o módulos.',ex:'assert(sumar(2, 3) === 5);'},{t:'De integración',d:'Se verifica cómo interactúan los componentes entre sí.'},{t:'De sistema',d:'Se evalúa el programa completo en un entorno real o simulado.'},{t:'De aceptación',d:'El usuario final verifica si cumple con sus requisitos.'}],
+  note:'<b>Técnicas de depuración:</b> imprimir valores en puntos clave (<code>echo</code>, <code>var_dump()</code>, <code>print_r()</code>), usar un depurador que ejecute paso a paso con puntos de interrupción (en PHP, <b>Xdebug</b>) y revisar el código manualmente, línea por línea.'},
+ {type:'demo', demo:'bug', title:'Encontrá el bug', file:'depurar.php', lead:'La función debería devolver <code>float(8)</code>, pero devuelve otra cosa. Usamos la técnica de <b>imprimir valores</b> con <code>var_dump()</code>. Tocá la línea donde está el error.'},
+ {type:'quiz', title:'Cuestionario: desarrollo y pruebas', file:'quiz_fases.php', questions:[
+  {q:'¿Cuál es la primera fase en el desarrollo de un algoritmo?',o:['Implementación','Prueba y depuración','Comprensión del problema','Diseño del algoritmo'],a:2,why:'Sin entender bien el problema, cualquier diseño o código posterior parte de una base equivocada.'},
+  {q:'Ejecutar el programa con distintos datos para verificar la salida se llama...',o:['Depuración','Prueba','Compilación','Diseño'],a:1,why:'La prueba detecta errores; la depuración los localiza y corrige.'},
+  {q:'¿Qué tipo de prueba verifica cómo interactúan los componentes entre sí?',o:['Unitaria','De integración','De aceptación','De sistema'],a:1,why:'Las pruebas de integración se enfocan en la comunicación entre módulos.'},
+  {q:'Agregar var_dump($suma) dentro de un bucle para ver cómo cambia es la técnica de...',o:['Imprimir valores','Prueba de aceptación','Benchmark','Recolección de basura'],a:0,why:'Mostrar el valor de las variables en puntos clave es la técnica de depuración más simple.'}]}
+]},
+/* ---------------------------------------------------------------- 2 */
+{ title:'Eficiencia de algoritmos', unit:'Unidad I', part:'Parte II', slides:[
+ {type:'cover', title:'Eficiencia', file:'eficiencia.php', sub:'Cómo medir qué tan bien usa un algoritmo el tiempo y la memoria de la computadora.', topics:['Por qué importa','Notación Big O','Tiempo de ejecución','Uso de memoria','Profilers y benchmarks']},
+ {type:'concept', title:'Eficiencia de un algoritmo', file:'eficiencia.php',
+  lead:'La eficiencia indica <b>qué tan bien un algoritmo usa los recursos</b> de la computadora: el <b>tiempo</b> (cuánto tarda en ejecutarse) y la <b>memoria</b> (cuánto espacio ocupa).',
+  ptitle:'¿Por qué es crucial en la informática moderna?',
+  points:[['Velocidad:','procesar grandes volúmenes de datos en menos tiempo (búsquedas, imágenes, aprendizaje automático).'],['Escalabilidad:','seguir respondiendo bien cuando los datos crecen, como en motores de búsqueda.'],['Consumo de recursos:','menos energía y menos costo, por razones económicas y ambientales.'],['Experiencia del usuario:','un sistema lento o pesado hace perder usuarios.']]},
+ {type:'demo', demo:'bigo', title:'Notación Big O', file:'big_o.php', lead:'Big O estima <b>cómo crece</b> la cantidad de operaciones cuando crece el tamaño de la entrada <code>n</code>. Mové el control y mirá cómo se separan las curvas.'},
+ {type:'concept', title:'Tiempo de ejecución', file:'tiempo.php',
+  lead:'Es el <b>tiempo que tarda un algoritmo en ejecutarse y producir un resultado</b>. Es crucial en sistemas en tiempo real, videojuegos o motores de búsqueda.',
+  groups:[{h:'¿Cómo se mide?',pts:[['Conteo de operaciones:','cuántas operaciones básicas realiza según el tamaño de la entrada.'],['Notación Big O:','cómo crece ese tiempo a medida que aumenta la entrada.']]},
+          {h:'¿Qué lo afecta?',pts:[['Tamaño de la entrada','y complejidad del algoritmo.'],['Hardware:','procesador, memoria y otros componentes.'],['Lenguaje y optimizaciones','del código.']]}],
+  analogy:'En PHP podés medir el tiempo real guardando <code>microtime(true)</code> antes y después de ejecutar un bloque, y restando ambos valores.'},
+ {type:'code', title:'Mismo resultado, distinta eficiencia', file:'suma.php',
+  lead:'Dos algoritmos que suman los números del 1 al <code>n</code>. El bucle hace <code>n</code> operaciones, O(n); la fórmula de Gauss hace una sola, O(1).',
+  controls:[{k:'n',label:'Valor de n',type:'seg',options:['10','100','1000','1000000'],value:'100'}],
+  code:v=>P`<?php
+$n = ${v.n};
+
+// Opción A: un bucle → O(n)
+$suma = 0;
+for ($i = 1; $i <= $n; $i++) {
+    $suma += $i;
+}
+echo "Bucle:   $suma ($n sumas)\n";
+
+// Opción B: fórmula de Gauss → O(1)
+$suma = $n * ($n + 1) / 2;
+echo "Fórmula: $suma (1 cálculo)\n";`,
+  run:v=>{ const n=+v.n, s=n*(n+1)/2; return `Bucle:   ${s} (${n} sumas)\nFórmula: ${s} (1 cálculo)`; }},
+ {type:'concept', title:'Uso de la memoria', file:'memoria.php',
+  lead:'Es la <b>cantidad de memoria que un algoritmo necesita</b> para ejecutarse. Es clave con grandes volúmenes de datos o en equipos con pocos recursos.',
+  groups:[{h:'¿Cómo se mide?',pts:[['Espacio auxiliar:','memoria extra que usa, además de la entrada.'],['Espacio total:','espacio auxiliar + espacio de la entrada.']]},
+          {h:'¿Qué lo afecta?',pts:[['Tamaño de la entrada:','más datos, más memoria.'],['Estructuras de datos:','elegir bien cambia mucho el consumo.'],['El algoritmo:','algunos son más eficientes en memoria que otros.']]}],
+  note:'<b>Tiempo vs. memoria:</b> a menudo hay una compensación. Un algoritmo que usa más memoria puede ser más rápido, y uno que usa poca puede ser más lento. La elección depende de las restricciones de cada problema.'},
+ {type:'code', title:'Más memoria, menos tiempo', file:'fibonacci.php',
+  lead:'Fibonacci recursivo recalcula los mismos valores una y otra vez. Si guardamos cada resultado en un array (<code>$memo</code>), gastamos un poco de memoria y ahorramos muchísimas llamadas.',
+  controls:[{k:'n',label:'Calcular fib(n)',type:'range',min:5,max:30,value:20}],
+  code:v=>P`<?php
+// Sin memoria: recalcula todo
+function fib(int $n): int {
+    return $n < 2 ? $n : fib($n - 1) + fib($n - 2);
+}
+
+// Con memoria: guarda cada resultado una sola vez
+function fibMemo(int $n, array &$memo = []): int {
+    if ($n < 2) return $n;
+    return $memo[$n] ??= fibMemo($n - 1, $memo) + fibMemo($n - 2, $memo);
+}
+
+echo "fib(${v.n}) = " . fib(${v.n}) . "\n";
+echo "fibMemo(${v.n}) = " . fibMemo(${v.n});`,
+  run:v=>{ const f=fibStats(+v.n); return `fib(${v.n}) = ${f.val}\nfibMemo(${v.n}) = ${f.val}`; },
+  after:v=>{ const f=fibStats(+v.n); const w=x=>Math.max(1.2,100*Math.log10(x+1)/Math.log10(f.naive+1)); return `<div class="panel"><h4>Llamadas a la función (escala logarítmica)</h4><div class="cmpbars">
+   <div class="row"><span>Sin memoria</span><div class="track"><i style="width:${w(f.naive)}%;background:var(--coral)"></i></div><b class="mono">${f.naive.toLocaleString('es-AR')}</b></div>
+   <div class="row"><span>Con memoria</span><div class="track"><i style="width:${w(f.memo)}%;background:var(--mint)"></i></div><b class="mono">${f.memo}</b></div>
+   <div class="row"><span>Valores guardados</span><div class="track"><i style="width:${w(f.stored)}%;background:var(--amber)"></i></div><b class="mono">${f.stored}</b></div></div></div>`; }},
+ {type:'quiz', title:'Cuestionario: eficiencia', file:'quiz_eficiencia.php', questions:[
+  {q:'La eficiencia de un algoritmo mide principalmente el uso de...',o:['Tiempo y memoria','Líneas de código','Cantidad de variables','Colores de la interfaz'],a:0,why:'Son los dos recursos principales: tiempo de procesamiento y memoria.'},
+  {q:'Un foreach que recorre una vez un array de n elementos tiene complejidad...',o:['O(1)','O(log n)','O(n)','O(n²)'],a:2,why:'Hace una operación por elemento: crece en proporción directa a n.'},
+  {q:'Dos foreach anidados sobre el mismo array de n elementos suelen ser...',o:['O(n)','O(n²)','O(log n)','O(1)'],a:1,why:'Por cada uno de los n elementos se recorren otros n: n × n.'},
+  {q:'Guardar resultados en $memo para no recalcularlos es un ejemplo de...',o:['Usar más memoria para ganar tiempo','Usar menos memoria y más tiempo','Un error de diseño','Recolección de basura'],a:0,why:'Es la compensación tiempo/memoria: sacrificamos espacio para ahorrar operaciones.'},
+  {q:'El espacio total que usa un algoritmo es...',o:['Solo el espacio de la entrada','Espacio auxiliar + espacio de la entrada','Solo las variables locales','El tamaño del archivo .php'],a:1,why:'El total suma la entrada y la memoria adicional (auxiliar) que necesita el algoritmo.'}]},
+ {type:'concept', title:'Profilers', file:'profilers.php',
+  lead:'Son herramientas que <b>analizan la ejecución de un programa</b> para identificar las secciones de código que consumen más tiempo o recursos: llamadas a funciones, tiempo por línea y uso de memoria.',
+  groups:[{h:'¿Para qué sirven?',pts:[['Identificar cuellos de botella:','qué partes frenan el programa.'],['Optimizar el código:','concentrar el esfuerzo donde más importa.'],['Evaluar implementaciones:','comparar algoritmos o estructuras de datos.']]},
+          {h:'Ejemplos',pts:[['Gprof:','línea de comandos, en sistemas Unix.'],['Valgrind:','análisis de memoria, incluye un profiler.'],['Perf:','profiler de bajo nivel para Linux.'],['Visual Studio Profiler:','integrado en ese entorno.']]}],
+  analogy:'En el mundo PHP los más usados son <b>Xdebug</b> (depurador y profiler) y <b>Blackfire</b>.'},
+ {type:'cards', title:'Benchmarks', file:'benchmarks.php', min:'230px',
+  lead:'Son programas diseñados para <b>medir el rendimiento</b> de un sistema, componente o algoritmo <b>bajo condiciones controladas</b>. Se ejecutan pruebas y se comparan los resultados. Sirven para comparar hardware, comparar software y medir el impacto de una optimización.',
+  cards:[{t:'Microbenchmarks',d:'Miden pequeñas unidades de código, como una función.'},{t:'Macrobenchmarks',d:'Miden aplicaciones completas o sistemas enteros.'},{t:'Sintéticos',d:'Usan datos generados artificialmente, en condiciones controladas.'},{t:'Reales',d:'Usan datos del mundo real, en escenarios típicos de uso.'}],
+  note:'<b>En resumen:</b> combiná ambos. El profiler te dice <b>dónde</b> optimizar; el benchmark te dice <b>cuánto</b> mejoró después de hacerlo.'},
+ {type:'quiz', title:'Cuestionario: medir el rendimiento', file:'quiz_rendimiento.php', questions:[
+  {q:'Una herramienta que analiza la ejecución para encontrar qué partes consumen más tiempo es un...',o:['Benchmark','Profiler','Compilador','Namespace'],a:1,why:'El profiler muestra los cuellos de botella del código.'},
+  {q:'Para saber si una optimización realmente mejoró el rendimiento, usamos...',o:['Un benchmark','Una interfaz','Un trait','Un getter'],a:0,why:'El benchmark mide el antes y el después en condiciones controladas.'},
+  {q:'Un benchmark que mide una única función es un...',o:['Macrobenchmark','Microbenchmark','Benchmark real','Profiler'],a:1,why:'Los microbenchmarks miden unidades pequeñas de código.'},
+  {q:'¿Qué herramienta se usa comúnmente en PHP para depurar y perfilar?',o:['Xdebug','Photoshop','Git','Excel'],a:0,why:'Xdebug permite ejecutar paso a paso, poner puntos de interrupción y generar perfiles.'}]}
+]},
+/* ---------------------------------------------------------------- 3 */
+{ title:'Tipos de algoritmos y subprogramas', unit:'Unidad I', part:'Parte III', slides:[
+ {type:'cover', title:'Tipos de algoritmos', file:'clasificacion.php', sub:'Búsqueda, ordenamiento y recursividad, más las piezas con las que armamos programas: funciones, ámbito y parámetros.', topics:['Clasificación','Búsqueda','Ordenamiento','Subprogramas','Ámbito de variables','Parámetros','Recursividad']},
+ {type:'cards', title:'Clasificación de algoritmos', file:'clasificacion.php', min:'240px', lead:'La clasificación varía según el criterio que usemos.',
+  cards:[{t:'Según su propósito',list:['Búsqueda','Ordenamiento','Grafos','Optimización']},{t:'Según su diseño',list:['Recursivos: se llaman a sí mismos','Iterativos: usan bucles','Divide y vencerás: parten el problema y combinan soluciones']},{t:'Según su complejidad',list:['Temporal: tiempo según la entrada','Espacial: memoria que usa','Se expresan con notación O grande']},{t:'Otros tipos',list:['Probabilísticos: usan aleatoriedad','Aprendizaje automático: aprenden de los datos','Genéticos: imitan la evolución biológica']}]},
+ {type:'demo', demo:'search', title:'Algoritmos de búsqueda', file:'busqueda.php', lead:'Localizan un elemento en una estructura de datos. La <b>secuencial</b> revisa uno por uno; la <b>binaria</b> parte el array ordenado a la mitad en cada paso. Elegí un número y compará cuántas comparaciones hace cada una.'},
+ {type:'demo', demo:'bubble', title:'Algoritmos de ordenamiento', file:'burbuja.php', lead:'Organizan elementos según un criterio. <b>Burbuja</b> compara vecinos y los intercambia si están en el orden incorrecto. Otros: <b>inserción</b> (inserta cada elemento en su lugar) y <b>quicksort</b> (divide en sublistas y ordena recursivamente).'},
+ {type:'cards', title:'Grafos y optimización', file:'grafos.php', min:'240px', lead:'Los grafos representan relaciones entre objetos (ciudades y rutas, personas y amistades). La optimización busca la mejor solución entre muchas posibles.',
+  cards:[{t:'Dijkstra',d:'Encuentra el camino más corto entre dos nodos de un grafo ponderado.'},{t:'Floyd-Warshall',d:'Calcula la distancia mínima desde cualquier nodo a cualquier otro.'},{t:'Programación dinámica',d:'Divide en subproblemas y guarda sus soluciones para no recalcularlas (como $memo en Fibonacci).'},{t:'Algoritmos voraces',d:'Construyen la solución paso a paso, eligiendo siempre lo que parece mejor en ese momento.'}],
+  note:'<b>¿Cuál es el mejor algoritmo?</b> No existe uno mejor para todo. Depende del <b>tamaño de la entrada</b>, de los <b>recursos disponibles</b> (memoria y tiempo) y de las <b>características del problema</b>.'},
+ {type:'quiz', title:'Cuestionario: tipos de algoritmos', file:'quiz_tipos.php', questions:[
+  {q:'La búsqueda binaria requiere que el array esté...',o:['Ordenado','Vacío','Formado por números pares','Indexado con strings'],a:0,why:'Solo puede descartar una mitad si sabe que los elementos están ordenados.'},
+  {q:'En un array ordenado de 1000 elementos, la búsqueda binaria hace como máximo unas...',o:['10 comparaciones','500 comparaciones','1000 comparaciones','100 comparaciones'],a:0,why:'Cada paso divide a la mitad: log₂(1000) ≈ 10. Es O(log n).'},
+  {q:'El método de la burbuja ordena...',o:['Comparando elementos adyacentes e intercambiándolos si están mal','Dividiendo en sublistas recursivas','Usando un grafo','Eligiendo elementos al azar'],a:0,why:'Compara vecinos; los mayores "suben" al final como burbujas.'},
+  {q:'Dijkstra es un algoritmo de...',o:['Ordenamiento','Grafos: camino más corto','Búsqueda secuencial','Aprendizaje automático'],a:1,why:'Encuentra el camino más corto entre dos nodos de un grafo ponderado.'},
+  {q:'Un algoritmo voraz...',o:['Toma en cada paso la decisión que parece mejor en ese momento','Prueba todas las combinaciones posibles','Siempre usa recursividad','Necesita un array ordenado'],a:0,why:'Decide localmente lo mejor en cada paso, sin volver atrás.'}]},
+ {type:'concept', title:'Subalgoritmos o subprogramas', file:'subprogramas.php',
+  lead:'Son <b>bloques de código independientes que realizan una tarea específica</b> dentro de un programa más grande. En PHP, los escribimos como <code>function</code>.',
+  analogy:'Pensá en construir una casa: cada subprograma es un <b>ladrillo</b> con una función particular. Al ensamblarlos, forman la estructura completa.',
+  ptitle:'¿Por qué usarlos?',
+  points:[['Modularidad:','dividen un problema complejo en partes manejables.'],['Reutilización:','se usan en distintas partes del programa o en otros programas.'],['Legibilidad:','el código es más fácil de entender y mantener.'],['Organización:','agrupan tareas relacionadas en un solo lugar.']]},
+ {type:'code', title:'Procedimientos y funciones', file:'area.php',
+  lead:'Un <b>procedimiento</b> ejecuta instrucciones pero no devuelve un valor (en PHP, tipo <code>void</code>). Una <b>función</b> ejecuta instrucciones y <b>devuelve</b> un valor con <code>return</code>, que podemos seguir usando.',
+  controls:[{k:'b',label:'Base',type:'number',value:6,min:0,max:999},{k:'h',label:'Altura',type:'number',value:4,min:0,max:999}],
+  code:v=>P`<?php
+// Procedimiento: hace algo, no devuelve nada
+function mostrarArea(float $b, float $h): void {
+    echo "Área: " . ($b * $h) . "\n";
+}
+
+// Función: calcula y devuelve un valor
+function calcularArea(float $b, float $h): float {
+    return $b * $h;
+}
+
+mostrarArea(${v.b}, ${v.h});
+$area = calcularArea(${v.b}, ${v.h});
+echo "El doble del área es " . ($area * 2);`,
+  run:v=>{ const a=(+v.b)*(+v.h); return `Área: ${pn(a)}\nEl doble del área es ${pn(a*2)}`; }},
+ {type:'code', title:'Ámbito: variables locales y globales', file:'ambito.php',
+  lead:'El ámbito define <b>dónde es visible</b> una variable. En PHP, una función <b>no ve</b> las variables globales salvo que las declares con <code>global</code>. Desactivá esa línea y ejecutá.',
+  controls:[{k:'g',label:'Usar la línea global $iva',type:'toggle',value:true},{k:'precio',label:'Precio',type:'number',value:1000,min:0,max:99999}],
+  code:v=>P`<?php
+$iva = 21;                  // variable global
+
+function precioFinal(float $precio): float {
+${v.g?'    global $iva;            // la traemos al ámbito local':'    // sin "global", $iva no existe acá adentro'}
+    return $precio * (1 + $iva / 100);
+}
+
+echo precioFinal(${v.precio});`,
+  run:v=>{ const p=+v.precio; return v.g ? pn(p*1.21) : `Warning: Undefined variable $iva in ambito.php on line 6\n${pn(p)}`; },
+  after:()=>`<div class="note"><b>Recomendación:</b> usá variables locales siempre que puedas y evitá abusar de las globales: generan conflictos de nombres y acoplan las partes del código. Mejor aún, pasá el valor como parámetro: <code>precioFinal($precio, $iva)</code>.</div>`},
+ {type:'code', title:'Paso de parámetros', file:'parametros.php',
+  lead:'Los parámetros son los <b>ingredientes</b> que le damos a una función. Por defecto PHP los pasa <b>por valor</b> (una copia). Con <code>&</code> se pasan <b>por referencia</b> y la función modifica la variable original.',
+  controls:[{k:'ref',label:'Pasar por referencia (&)',type:'toggle',value:false},{k:'num',label:'Valor de $numero',type:'number',value:5,min:-999,max:999}],
+  code:v=>P`<?php
+function duplicar(int ${v.ref?'&':''}$n): void {
+    $n = $n * 2;        // modifica ${v.ref?'la variable original':'solo la copia local'}
+}
+
+$numero = ${v.num};
+duplicar($numero);
+echo $numero;`,
+  run:v=>pn(v.ref ? (+v.num)*2 : +v.num)},
+ {type:'demo', demo:'recursion', title:'¿Qué es la recursividad?', file:'factorial.php', lead:'Una función recursiva <b>se llama a sí misma</b> con un problema más chico, hasta llegar a un <b>caso base</b> que la detiene. Cada llamada se apila en memoria y, al llegar al caso base, los resultados vuelven desapilándose.'},
+ {type:'concept', title:'Recursividad: cuándo usarla', file:'recursividad.php',
+  ptitle:'Conviene cuando...',
+  points:[['El problema es divisible','en subproblemas más pequeños del mismo tipo.'],['Trabajás con estructuras recursivas,','como árboles o listas enlazadas.'],['La definición matemática ya es recursiva,','como el factorial o Fibonacci.']],
+  groups:[{h:'Ventajas',pts:[['Código conciso y elegante,','a menudo más corto que el iterativo.'],['Se adapta naturalmente','a árboles y listas enlazadas.']]},{h:'Desventajas',pts:[['Sobrecarga de la pila:','demasiadas llamadas agotan la memoria.'],['Difícil de depurar.',''],['Puede ser menos eficiente','que una solución iterativa.']]}]},
+ {type:'quiz', title:'Cuestionario: subprogramas y recursividad', file:'quiz_funciones.php', questions:[
+  {q:'En PHP, una función con tipo de retorno void se comporta como un...',o:['Procedimiento','Función que devuelve un valor','Clase','Namespace'],a:0,why:'void indica que no devuelve nada: ejecuta instrucciones, como un procedimiento.'},
+  {q:'Dentro de una función, ¿cómo accedés a una variable global $iva?',o:['Directamente, escribiendo $iva','Declarándola con global $iva, o mejor, pasándola como parámetro','Con $this->iva','No es posible'],a:1,why:'Las funciones de PHP tienen su propio ámbito: sin global, $iva no existe adentro.'},
+  {q:'function duplicar(int &$n) recibe el parámetro...',o:['Por valor','Por referencia','Como constante','Como global'],a:1,why:'El & indica referencia: los cambios afectan a la variable original.'},
+  {q:'¿Qué evita que una función recursiva se llame infinitamente?',o:['El caso base','La pila de llamadas','El tipo void','Una variable global'],a:0,why:'El caso base es la condición que corta la recursión.'},
+  {q:'¿Cuál es el resultado de factorial(4)?',o:['16','24','10','120'],a:1,why:'4 × 3 × 2 × 1 = 24.'}]}
+]},
+/* ---------------------------------------------------------------- 4 */
+{ title:'Paradigmas y POO', unit:'Unidad II', part:'Parte I', slides:[
+ {type:'cover', title:'Paradigmas y POO', file:'paradigmas.php', sub:'Distintas formas de pensar un programa y por qué la Programación Orientada a Objetos modela tan bien el mundo real.', topics:['Paradigmas','Un problema, tres estilos','¿Qué es la POO?','Ventajas','Comparaciones']},
+ {type:'concept', title:'¿Qué es un paradigma de programación?', file:'paradigma.php',
+  lead:'Es un <b>enfoque o estilo</b> para diseñar, estructurar y escribir código. Una filosofía que guía cómo pensamos los problemas y cómo los resolvemos.',
+  analogy:'Construir una casa: podés seguir un plano detallado paso a paso (<b>programación estructurada</b>) o empezar con bloques que unís para formar habitaciones (<b>POO</b>). Cada enfoque tiene ventajas y desventajas.',
+  ptitle:'¿Por qué son importantes?',
+  points:[['Organización:','cada paradigma estructura el código de otra forma.'],['Resolución de problemas:','algunos se adaptan mejor a ciertos problemas.'],['Reutilización:','la POO facilita crear componentes reutilizables.'],['Abstracción:','simplifican la complejidad de los programas.']]},
+ {type:'cards', title:'Principales paradigmas', file:'principales.php', min:'240px',
+  cards:[{t:'Imperativa',d:'El más antiguo: instrucciones paso a paso que modifican el estado.',list:['Estructurada: bloques pequeños y manejables','Procedimental: agrupa en funciones']},{t:'Declarativa',d:'Describe qué se quiere obtener, no cómo.',list:['Funcional: funciones puras, sin efectos secundarios','Lógica: reglas lógicas (sistemas expertos)']},{t:'Orientada a Objetos',d:'Organiza el código en objetos con propiedades (atributos) y comportamientos (métodos).',ex:'$coche->acelerar();'}],
+  note:'<b>Otros paradigmas:</b> orientada a aspectos (separa preocupaciones transversales), concurrente (tareas simultáneas) y evolutiva (algoritmos genéticos). <b>No existe un paradigma mejor:</b> depende del problema, del lenguaje y del equipo.'},
+ {type:'code', title:'Un problema, tres paradigmas', file:'pares.php',
+  lead:'Sumar los números pares de una lista. PHP es multiparadigma: el resultado es el mismo, cambia la forma de pensarlo.',
+  controls:[{k:'est',label:'Estilo',type:'seg',options:['Estructurado','Funcional','POO'],value:'Estructurado'},{k:'n',label:'Números enteros',type:'text',value:'3, 8, 5, 12, 7, 4'}],
+  code:v=>{ const a=ints(v.n).join(', '); if(v.est==='Funcional') return P`<?php
+$numeros = [${a}];
+
+// Declarativo: decimos QUÉ queremos (filtrar pares y sumar)
+$esPar = fn(int $n): bool => $n % 2 === 0;
+$suma = array_sum(array_filter($numeros, $esPar));
+
+echo "Suma de pares: $suma";`;
+   if(v.est==='POO') return P`<?php
+class ListaNumeros {
+    public function __construct(private array $numeros) {}
+
+    public function sumaPares(): int {
+        $suma = 0;
+        foreach ($this->numeros as $n) {
+            if ($n % 2 === 0) $suma += $n;
+        }
+        return $suma;
+    }
+}
+
+$lista = new ListaNumeros([${a}]);
+echo "Suma de pares: " . $lista->sumaPares();`;
+   return P`<?php
+$numeros = [${a}];
+
+// Imperativo: decimos CÓMO hacerlo, paso a paso
+$suma = 0;
+for ($i = 0; $i < count($numeros); $i++) {
+    if ($numeros[$i] % 2 === 0) {
+        $suma += $numeros[$i];
+    }
+}
+echo "Suma de pares: $suma";`; },
+  run:v=>'Suma de pares: '+ints(v.n).filter(x=>x%2===0).reduce((a,b)=>a+b,0)},
+ {type:'concept', title:'¿Qué es la POO?', file:'poo.php',
+  lead:'La Programación Orientada a Objetos se basa en <b>objetos</b>: representaciones de algo del mundo real (una persona, un coche, una casa), cada uno con sus <b>atributos</b> (características) y <b>métodos</b> (comportamientos).',
+  analogy:'En un videojuego, cada personaje es un objeto: tiene nombre, edad y fuerza (atributos), y puede caminar, atacar o hablar (métodos).',
+  ptitle:'¿Por qué modelar el mundo real?',
+  points:[['Organización:','cada objeto representa una entidad concreta.'],['Reutilización:','los objetos se usan en distintas partes del programa.'],['Extensibilidad:','es fácil agregar características o crear objetos nuevos.'],['Mantenimiento:','separar responsabilidades facilita encontrar errores.']]},
+ {type:'demo', demo:'perro', title:'Un objeto en acción', file:'perro.php', lead:'Este es el objeto <code>$max</code>, creado a partir de la clase <code>Perro</code>. Llamá a sus métodos y mirá cómo cambian sus atributos.'},
+ {type:'cards', title:'Ventajas de la POO', file:'ventajas.php', min:'230px',
+  cards:[{t:'Modularidad',list:['División del problema en objetos','Objetos independientes, que se prueban por separado','Errores más fáciles de localizar']},{t:'Reutilización de código',list:['Herencia: clases nuevas a partir de existentes','Composición: objetos formados por otros','Bibliotecas de clases']},{t:'Mantenimiento',list:['Localización de errores','Cambios con menor impacto','Evolución sin afectar todo el sistema']},{t:'Diseño intuitivo',list:['Modelo del mundo real','Abstracción: se expone solo lo necesario','Mejor colaboración en equipo']}],
+  note:'<b>Otras ventajas:</b> flexibilidad, extensibilidad, <b>polimorfismo</b> (objetos de distintas clases tratados como del mismo tipo) y <b>encapsulación</b> (protege los datos internos de modificaciones externas).'},
+ {type:'table', title:'Estructurada vs. POO', file:'comparacion.php', lead:'La programación estructurada introdujo funciones, estructuras de control (<code>if</code>, <code>for</code>, <code>while</code>) y bloques. Con programas cada vez más complejos, hizo falta una forma más modular de organizar el código.',
+  head:['','Programación estructurada','POO'],
+  rows:[['Enfoque','En el flujo de control, dividiendo el código en funciones y procedimientos.','En los datos y en los objetos que interactúan entre sí.'],['Reutilización','A través de funciones y bibliotecas.','Herencia y composición: más flexible y potente.'],['Abstracción','A través de funciones.','Más profunda: encapsula datos y comportamiento en objetos.']]},
+ {type:'table', title:'Funcional vs. POO', file:'funcional.php', lead:'En la programación funcional, las funciones son <b>ciudadanos de primera clase</b>: se asignan a variables, se pasan como argumentos y se devuelven como resultado (como <code>$esPar</code> en el ejemplo anterior).',
+  head:['','Programación funcional','POO'],
+  rows:[['Estado','Evita el estado mutable: los datos no cambian después de creados.','Permite modificar el estado de los objetos.'],['Efectos secundarios','Busca minimizarlos.','Por la mutabilidad, puede tener más.'],['Paradigma','Declarativa: se enfoca en qué hacer.','Más imperativa: se enfoca en cómo hacerlo.']]},
+ {type:'quiz', title:'Cuestionario: paradigmas y POO', file:'quiz_paradigmas.php', questions:[
+  {q:'Un paradigma de programación es...',o:['Un lenguaje específico','Un enfoque o estilo para diseñar y escribir código','Un tipo de variable','Un editor de código'],a:1,why:'Es una filosofía de trabajo; un mismo lenguaje, como PHP, puede soportar varios paradigmas.'},
+  {q:'Describir qué se quiere obtener, en lugar de cómo hacerlo, es propio de la programación...',o:['Imperativa','Declarativa','Estructurada','Procedimental'],a:1,why:'La declarativa (funcional, lógica) describe el resultado buscado.'},
+  {q:'Usar array_filter y array_sum para sumar los pares es un estilo...',o:['Funcional','Lógico','Concurrente','Orientado a aspectos'],a:0,why:'Combina funciones sin modificar estado: estilo funcional.'},
+  {q:'En la POO, los comportamientos de un objeto se llaman...',o:['Atributos','Métodos','Paquetes','Parámetros'],a:1,why:'Atributos = características; métodos = comportamientos.'},
+  {q:'La POO se centra en...',o:['El flujo de control','Los datos y los objetos que interactúan','Evitar todo estado mutable','Reglas lógicas'],a:1,why:'A diferencia de la estructurada, el foco está en los objetos y sus interacciones.'}]}
+]},
+/* ---------------------------------------------------------------- 5 */
+{ title:'Clases, objetos y pilares', unit:'Unidad II', part:'Parte II', slides:[
+ {type:'cover', title:'Clases y objetos', file:'clases.php', sub:'El molde y lo que sale de él: clases, instancias, los cuatro pilares, el ciclo de vida y las referencias.', topics:['Clase, objeto e instancia','Sintaxis en PHP','Los 4 pilares','Ciclo de vida','Referencias','Getters y setters']},
+ {type:'cards', title:'Clase, objeto e instancia', file:'conceptos.php', min:'240px', lead:'Una <b>plantilla</b> o <b>blueprint</b> es un plano o molde que define la estructura y el comportamiento de algo.',
+  cards:[{t:'Clase',d:'La plantilla que define las características (atributos) y comportamientos (métodos) de un conjunto de objetos.',ex:'class Coche { ... }'},{t:'Objeto',d:'Algo concreto creado a partir de la clase: la casa real construida con el plano.',ex:'new Coche("Fiat", "rojo")'},{t:'Instancia',d:'Cada objeto específico, con sus propios valores. Todos comparten la estructura del molde.',ex:'$miCoche, $tuCoche'}],
+  analogy:'La clase es el <b>plano arquitectónico</b>: dice cuántas habitaciones habrá y dónde van las ventanas. Cada casa construida con ese plano es un objeto distinto.'},
+ {type:'code', title:'Sintaxis de una clase en PHP', file:'Coche.php',
+  lead:'Definimos la clase con <code>class</code>, la <b>instanciamos</b> con <code>new</code> y accedemos a sus miembros con <code>-></code>. Dentro de la clase, <code>$this</code> es el objeto actual.',
+  controls:[{k:'marca',label:'Marca',type:'text',value:'Fiat'},{k:'kmh',label:'Acelerar (km/h)',type:'range',min:10,max:60,value:30}],
+  code:v=>P`<?php
+class Coche {
+    public string $marca;               // atributo
+    public int $velocidad = 0;          // atributo con valor inicial
+
+    public function __construct(string $marca) {
+        $this->marca = $marca;
+    }
+
+    public function acelerar(int $kmh): void {   // método
+        $this->velocidad += $kmh;
+        echo "{$this->marca} va a {$this->velocidad} km/h\n";
+    }
+}
+
+$miCoche = new Coche("${clean(v.marca,'Fiat')}");   // instanciación
+$miCoche->acelerar(${v.kmh});
+$miCoche->acelerar(${v.kmh});`,
+  run:v=>{ const m=clean(v.marca,'Fiat'); return `${m} va a ${v.kmh} km/h\n${m} va a ${v.kmh*2} km/h`; }},
+ {type:'demo', demo:'factory', title:'La fábrica de objetos', file:'fabrica.php', lead:'Una sola clase, muchas instancias. Elegí los valores y creá objetos con <code>new</code>: cada uno es independiente y tiene sus propios atributos.'},
+ {type:'table', title:'Diferencias entre clases y objetos', file:'diferencias.php',
+  head:['','Clase','Objeto'],
+  rows:[['Naturaleza','Un concepto abstracto.','Una entidad real en el programa.'],['Qué define','La estructura y el comportamiento.','Valores específicos para sus atributos.'],['Analogía','El plano o el molde.','La casa construida.'],['En PHP','<code>class Coche { ... }</code>','<code>$miCoche = new Coche("Fiat")</code>']]},
+ {type:'quiz', title:'Cuestionario: clases y objetos', file:'quiz_clases.php', questions:[
+  {q:'Una clase es...',o:['Un objeto concreto','Una plantilla que define atributos y métodos','Una variable global','Un tipo de bucle'],a:1,why:'Es el molde; los objetos son lo que se crea a partir de él.'},
+  {q:'¿Qué palabra clave crea una instancia en PHP?',o:['class','new','extends','this'],a:1,why:'new Coche(...) reserva memoria, crea el objeto y ejecuta el constructor.'},
+  {q:'Dentro de un método, $this hace referencia a...',o:['La clase padre','El objeto actual','Una variable global','El archivo actual'],a:1,why:'$this apunta al objeto sobre el que se llamó el método.'},
+  {q:'Si creás tres objetos con new Coche(), tenés...',o:['1 clase y 3 instancias','3 clases','1 objeto compartido','3 namespaces'],a:0,why:'Una sola clase puede generar todas las instancias que necesites.'}]},
+ {type:'cards', flipcards:true, title:'Los 4 pilares de la POO', file:'pilares.php', min:'220px', lead:'Tocá cada tarjeta para ver un ejemplo.',
+  cards:[{t:'Abstracción',d:'Simplificar la realidad: quedarse con lo esencial y omitir detalles.',back:'Al modelar un Coche usamos marca, modelo, acelerar() y frenar(), sin detallar el funcionamiento interno del motor.'},{t:'Encapsulación',d:'Ocultar los detalles internos y exponer solo la interfaz necesaria.',back:'private float $saldo; solo se modifica a través de métodos públicos como depositar().'},{t:'Herencia',d:'Crear clases nuevas (subclases) a partir de existentes (superclases).',back:'class Perro extends Animal: hereda comer() y dormir(), y agrega ladrar().'},{t:'Polimorfismo',d:'Objetos de distintas clases responden de forma diferente al mismo mensaje.',back:'hacerSonido(): el Perro ladra y el Gato maúlla, aunque ambos heredan de Animal.'}]},
+ {type:'code', title:'Herencia y polimorfismo', file:'animales.php',
+  lead:'<code>Perro</code> y <code>Gato</code> <b>heredan</b> de <code>Animal</code> con <code>extends</code> y <b>redefinen</b> <code>hacerSonido()</code>. El bucle envía el mismo mensaje a todos y cada uno responde a su manera.',
+  controls:[{k:'vaca',label:'Agregar la clase Vaca',type:'toggle',value:false},{k:'perro',label:'Nombre del perro',type:'text',value:'Firulais'}],
+  code:v=>P`<?php
+class Animal {
+    public function __construct(protected string $nombre) {}
+    public function comer(): string { return "{$this->nombre} come."; }
+    public function hacerSonido(): string { return "..."; }
+}
+
+class Perro extends Animal {
+    public function hacerSonido(): string { return "{$this->nombre}: ¡Guau!"; }
+}
+
+class Gato extends Animal {
+    public function hacerSonido(): string { return "{$this->nombre}: ¡Miau!"; }
+}
+${v.vaca?P`
+class Vaca extends Animal {
+    public function hacerSonido(): string { return "{$this->nombre}: ¡Muuu!"; }
+}
+`:''}
+$animales = [new Perro("${clean(v.perro,'Firulais')}"), new Gato("Michi")${v.vaca?', new Vaca("Lola")':''}];
+
+foreach ($animales as $animal) {
+    echo $animal->hacerSonido() . "\n";   // mismo mensaje, distinta respuesta
+}
+echo $animales[0]->comer();               // heredado de Animal`,
+  run:v=>{ const p=clean(v.perro,'Firulais'); return `${p}: ¡Guau!\nMichi: ¡Miau!\n${v.vaca?'Lola: ¡Muuu!\n':''}${p} come.`; }},
+ {type:'steps', title:'Ciclo de vida de una clase', file:'ciclo_clase.php', lead:'Las etapas que atraviesa una clase desde que se escribe hasta que termina el programa.',
+  steps:[{t:'Definición',d:'Se escribe la estructura: atributos y métodos.'},{t:'Compilación',d:'En lenguajes compilados se traduce a código máquina. PHP la traduce a opcodes al ejecutar.'},{t:'Carga',d:'Al ejecutar, la clase se carga en memoria junto con sus variables estáticas.'},{t:'Instanciación',d:'Se crean objetos, cada uno con sus propios valores.'},{t:'Uso',d:'Se invocan métodos y se accede a atributos.'},{t:'Destrucción',d:'Al terminar el programa, clases y objetos se eliminan de la memoria.'}]},
+ {type:'code', title:'Ciclo de vida de un objeto', file:'Conexion.php',
+  lead:'<b>Creación</b> con <code>new</code>, <b>uso</b> y <b>destrucción</b> cuando ya nadie lo referencia. Ahí actúa el <b>recolector de basura</b>, que libera la memoria automáticamente. Probá sacar el <code>unset()</code>: el objeto vive hasta el final del script.',
+  controls:[{k:'u',label:'Usar unset($db)',type:'toggle',value:true}],
+  code:v=>P`<?php
+class Conexion {
+    public function __construct() {
+        echo "1. Creación: se abre la conexión\n";
+    }
+    public function consultar(): void {
+        echo "2. Uso: se ejecuta una consulta\n";
+    }
+    public function __destruct() {
+        echo "3. Destrucción: se libera la memoria\n";
+    }
+}
+
+$db = new Conexion();
+$db->consultar();
+${v.u?'unset($db);              // nadie lo referencia → se destruye':'// sin unset, $db vive hasta el final'}
+echo "Fin del script\n";`,
+  run:v=>v.u?'1. Creación: se abre la conexión\n2. Uso: se ejecuta una consulta\n3. Destrucción: se libera la memoria\nFin del script':'1. Creación: se abre la conexión\n2. Uso: se ejecuta una consulta\nFin del script\n3. Destrucción: se libera la memoria'},
+ {type:'demo', demo:'refs', title:'Variables de referencia', file:'referencias.php', lead:'Una variable no guarda el objeto completo, sino una <b>referencia</b>: una etiqueta que apunta a su lugar en memoria. Es más eficiente y permite que varias variables apunten al mismo objeto. Probá asignar y clonar.'},
+ {type:'code', title:'Getters y setters', file:'Alumno.php',
+  lead:'Un <b>getter</b> obtiene el valor de un atributo privado; un <b>setter</b> lo asigna. Permiten <b>encapsular</b>, <b>validar</b> y <b>controlar el acceso</b>. Probá con una edad negativa.',
+  controls:[{k:'edad',label:'setEdad(...)',type:'number',value:20,min:-50,max:300}],
+  code:v=>P`<?php
+class Alumno {
+    private int $edad = 18;
+
+    public function getEdad(): int {
+        return $this->edad;
+    }
+
+    public function setEdad(int $edad): void {
+        if ($edad < 0 || $edad > 120) {
+            throw new InvalidArgumentException("Edad inválida: $edad");
+        }
+        $this->edad = $edad;
+    }
+}
+
+$alumno = new Alumno();
+$alumno->setEdad(${v.edad});
+echo "Edad: " . $alumno->getEdad();`,
+  run:v=>{ const e=Math.trunc(+v.edad); return (e<0||e>120)? FE('InvalidArgumentException','Edad inválida: '+e) : 'Edad: '+e; }},
+ {type:'quiz', title:'Cuestionario: pilares y referencias', file:'quiz_pilares.php', questions:[
+  {q:'Ocultar los datos internos y exponer solo métodos públicos es...',o:['Herencia','Encapsulación','Polimorfismo','Abstracción'],a:1,why:'La encapsulación protege los datos de modificaciones no autorizadas.'},
+  {q:'Perro y Gato responden distinto a hacerSonido(). Esto es...',o:['Polimorfismo','Encapsulación','Instanciación','Recursividad'],a:0,why:'Mismo mensaje, distintas formas de responder.'},
+  {q:'Después de $b = $a; (siendo $a un objeto), modificar $b->nombre...',o:['También cambia $a->nombre, porque apuntan al mismo objeto','Solo cambia $b','Lanza un error','Crea una tercera copia'],a:0,why:'Se copia la referencia, no el objeto: ambas variables apuntan al mismo lugar.'},
+  {q:'¿Cómo obtenés una copia independiente de un objeto en PHP?',o:['$b = $a;','$b = clone $a;','$b = &$a;','$b = $a->copy;'],a:1,why:'clone crea un objeto nuevo con los mismos valores.'},
+  {q:'¿Para qué sirve validar dentro de un setter?',o:['Para asegurar que el valor asignado sea válido','Para hacer el código más lento','Para crear objetos','Para heredar métodos'],a:0,why:'El setter es la puerta de entrada al atributo: ahí se controla qué se acepta.'}]}
+]},
+/* ---------------------------------------------------------------- 6 */
+{ title:'Visibilidad, abstracción e interfaces', unit:'Unidad II', part:'Parte III', slides:[
+ {type:'cover', title:'Visibilidad e interfaces', file:'visibilidad.php', sub:'Quién puede ver qué, cómo se resuelve la sobrecarga en PHP, clases abstractas, interfaces y namespaces.', topics:['public, private, protected','Sobrecarga','Clases abstractas','Interfaces','Paquetes y namespaces']},
+ {type:'concept', title:'Propiedades públicas, privadas y protegidas', file:'visibilidad.php',
+  lead:'Las propiedades (atributos o variables de instancia) definen a un objeto. Su <b>visibilidad</b> determina <b>desde qué partes del código se puede acceder</b> a ellas, y se controla con <code>public</code>, <code>private</code> y <code>protected</code>.',
+  groups:[{h:'public',p:'Accesible desde <b>cualquier parte</b> del código. Para la interfaz pública de la clase.'},{h:'private',p:'Solo desde <b>la misma clase</b>. Para el estado interno, protegido de cambios externos.'},{h:'protected',p:'Desde <b>la clase y sus subclases</b>. Útil para la herencia y el polimorfismo.'}],
+  ptitle:'¿Por qué es importante?',
+  points:[['Encapsulación:','protege los datos de modificaciones no deseadas.'],['Reutilización:','clases más robustas y reutilizables.'],['Mantenimiento:','menos complejidad y acoplamiento.'],['Seguridad:','previene errores y vulnerabilidades.']]},
+ {type:'code', title:'Probá los modificadores de acceso', file:'Cuenta.php',
+  lead:'Elegí un modificador y desde dónde intentamos leer <code>$saldo</code>. La tabla muestra qué accesos permite cada uno.',
+  controls:[{k:'mod',label:'Modificador',type:'seg',options:['public','protected','private'],value:'private'},{k:'desde',label:'Acceso desde',type:'seg',options:['la clase','una subclase','afuera'],value:'afuera'}],
+  code:v=>P`<?php
+class Cuenta {
+    ${v.mod} float $saldo = 1000;
+
+    public function verSaldo(): float {
+        return $this->saldo;            // desde la clase
+    }
+}
+
+class CajaAhorro extends Cuenta {
+    public function saldoDoble(): float {
+        return $this->saldo * 2;        // desde una subclase
+    }
+}
+
+$c = new CajaAhorro();
+echo ${v.desde==='la clase'?'$c->verSaldo()':v.desde==='una subclase'?'$c->saldoDoble()':'$c->saldo'};          // ${v.desde==='afuera'?'desde afuera':'llamando a un método público'}`,
+  run:v=>{ if(v.desde==='la clase') return '1000';
+    if(v.desde==='una subclase') return v.mod==='private' ? 'Warning: Undefined property: CajaAhorro::$saldo\n0' : '2000';
+    return v.mod==='public' ? '1000' : FE('Error',`Cannot access ${v.mod} property CajaAhorro::$saldo`); },
+  after:v=>{ const ok={public:[1,1,1],protected:[1,1,0],private:[1,0,0]}[v.mod]; const lab=['Dentro de la clase','Desde una subclase','Desde afuera']; const sel=['la clase','una subclase','afuera'].indexOf(v.desde);
+    return `<div class="matrix">${lab.map((l,i)=>`<div class="mcell ${ok[i]?'yes':'no'} ${i===sel?'sel':''}"><b>${ok[i]?'Permitido':'Bloqueado'}</b>${l}</div>`).join('')}</div>`; }},
+ {type:'quiz', title:'Cuestionario: visibilidad', file:'quiz_visibilidad.php', questions:[
+  {q:'Una propiedad private puede accederse...',o:['Desde cualquier parte','Solo desde la propia clase','Desde la clase y sus subclases','Solo desde afuera'],a:1,why:'private es el nivel más restrictivo: solo los métodos de la misma clase.'},
+  {q:'protected permite el acceso desde...',o:['La clase y sus subclases','Cualquier archivo','Solo la clase','Solo funciones globales'],a:0,why:'Pensado para la herencia: las clases hijas lo ven, el mundo exterior no.'},
+  {q:'Si hacés echo $cuenta->saldo y saldo es private, PHP...',o:['Muestra el valor','Lanza Error: Cannot access private property','Devuelve null sin avisar','Lo vuelve public'],a:1,why:'Acceder a una propiedad privada desde afuera es un error fatal.'}]},
+ {type:'code', title:'Sobrecarga en PHP', file:'Figura.php',
+  lead:'La sobrecarga define varios métodos con el mismo nombre y distintos parámetros. <b>PHP no la permite de forma clásica:</b> declarar dos veces el mismo método es un error. Se logra con <b>parámetros opcionales</b>, <b>variádicos</b> (<code>...</code>), <b>tipos unión</b> o <code>__call()</code>.',
+  controls:[{k:'modo',label:'Enfoque',type:'seg',options:['Clásica','Al estilo PHP'],value:'Al estilo PHP'},{k:'args',label:'Argumentos de area(...)',type:'seg',options:['4','4, 3','4, 3, 2'],value:'4, 3'}],
+  code:v=>v.modo==='Clásica'?P`<?php
+class Figura {
+    public function area(float $lado): float {
+        return $lado ** 2;
+    }
+
+    // En Java o C# esto sería válido. En PHP, no:
+    public function area(float $base, float $altura): float {
+        return $base * $altura;
+    }
+}
+
+$f = new Figura();
+echo $f->area(${v.args});`:P`<?php
+class Figura {
+    // Un solo método que se adapta a los argumentos
+    public function area(float ...$medidas): float {
+        return match (count($medidas)) {
+            1 => $medidas[0] ** 2,              // cuadrado
+            2 => $medidas[0] * $medidas[1],     // rectángulo
+            default => throw new ArgumentCountError("Se esperan 1 o 2 medidas"),
+        };
+    }
+}
+
+$f = new Figura();
+echo $f->area(${v.args});`,
+  run:v=>{ if(v.modo==='Clásica') return 'Fatal error: Cannot redeclare Figura::area() in Figura.php on line 8'; const a=nums(v.args); if(a.length===1) return pn(a[0]**2); if(a.length===2) return pn(a[0]*a[1]); return FE('ArgumentCountError','Se esperan 1 o 2 medidas'); },
+  after:()=>`<div class="note"><b>¿Por qué usarla?</b> Flexibilidad (un método se adapta a distintos datos), claridad (un mismo nombre para operaciones relacionadas) y facilidad de uso (no hace falta recordar nombres distintos).</div>`},
+ {type:'code', title:'Clases abstractas', file:'Vehiculo.php',
+  lead:'Son <b>plantillas que no se pueden instanciar</b>. Pueden tener métodos <b>abstractos</b> (sin implementación) y <b>concretos</b> (con implementación), y obligan a las hijas a implementar los abstractos. Probá instanciar <code>Vehiculo</code>.',
+  controls:[{k:'cl',label:'Instanciar',type:'seg',options:['Coche','Moto','Vehiculo'],value:'Moto'},{k:'mod',label:'Modelo',type:'text',value:'Honda'}],
+  code:v=>P`<?php
+abstract class Vehiculo {
+    public function __construct(protected string $modelo) {}
+
+    abstract public function acelerar(): string;   // sin implementación
+
+    public function frenar(): string {              // con implementación
+        return "{$this->modelo} frena.";
+    }
+}
+
+class Coche extends Vehiculo {
+    public function acelerar(): string { return "{$this->modelo} acelera en 4 ruedas."; }
+}
+
+class Moto extends Vehiculo {
+    public function acelerar(): string { return "{$this->modelo} acelera en 2 ruedas."; }
+}
+
+$v = new ${v.cl}("${clean(v.mod,'Honda')}");
+echo $v->acelerar() . "\n";
+echo $v->frenar();`,
+  run:v=>{ const m=clean(v.mod,'Honda'); if(v.cl==='Vehiculo') return FE('Error','Cannot instantiate abstract class Vehiculo'); return `${m} acelera en ${v.cl==='Coche'?4:2} ruedas.\n${m} frena.`; }},
+ {type:'code', title:'Interfaces', file:'Volador.php',
+  lead:'Son <b>contratos</b>: indican qué métodos debe implementar una clase, sin implementarlos. Una clase puede implementar <b>varias interfaces</b>, y clases no relacionadas pueden compartir un comportamiento. Probá con <code>Perro</code>, que no la implementa.',
+  controls:[{k:'cl',label:'despegar(new ...)',type:'seg',options:['Avion','Pajaro','Perro'],value:'Pajaro'}],
+  code:v=>P`<?php
+interface Volador {
+    public function volar(): string;
+}
+
+class Avion implements Volador {
+    public function volar(): string { return "El avión vuela con motores."; }
+}
+
+class Pajaro implements Volador {
+    public function volar(): string { return "El pájaro vuela batiendo las alas."; }
+}
+
+class Perro {}   // no implementa Volador
+
+function despegar(Volador $v): void {
+    echo $v->volar() . "\n";
+}
+
+$obj = new ${v.cl}();
+var_dump($obj instanceof Volador);
+despegar($obj);`,
+  run:v=>v.cl==='Perro'?'bool(false)\n'+FE('TypeError','despegar(): Argument #1 ($v) must be of type Volador, Perro given'):`bool(true)\n${v.cl==='Avion'?'El avión vuela con motores.':'El pájaro vuela batiendo las alas.'}`},
+ {type:'table', title:'Clases abstractas vs. interfaces', file:'abstracta_vs_interfaz.php',
+  head:['','Clase abstracta','Interfaz'],
+  rows:[['Métodos','Abstractos o concretos.','Solo firmas de métodos (y constantes).'],['Herencia','Se extiende solo una: <code>extends</code>.','Se implementan varias: <code>implements A, B</code>.'],['Propiedades','Puede tener variables de instancia.','No puede tener variables de instancia.'],['Constructor','Puede tener constructor.','No define constructor.']],
+  groups:[{h:'Usá una clase abstracta cuando...',pts:[['Querés compartir código','entre clases relacionadas.'],['Necesitás una implementación parcial','de algunos métodos.'],['Querés establecer','una jerarquía de clases.']]},{h:'Usá una interfaz cuando...',pts:[['Querés un contrato','que cumplan clases incluso no relacionadas.'],['Buscás un alto desacoplamiento','entre clases.'],['Una clase debe tener','múltiples comportamientos.']]}]},
+ {type:'quiz', title:'Cuestionario: sobrecarga, abstractas e interfaces', file:'quiz_interfaces.php', questions:[
+  {q:'¿PHP permite declarar dos métodos con el mismo nombre en una clase?',o:['Sí, si tienen distinta cantidad de parámetros','No: da error. Se simula con parámetros opcionales, variádicos o __call()','Sí, siempre','Solo si son static'],a:1,why:'PHP lanza "Cannot redeclare". La flexibilidad se logra con un único método adaptable.'},
+  {q:'¿Qué pasa con new Vehiculo() si Vehiculo es abstract?',o:['Se crea normalmente','Error: no se puede instanciar una clase abstracta','Se crea un Coche','Devuelve null'],a:1,why:'Las clases abstractas solo sirven como base para otras.'},
+  {q:'Una clase en PHP puede...',o:['Extender varias clases','Implementar varias interfaces','Extender interfaces con extends','No usar nunca interfaces'],a:1,why:'Herencia simple de clases, pero múltiples interfaces: class A implements B, C.'},
+  {q:'Avion y Pajaro no tienen relación de herencia, pero ambos vuelan. Conviene...',o:['Una interfaz Volador','Una clase abstracta común','Variables globales','Un namespace'],a:0,why:'Las interfaces definen comportamientos compartidos por clases no relacionadas.'}]},
+ {type:'concept', title:'Paquetes y namespaces', file:'namespaces.php',
+  groups:[{h:'Paquetes',p:'Contenedores que <b>agrupan archivos de código relacionados</b> en una jerarquía, como carpetas. En PHP se distribuyen e instalan con <b>Composer</b>.'},{h:'Namespaces',p:'Contenedores de <b>nombres</b>: cada clase, función o constante debe ser única dentro de su namespace. Evitan conflictos en proyectos grandes.'}],
+  analogy:'Una biblioteca enorme se divide en secciones: novelas, poesía, historia. Cada sección es un paquete. Puede haber un libro llamado "Inicio" en dos secciones distintas sin confundirlos.',
+  ptitle:'¿Por qué usarlos?',
+  points:[['Modularidad:','dividen el código en partes manejables.'],['Reutilización:','permiten crear bibliotecas para otros proyectos.'],['Organización:','mejoran la estructura y la legibilidad.'],['Evitar conflictos:','cada nombre tiene un significado único en su contexto.']]},
+ {type:'code', title:'Namespaces en PHP', file:'Usuario.php',
+  lead:'Dos clases se llaman <code>Usuario</code>, pero viven en namespaces distintos. Con <code>use</code> elegimos cuál usar. Así trabajan los frameworks como Laravel.',
+  controls:[{k:'ns',label:'use App\\...\\Usuario',type:'seg',options:['Modelos','Admin'],value:'Modelos'}],
+  code:v=>P`<?php
+namespace App\Modelos {
+    class Usuario {
+        public function tipo(): string { return "Cliente de la tienda"; }
+    }
+}
+
+namespace App\Admin {
+    class Usuario {
+        public function tipo(): string { return "Administrador del sistema"; }
+    }
+}
+
+namespace {
+    use App${'\\'+v.ns}\Usuario;
+
+    echo (new Usuario())->tipo() . "\n";
+    echo Usuario::class;          // nombre completo de la clase
+}`,
+  run:v=>`${v.ns==='Modelos'?'Cliente de la tienda':'Administrador del sistema'}\nApp\\${v.ns}\\Usuario`},
+ {type:'quiz', title:'Cuestionario: paquetes y namespaces', file:'quiz_namespaces.php', questions:[
+  {q:'¿Para qué sirven los namespaces?',o:['Para evitar conflictos de nombres entre clases','Para acelerar los bucles','Para encriptar el código','Para crear objetos'],a:0,why:'Permiten que dos clases con el mismo nombre convivan en contextos distintos.'},
+  {q:'Con use App\\Admin\\Usuario; ¿qué clase crea new Usuario()?',o:['App\\Modelos\\Usuario','App\\Admin\\Usuario','Una clase Usuario global','Ninguna: es un error'],a:1,why:'use importa ese nombre completo dentro del archivo.'},
+  {q:'En PHP, los paquetes reutilizables se instalan normalmente con...',o:['Composer','npm','pip','Maven'],a:0,why:'Composer es el gestor de dependencias de PHP.'}]}
+]},
+/* ---------------------------------------------------------------- 7 */
+{ title:'PHP moderno', unit:'Unidad II', part:'Parte IV', slides:[
+ {type:'cover', title:'PHP moderno', file:'php_moderno.php', sub:'Herramientas del lenguaje para escribir clases más claras, seguras y reutilizables.', topics:['Métodos mágicos','Declaraciones de tipo','Propiedades readonly','self:: y static::','Traits']},
+ {type:'cards', title:'Métodos mágicos', file:'magicos.php', min:'230px', lead:'Su nombre empieza con <b>doble guion bajo</b> <code>__</code>. No se llaman directamente: <b>PHP los ejecuta solo</b> cuando ocurre un evento sobre el objeto.',
+  cards:[{t:'__construct()',d:'Al crear el objeto con new.'},{t:'__destruct()',d:'Cuando el objeto se destruye.'},{t:'__toString()',d:'Al usar el objeto como texto, por ejemplo con echo.'},{t:'__get() y __set()',d:'Al leer o asignar una propiedad inaccesible.'},{t:'__isset() y __unset()',d:'Al usar isset() o unset() sobre ella.'},{t:'__call()',d:'Al invocar un método que no existe.'},{t:'__invoke()',d:'Al usar el objeto como si fuera una función.'},{t:'__clone()',d:'Al copiar el objeto con clone.'}]},
+ {type:'code', title:'__construct y __toString', file:'Libro.php',
+  lead:'<code>__construct</code> se ejecuta con <code>new</code> y <code>__toString</code> cuando hacemos <code>echo</code> del objeto. Usa <b>promoción de propiedades</b>: se declaran directamente en el constructor.',
+  controls:[{k:'t',label:'Título',type:'text',value:'Rayuela'},{k:'a',label:'Autor',type:'text',value:'Cortázar'}],
+  code:v=>P`<?php
+class Libro {
+    public function __construct(private string $titulo, private string $autor) {
+        echo "Libro creado\n";
+    }
+
+    public function __toString(): string {
+        return "{$this->titulo} - {$this->autor}";
+    }
+}
+
+$libro = new Libro("${clean(v.t,'Rayuela')}", "${clean(v.a,'Cortázar')}");   // ejecuta __construct
+echo $libro;                                      // ejecuta __toString`,
+  run:v=>`Libro creado\n${clean(v.t,'Rayuela')} - ${clean(v.a,'Cortázar')}`},
+ {type:'code', title:'__get y __set', file:'Persona.php',
+  lead:'Atrapan la lectura y escritura de propiedades que <b>no existen o no son accesibles</b>. Asigná una propiedad y después leé otra.',
+  controls:[{k:'p',label:'Propiedad a asignar',type:'text',value:'edad'},{k:'val',label:'Valor',type:'text',value:'30'},{k:'r',label:'Propiedad a leer',type:'text',value:'email'}],
+  code:v=>{ const p=ident(v.p,'edad'), r=ident(v.r,'email'); return P`<?php
+class Persona {
+    private array $datos = [];
+
+    public function __set(string $prop, mixed $valor): void {
+        echo "Asignando $prop\n";
+        $this->datos[$prop] = $valor;
+    }
+
+    public function __get(string $prop): mixed {
+        return $this->datos[$prop] ?? "No definido";
+    }
+}
+
+$p = new Persona();
+$p->${p} = "${clean(v.val,'30')}";     // llama a __set
+echo $p->${r};              // llama a __get`; },
+  run:v=>{ const p=ident(v.p,'edad'), r=ident(v.r,'email'); return `Asignando ${p}\n${p===r?clean(v.val,'30'):'No definido'}`; }},
+ {type:'code', title:'__call e __invoke', file:'Asistente.php',
+  lead:'<code>__call</code> atrapa llamadas a <b>métodos que no existen</b>; <code>__invoke</code> permite usar el objeto <b>como si fuera una función</b>.',
+  controls:[{k:'m',label:'Método inexistente',type:'text',value:'volar'},{k:'args',label:'Argumentos',type:'seg',options:['ninguno','"alto"','"alto", 300'],value:'"alto"'},{k:'n',label:'$a("...")',type:'text',value:'Juan'}],
+  code:v=>P`<?php
+class Asistente {
+    public function __call(string $metodo, array $args): string {
+        return "No existe $metodo(), recibió " . count($args) . " dato/s";
+    }
+
+    public function __invoke(string $nombre): string {
+        return "¡Hola, $nombre!";
+    }
+}
+
+$a = new Asistente();
+echo $a->${ident(v.m,'volar')}(${v.args==='ninguno'?'':v.args}) . "\n";
+echo $a("${clean(v.n,'Juan')}");`,
+  run:v=>`No existe ${ident(v.m,'volar')}(), recibió ${v.args==='ninguno'?0:v.args.split(',').length} dato/s\n¡Hola, ${clean(v.n,'Juan')}!`},
+ {type:'quiz', title:'Cuestionario: métodos mágicos', file:'quiz_magicos.php', questions:[
+  {q:'Los métodos mágicos de PHP comienzan con...',o:['Un guion bajo','Doble guion bajo __','El símbolo @','La palabra magic'],a:1,why:'__construct, __toString, __get... todos empiezan con __.'},
+  {q:'¿Qué método se ejecuta al hacer echo $objeto?',o:['__construct','__toString','__invoke','__get'],a:1,why:'Convierte el objeto en texto.'},
+  {q:'Si leés una propiedad inaccesible, PHP llama a...',o:['__set','__get','__call','__clone'],a:1,why:'__get para leer, __set para asignar.'},
+  {q:'Para poder escribir $a("Juan") se implementa...',o:['__call','__invoke','__toString','__destruct'],a:1,why:'__invoke hace que el objeto sea "invocable" como una función.'}]},
+ {type:'concept', title:'Declaraciones de tipo', file:'tipos.php',
+  lead:'Indican <b>qué tipo de dato</b> debe recibir un parámetro, devolver un método o guardar una propiedad. Si no coincide, PHP lanza un <code>TypeError</code>. El código queda más claro, seguro y fácil de mantener.',
+  groups:[{h:'¿Dónde se declaran?',pts:[['Parámetros:','antes de la variable.<br><code>function saludar(string $nombre)</code>'],['Retorno:','después de los paréntesis, con dos puntos.<br><code>function sumar(int $a, int $b): int</code>'],['Propiedades:','después del modificador.<br><code>private float $precio;</code>']]},
+          {h:'Tipos disponibles',pts:[['Escalares:','<code>int</code>, <code>float</code>, <code>string</code>, <code>bool</code>'],['Compuestos:','<code>array</code>, <code>object</code>, <code>callable</code>, <code>iterable</code>'],['Clases e interfaces:','por ejemplo <code>Producto</code>'],['Especiales:','<code>void</code>, <code>mixed</code>, <code>null</code>'],['Nullable y unión:','<code>?string</code>, <code>int|float</code>']]}]},
+ {type:'code', title:'Ejemplo: Producto con tipos', file:'Producto.php',
+  lead:'Propiedades, parámetros y retorno tipados. <code>precioConIva()</code> siempre devuelve un <code>float</code>.',
+  controls:[{k:'n',label:'Nombre',type:'text',value:'Mouse'},{k:'p',label:'Precio sin IVA',type:'number',value:5000,min:0,max:9999999}],
+  code:v=>P`<?php
+class Producto {
+    private string $nombre;
+    private float $precio;
+
+    public function __construct(string $nombre, float $precio) {
+        $this->nombre = $nombre;
+        $this->precio = $precio;
+    }
+
+    public function precioConIva(): float {
+        return $this->precio * 1.21;
+    }
+}
+
+$p = new Producto("${clean(v.n,'Mouse')}", ${v.p});
+echo $p->precioConIva();`,
+  run:v=>pn(+(v.p*1.21).toFixed(10))},
+ {type:'code', title:'Modo estricto: strict_types', file:'strict.php',
+  lead:'Por defecto PHP intenta <b>convertir</b> los valores al tipo esperado. Con <code>declare(strict_types=1)</code> al inicio del archivo, los tipos se exigen de forma estricta.',
+  controls:[{k:'s',label:'declare(strict_types=1)',type:'toggle',value:true},{k:'arg',label:'Llamada',type:'seg',options:['sumar(5, 3)','sumar("5", 3)','sumar("cinco", 3)'],value:'sumar("5", 3)'}],
+  code:v=>P`<?php
+${v.s?'declare(strict_types=1);':'// sin strict_types: PHP convierte cuando puede'}
+
+function sumar(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo ${v.arg};`,
+  run:v=>{ const te=FE('TypeError','sumar(): Argument #1 ($a) must be of type int, string given'); if(v.arg==='sumar(5, 3)') return '8'; if(v.arg==='sumar("5", 3)') return v.s?te:'8'; return te; }},
+ {type:'code', title:'Nullable, unión y void', file:'Calculadora.php',
+  lead:'<code>int|float</code> acepta cualquiera de los dos tipos, <code>?string</code> acepta un string o <code>null</code> y <code>void</code> indica que no se devuelve nada.',
+  controls:[{k:'n',label:'doble(...)',type:'seg',options:['4','2.5'],value:'2.5'},{k:'id',label:'buscarNombre(...)',type:'seg',options:['1','2'],value:'2'}],
+  code:v=>P`<?php
+class Calculadora {
+    // Tipo unión: acepta int o float
+    public function doble(int|float $n): int|float {
+        return $n * 2;
+    }
+
+    // Nullable: devuelve un string o null
+    public function buscarNombre(int $id): ?string {
+        return $id === 1 ? "Ana" : null;
+    }
+
+    // void: no devuelve ningún valor
+    public function mostrar(string $msg): void {
+        echo $msg;
+    }
+}
+
+$calc = new Calculadora();
+echo $calc->doble(${v.n}) . "\n";
+var_dump($calc->buscarNombre(${v.id}));
+$calc->mostrar("Listo");`,
+  run:v=>`${pn(+v.n*2)}\n${v.id==='1'?'string(3) "Ana"':'NULL'}\nListo`},
+ {type:'quiz', title:'Cuestionario: tipos', file:'quiz_tipos.php', questions:[
+  {q:'function buscar(int $id): ?string puede devolver...',o:['Solo string','string o null','int o string','Nada'],a:1,why:'El signo ? delante del tipo lo hace nullable.'},
+  {q:'Con declare(strict_types=1), sumar("5", 3) con parámetros int...',o:['Devuelve 8','Lanza TypeError','Devuelve "53"','Devuelve 0'],a:1,why:'En modo estricto "5" es string y no se convierte.'},
+  {q:'int|float es un tipo...',o:['Nullable','Unión','void','mixed'],a:1,why:'La barra | combina tipos: acepta cualquiera de ellos.'},
+  {q:'Un método que no devuelve nada se declara con...',o:[': null',': void',': mixed',': empty'],a:1,why:'void indica ausencia de valor de retorno.'}]},
+ {type:'code', title:'Propiedades readonly', file:'AlumnoLegajo.php',
+  lead:'Desde PHP 8.1, una propiedad <code>readonly</code> <b>solo puede asignarse una vez</b>, desde dentro de la clase (normalmente en el constructor). Debe tener tipo declarado. Ideal para un legajo, un DNI o un id.',
+  controls:[{k:'acc',label:'Acción',type:'seg',options:['leer legajo','cambiar nombre','cambiar legajo'],value:'cambiar legajo'}],
+  code:v=>P`<?php
+class Alumno {
+    public readonly string $legajo;
+    public string $nombre;
+
+    public function __construct(string $legajo, string $nombre) {
+        $this->legajo = $legajo;     // OK: primera asignación
+        $this->nombre = $nombre;
+    }
+}
+
+$a = new Alumno("12345", "Lucía");
+${v.acc==='leer legajo'?'echo $a->legajo;':v.acc==='cambiar nombre'?'$a->nombre = "Lucía M.";\necho $a->nombre;':'$a->legajo = "99999";'}`,
+  run:v=>v.acc==='leer legajo'?'12345':v.acc==='cambiar nombre'?'Lucía M.':FE('Error','Cannot modify readonly property Alumno::$legajo')},
+ {type:'code', title:'readonly con promoción de propiedades', file:'Punto.php',
+  lead:'Combinando <code>readonly</code> con la promoción del constructor obtenemos clases muy compactas. Para "cambiar" un valor se <b>crea un objeto nuevo</b>: el original queda intacto.',
+  controls:[{k:'x',label:'x inicial',type:'range',min:-5,max:5,value:2},{k:'dx',label:'moverX($dx)',type:'range',min:-5,max:5,value:5}],
+  code:v=>P`<?php
+class Punto {
+    public function __construct(
+        public readonly int $x,
+        public readonly int $y
+    ) {}
+
+    // Devuelve un Punto nuevo en lugar de modificar este
+    public function moverX(int $dx): Punto {
+        return new Punto($this->x + $dx, $this->y);
+    }
+}
+
+$p1 = new Punto(${v.x}, 3);
+$p2 = $p1->moverX(${v.dx});
+echo "p1->x = {$p1->x}\n";
+echo "p2->x = {$p2->x}";`,
+  run:v=>`p1->x = ${v.x}\np2->x = ${(+v.x)+(+v.dx)}`},
+ {type:'code', title:'¿Qué es self::?', file:'Contador.php',
+  lead:'<code>self::</code> apunta a <b>la clase donde está escrito el código</b>. Se usa para constantes, propiedades y métodos estáticos, sin crear objetos. Mientras <code>$this</code> apunta al objeto, <code>self::</code> apunta a la clase.',
+  controls:[{k:'n',label:'Veces que llamamos a incrementar()',type:'range',min:1,max:6,value:2}],
+  code:v=>P`<?php
+class Contador {
+    const MAXIMO = 3;
+    private static int $total = 0;
+
+    public static function incrementar(): void {
+        if (self::$total < self::MAXIMO) {
+            self::$total++;
+        }
+    }
+
+    public static function getTotal(): int {
+        return self::$total;
+    }
+}
+
+for ($i = 0; $i < ${v.n}; $i++) {
+    Contador::incrementar();
+}
+echo Contador::getTotal();`,
+  run:v=>String(Math.min(+v.n,3))},
+ {type:'code', title:'self:: vs. static::', file:'Animal.php',
+  lead:'<code>static::</code> se resuelve <b>en tiempo de ejecución</b> y apunta a la clase que <b>realmente hizo la llamada</b>. Se llama <i>Late Static Binding</i> y respeta los métodos redefinidos en las hijas.',
+  controls:[{k:'c',label:'Clase que llama',type:'seg',options:['Animal','Perro'],value:'Perro'}],
+  code:v=>P`<?php
+class Animal {
+    public static function nombre(): string { return "Animal"; }
+
+    public static function conSelf(): string {
+        return self::nombre();      // siempre usa Animal
+    }
+
+    public static function conStatic(): string {
+        return static::nombre();    // usa la clase que llamó
+    }
+}
+
+class Perro extends Animal {
+    public static function nombre(): string { return "Perro"; }
+}
+
+echo ${v.c}::conSelf() . "\n";
+echo ${v.c}::conStatic();`,
+  run:v=>`Animal\n${v.c}`,
+  after:()=>`<div class="twrap"><table><thead><tr><th></th><th>self::</th><th>static::</th></tr></thead><tbody>
+  <tr><th>Referencia</th><td>La clase donde se escribió el código.</td><td>La clase que hizo la llamada.</td></tr>
+  <tr><th>Resolución</th><td>Al definir la clase (early binding).</td><td>En ejecución (late static binding).</td></tr>
+  <tr><th>Herencia</th><td>Ignora los métodos redefinidos.</td><td>Respeta los métodos redefinidos.</td></tr>
+  <tr><th>Uso típico</th><td>Constantes y datos propios.</td><td>Métodos que dependen de la clase hija.</td></tr></tbody></table></div>`},
+ {type:'quiz', title:'Cuestionario: readonly, self y static', file:'quiz_static.php', questions:[
+  {q:'Una propiedad readonly...',o:['Puede asignarse una sola vez','No puede leerse','Siempre es private','No necesita tipo'],a:0,why:'Se inicializa una vez (normalmente en el constructor) y después no cambia.'},
+  {q:'Para "cambiar" la x de un Punto readonly...',o:['Se modifica $x directamente','Se crea un objeto nuevo con los nuevos valores','Se usa unset()','Se declara la propiedad global'],a:1,why:'Es el patrón inmutable: moverX() devuelve un Punto nuevo.'},
+  {q:'Perro::conStatic() ejecuta static::nombre(). ¿Qué devuelve?',o:['Animal','Perro','Un error','null'],a:1,why:'static:: usa la clase que hizo la llamada: Perro.'},
+  {q:'self:: se resuelve según...',o:['La clase donde se escribió el código','La clase que hizo la llamada','El namespace','El objeto $this'],a:0,why:'self:: es "early binding": queda fijo en la clase que lo contiene.'}]},
+ {type:'concept', title:'¿Qué son los traits?', file:'traits.php',
+  lead:'PHP solo permite <b>herencia simple</b>: una clase extiende a una única clase padre. Los <b>traits</b> permiten <b>reutilizar código</b> (propiedades y métodos) en varias clases aunque no estén relacionadas. Funcionan como si el código se <b>copiara</b> dentro de la clase.',
+  ptitle:'Características',
+  points:[['Se declaran','con <code>trait</code> y se incorporan con <code>use</code>.'],['No se instancian:','no existe <code>new</code> de un trait.'],['Una clase puede usar','varios traits a la vez.'],['Pueden contener','propiedades y métodos concretos, abstractos y estáticos.'],['Los conflictos de nombres','se resuelven con <code>insteadof</code> y <code>as</code>.']]},
+ {type:'code', title:'Ejemplo: un trait compartido', file:'Saludable.php',
+  lead:'<code>Alumno</code> y <code>Docente</code> no tienen relación de herencia, pero los dos saben saludar gracias al mismo trait.',
+  controls:[{k:'a',label:'Alumno',type:'text',value:'Sofía'},{k:'d',label:'Docente',type:'text',value:'Martín'}],
+  code:v=>P`<?php
+trait Saludable {
+    public function saludar(): string {
+        return "Hola, soy " . $this->nombre;
+    }
+}
+
+class Alumno {
+    use Saludable;
+    public function __construct(public string $nombre) {}
+}
+
+class Docente {
+    use Saludable;
+    public function __construct(public string $nombre) {}
+}
+
+echo (new Alumno("${clean(v.a,'Sofía')}"))->saludar() . "\n";
+echo (new Docente("${clean(v.d,'Martín')}"))->saludar();`,
+  run:v=>`Hola, soy ${clean(v.a,'Sofía')}\nHola, soy ${clean(v.d,'Martín')}`},
+ {type:'code', title:'Varios traits y conflictos', file:'Pedido.php',
+  lead:'Si dos traits traen un método con el mismo nombre, elegimos cuál gana con <code>insteadof</code> y le damos un alias al otro con <code>as</code>.',
+  controls:[{k:'g',label:'¿Qué trait gana mensaje()?',type:'seg',options:['Logger','Notificador'],value:'Logger'}],
+  code:v=>{ const o=v.g==='Logger'?'Notificador':'Logger'; return P`<?php
+trait Logger {
+    public function mensaje(): string { return "Log"; }
+}
+
+trait Notificador {
+    public function mensaje(): string { return "Notificación"; }
+}
+
+class Pedido {
+    use Logger, Notificador {
+        ${v.g}::mensaje insteadof ${o};   // gana ${v.g}
+        ${o}::mensaje as aviso;                 // alias para el otro
+    }
+}
+
+$p = new Pedido();
+echo $p->mensaje() . "\n";
+echo $p->aviso();`; },
+  run:v=>v.g==='Logger'?'Log\nNotificación':'Notificación\nLog'},
+ {type:'table', title:'Traits vs. interfaces', file:'traits_vs_interfaces.php',
+  head:['','Trait','Interfaz'],
+  rows:[['Contenido','Métodos con implementación y propiedades.','Solo firmas de métodos y constantes.'],['Objetivo','Reutilizar código.','Definir un contrato.'],['Múltiples','Una clase puede usar varios.','Una clase puede implementar varias.'],['Tipo','No define un tipo (no sirve con <code>instanceof</code>).','Define un tipo (sirve con <code>instanceof</code>).']],
+  ptitle:'¿Cuándo usar traits?',
+  points:[['Cuando varias clases no relacionadas','necesitan el mismo comportamiento (registrar logs, formatear fechas).'],['Cuando la herencia simple','no alcanza para compartir código.'],['Para no duplicar','métodos idénticos en distintas clases.'],['Pero si hay una relación "es un",','conviene usar herencia.']]},
+ {type:'quiz', title:'Cuestionario: traits', file:'quiz_traits.php', questions:[
+  {q:'Un trait se incorpora a una clase con...',o:['extends','implements','use','include'],a:2,why:'Dentro de la clase: use NombreDelTrait;'},
+  {q:'¿Se puede hacer new de un trait?',o:['Sí','No, los traits no se instancian','Solo si es abstract','Solo desde PHP 8'],a:1,why:'Un trait no es una clase: solo aporta código a las clases que lo usan.'},
+  {q:'Si dos traits tienen un método mensaje(), el conflicto se resuelve con...',o:['insteadof y as','extends e implements','self y static','public y private'],a:0,why:'insteadof elige cuál gana y as crea un alias para el otro.'},
+  {q:'Si Gato "es un" Animal, conviene usar...',o:['Herencia','Un trait','Variables globales','Un namespace'],a:0,why:'La relación "es un" es justamente lo que modela la herencia.'}]},
+ {type:'end', title:'Resumen final', file:'fin.php'}
+]}
+];
+
+function fibStats(n){ const naive=[1,1]; for(let i=2;i<=n;i++) naive[i]=1+naive[i-1]+naive[i-2];
+  let c=0; const memo={}; const f=k=>{c++; if(k<2) return k; if(memo[k]!==undefined) return memo[k]; return memo[k]=f(k-1)+f(k-2);};
+  const val=f(n); return {val, naive:naive[n], memo:c, stored:Object.keys(memo).length}; }
+</script>
+<script>
+/* ============ Motor de la presentación ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = ms => new Promise(r => setTimeout(r, RM.matches ? Math.min(ms, 30) : ms));
+const store = { get(k, d) { try { const v = localStorage.getItem('p2php:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem('p2php:' + k, JSON.stringify(v)); } catch {} } };
+
+const SLIDES = [];
+MODULES.forEach((m, mi) => m.slides.forEach((s, si) => { s.mi = mi; s.si = si; s.idx = SLIDES.length; if (s.type === 'quiz') s.qid = `m${mi}-${si}`; SLIDES.push(s); }));
+const QUIZZES = SLIDES.filter(s => s.type === 'quiz');
+const TOTALQ = QUIZZES.reduce((a, s) => a + s.questions.length, 0);
+let scores = store.get('scores', {});
+let cur = -1, NAV = 0;
+
+/* ---------- Resaltado de sintaxis PHP ---------- */
+const KW = new Set('abstract and array as break callable case catch class clone const continue declare default do echo else elseif empty extends final finally fn for foreach function global if implements include instanceof insteadof interface isset list match namespace new or print private protected public readonly require return static switch throw trait try unset use var while yield true false null void int float string bool mixed iterable object self parent never'.split(' '));
+function hl(code) {
+  const re = /(<\?php)|(\/\/[^\n]*|#(?!\[)[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index)); const t = m[0];
+    if (m[1]) out += `<span class="t-tag">${esc(t)}</span>`;
+    else if (m[2]) out += `<span class="t-com">${esc(t)}</span>`;
+    else if (m[3]) out += `<span class="t-str">${esc(t).replace(/\$[A-Za-z_]\w*/g, v => `<span class="t-var">${v}</span>`)}</span>`;
+    else if (m[4]) out += `<span class="${t === '$this' ? 't-this' : 't-var'}">${t}</span>`;
+    else if (m[5]) out += `<span class="t-num">${t}</span>`;
+    else {
+      const before = code.slice(Math.max(0, m.index - 2), m.index), call = /^\s*\(/.test(code.slice(re.lastIndex));
+      if (before === '->' || before === '?>') out += call ? `<span class="t-fn">${t}</span>` : esc(t);
+      else if (KW.has(t.toLowerCase()) && !(call && !['function','fn','array','isset','unset','empty','match','list','echo','print','declare','if','foreach','for','while','switch','catch'].includes(t))) out += `<span class="t-kw">${t}</span>`;
+      else if (call) out += `<span class="t-fn">${t}</span>`;
+      else if (/^[A-Z]/.test(t)) out += `<span class="t-cls">${t}</span>`;
+      else out += esc(t);
+    }
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+const codeLines = code => hl(code).split('\n').map((l, i) => `<span class="ln" data-l="${i}">${l || ' '}</span>`).join('');
+
+/* ---------- Íconos ---------- */
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>',
+};
+
+/* ---------- Bloques reutilizables ---------- */
+const title = s => `<h2 class="stitle rv">${s.title}<span class="brace">{</span></h2>`;
+const close = d => `<div class="cbrace rv" style="--d:${d}">}</div>`;
+const lead = (s, d = 1) => s.lead ? `<p class="lead rv" style="--d:${d}">${s.lead}</p>` : '';
+const ptsHTML = pts => `<ul class="pts">${pts.map(([b, t]) => `<li><b>${b}</b> ${t}</li>`).join('')}</ul>`;
+const groupsHTML = (g, d) => `<div class="groups rv" style="--d:${d}">${g.map(x => `<div class="group"><h3>${x.h}</h3>${x.p ? `<p>${x.p}</p>` : ''}${x.pts ? ptsHTML(x.pts) : ''}</div>`).join('')}</div>`;
+const analogyHTML = (a, d) => `<aside class="analogy rv" style="--d:${d}">${ICON.bulb}<p><strong>Pensalo así</strong>${a}</p></aside>`;
+const noteHTML = (n, d) => `<div class="note rv" style="--d:${d}">${n}</div>`;
+function extras(s, d) { let h = '';
+  if (s.groups) h += groupsHTML(s.groups, d++);
+  if (s.points) h += `<div class="rv" style="--d:${d++}">${s.ptitle ? `<div class="ptitle">${s.ptitle}</div>` : ''}${ptsHTML(s.points)}</div>`;
+  if (s.analogy) h += analogyHTML(s.analogy, d++);
+  if (s.note) h += noteHTML(s.note, d++);
+  return [h, d]; }
+
+/* ---------- Renderizadores ---------- */
+const R = {
+  cover(s) {
+    const m = MODULES[s.mi];
+    return `<div class="cover"><div class="unit rv">${m.unit}, ${m.part.replace('Parte','parte')}, módulo ${s.mi + 1} de ${MODULES.length}</div>
+      <h1 class="rv" style="--d:1">${s.title}<span class="brace">{ }</span></h1>
+      <p class="sub rv" style="--d:2">${s.sub}</p>
+      <ul class="topics rv" style="--d:3">${s.topics.map(t => `<li><button data-topic="${esc(t)}">${t}</button></li>`).join('')}</ul>
+      <button class="btn start rv" style="--d:4" data-go="next">Empezar ${ICON.chev.replace('class="chev"', 'width="16" height="16"')}</button></div>`;
+  },
+  concept(s) { const [x, d] = extras(s, 2); return title(s) + lead(s) + x + close(d); },
+  cards(s) {
+    const cards = s.cards.map((c, i) => s.flipcards
+      ? `<button class="flip rv" style="--d:${i + 2}" aria-pressed="false"><div class="flip-in"><div class="face"><h3>${c.t}</h3><p>${c.d}</p><small>Ver ejemplo</small></div><div class="face back"><h3>${c.t}</h3><p>${c.back}</p><small>Volver</small></div></div></button>`
+      : `<div class="card rv" style="--d:${i + 2}"><h3>${c.t}</h3>${c.d ? `<p>${c.d}</p>` : ''}${c.list ? `<ul>${c.list.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}${c.ex ? `<div class="ex">${hl(c.ex)}</div>` : ''}</div>`).join('');
+    const [x, d] = extras(s, s.cards.length + 2);
+    return title(s) + lead(s) + `<div class="cards ${s.flow ? 'flow' : ''}" style="--min:${s.min || '220px'}">${cards}</div>` + x + close(d);
+  },
+  steps(s) {
+    return title(s) + lead(s) + `<ol class="steps">${s.steps.map((st, i) => `<li class="rv" style="--d:${i + 2}"><h3>${st.t}</h3><p>${st.d}</p>${st.sub ? `<ul>${st.sub.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ol>` + close(s.steps.length + 2);
+  },
+  table(s) {
+    const t = `<div class="twrap rv" style="--d:2"><table><thead><tr>${s.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r => `<tr><th>${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const [x, d] = extras(s, 3); return title(s) + lead(s) + t + x + close(d);
+  },
+  code(s) {
+    return title(s) + lead(s) + `<div class="code-layout rv" style="--d:2"><pre class="code" tabindex="0" aria-label="Código PHP"></pre>
+      <div class="side">${s.controls ? `<div class="ctrls">${s.controls.map(ctrlHTML).join('')}</div>` : ''}
+      <div><button class="btn run">${ICON.play}Ejecutar</button></div>
+      <div class="term"><div class="term-h"><span class="p">$</span> php ${esc(s.file)}</div><pre class="term-out" aria-live="polite"><span class="dim">Tocá «Ejecutar» para ver la salida.</span></pre></div>
+      <div class="extra"></div></div></div>` + close(3);
+  },
+  demo(s) { return title(s) + lead(s) + `<div class="demo rv" style="--d:2"></div>` + close(3); },
+  quiz(s) { return title(s) + `<div class="quiz rv" style="--d:1"></div>`; },
+  end(s) { return title(s) + `<p class="lead rv" style="--d:1">Recorriste los dos primeros ejes de Programación II: algoritmos y Programación Orientada a Objetos con PHP. Este es tu progreso en los cuestionarios.</p><div class="final rv" style="--d:2"></div>` + close(3); },
+};
+
+function ctrlHTML(c) {
+  const id = 'c_' + c.k;
+  if (c.type === 'toggle') return `<label class="ctrl switch"><input type="checkbox" data-k="${c.k}" ${c.value ? 'checked' : ''}><span>${c.label}</span></label>`;
+  if (c.type === 'seg') return `<div class="ctrl"><span>${c.label}</span><div class="seg" role="group">${c.options.map(o => `<button type="button" data-k="${c.k}" data-v="${esc(o)}" aria-pressed="${o === c.value}">${esc(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'range') return `<label class="ctrl" for="${id}"><span>${c.label}: <output>${c.value}</output></span><input id="${id}" type="range" data-k="${c.k}" min="${c.min}" max="${c.max}" value="${c.value}"></label>`;
+  return `<label class="ctrl" for="${id}"><span>${c.label}</span><input id="${id}" type="${c.type}" data-k="${c.k}" value="${esc(c.value)}" ${c.min != null ? `min="${c.min}" max="${c.max}"` : ''} spellcheck="false" autocomplete="off"></label>`;
+}
+
+/* ---------- Terminal con efecto de tipeo ---------- */
+function colorize(text) {
+  return text.split('\n').map(l => { const e = esc(l);
+    if (/^(PHP )?Fatal error/.test(l)) return `<span class="e">${e}</span>`;
+    if (/^(Warning|Deprecated|Notice)/.test(l)) return `<span class="w">${e}</span>`;
+    return e; }).join('\n');
+}
+async function typeOut(el, text) {
+  const tk = ++el._tk || (el._tk = 1);
+  el.innerHTML = '<span class="caret"></span>';
+  if (!RM.matches) { await sleep(180); let i = 0; const step = Math.max(1, Math.ceil(text.length / 70));
+    while (i < text.length) { if (el._tk !== tk) return; i += step; el.innerHTML = esc(text.slice(0, i)) + '<span class="caret"></span>'; await sleep(14); } }
+  if (el._tk === tk) el.innerHTML = colorize(text) + '\n<span class="dim">— fin de la ejecución —</span>';
+}
+
+/* ---------- Hidratación ---------- */
+const H = {
+  cover(el, s) {
+    $$('[data-topic]', el).forEach(b => b.onclick = () => {
+      const t = b.dataset.topic.toLowerCase().replace(/[¿?]/g, '');
+      const words = t.split(/[\s,]+/).filter(w => w.length > 3);
+      const target = SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.type !== 'quiz' && words.some(w => x.title.toLowerCase().includes(w)));
+      go(target ? target.idx : s.idx + 1);
+    });
+  },
+  cards(el) { $$('.flip', el).forEach(f => f.onclick = () => { f.classList.toggle('on'); f.setAttribute('aria-pressed', f.classList.contains('on')); }); },
+  code(el, s) {
+    const v = {}; (s.controls || []).forEach(c => v[c.k] = c.value);
+    const pre = $('.code', el), out = $('.term-out', el), ex = $('.extra', el); let ran = false;
+    const paint = (flash) => { pre.innerHTML = codeLines(typeof s.code === 'function' ? s.code(v) : s.code);
+      if (flash) { pre.classList.remove('flash'); void pre.offsetWidth; pre.classList.add('flash'); }
+      if (s.after) ex.innerHTML = s.after(v); };
+    const run = () => { ran = true; typeOut(out, s.run(v)); };
+    paint(false);
+    $('.run', el).onclick = run;
+    let t;
+    const changed = () => { paint(true); clearTimeout(t); if (ran) t = setTimeout(run, 250); };
+    $$('input[data-k]', el).forEach(i => i.addEventListener('input', () => {
+      v[i.dataset.k] = i.type === 'checkbox' ? i.checked : (i.type === 'range' || i.type === 'number') ? (i.value === '' ? 0 : +i.value) : i.value;
+      const o = i.parentElement.querySelector('output'); if (o) o.textContent = i.value; changed(); }));
+    $$('.seg button', el).forEach(b => b.onclick = () => { $$(`.seg button[data-k="${b.dataset.k}"]`, el).forEach(x => x.setAttribute('aria-pressed', x === b)); v[b.dataset.k] = b.dataset.v; changed(); });
+  },
+  demo(el, s) { DEMOS[s.demo]($('.demo', el), s); },
+  quiz(el, s) { runQuiz($('.quiz', el), s); },
+  end(el) {
+    const box = $('.final', el); let tc = 0;
+    box.innerHTML = MODULES.map((m, mi) => { const qs = QUIZZES.filter(q => q.mi === mi); const t = qs.reduce((a, q) => a + q.questions.length, 0); const c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0); tc += c;
+      return `<div class="frow"><span><b>${m.title}</b><br><span class="muted" style="font-size:.85rem">${m.unit}, ${m.part.replace("Parte","parte")}</span></span><div class="meter"><i style="width:0" data-w="${t ? c / t * 100 : 0}"></i></div><b class="mono">${c}/${t}</b></div>`; }).join('')
+      + `<div class="note"><b>Total: ${tc} de ${TOTALQ} respuestas correctas.</b> ${tc === TOTALQ ? '¡Impecable! Dominás todos los temas.' : tc >= TOTALQ * .7 ? 'Muy buen trabajo. Repasá los módulos con barras más cortas.' : 'Volvé a los cuestionarios que te costaron: podés reintentarlos cuantas veces quieras.'}</div>
+      <div><button class="btn ghost" id="resetAll">${ICON.redo}Borrar mi progreso</button></div>`;
+    requestAnimationFrame(() => setTimeout(() => $$('.meter i', box).forEach(i => i.style.width = i.dataset.w + '%'), 80));
+    $('#resetAll', box).onclick = () => { scores = {}; store.set('scores', scores); updateScore(); buildDrawer(); H.end(el); };
+  },
+};
+
+/* ---------- Cuestionarios ---------- */
+function runQuiz(box, s) {
+  let qi = 0, ok = 0; const marks = [];
+  const show = () => {
+    const q = s.questions[qi];
+    box.innerHTML = `<div class="qhead"><div class="qdots">${s.questions.map((_, i) => `<i class="${marks[i] === true ? 'ok' : marks[i] === false ? 'ko' : i === qi ? 'cur' : ''}"></i>`).join('')}</div><span>Pregunta ${qi + 1} de ${s.questions.length}</span></div>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div class="qfb"></div>`;
+    $$('.opt', box).forEach(b => b.onclick = () => answer(+b.dataset.j));
+    $('.opt', box).focus({ preventScroll: true });
+  };
+  const answer = j => {
+    const q = s.questions[qi], right = j === q.a; marks[qi] = right; if (right) ok++;
+    $$('.opt', box).forEach((b, k) => { b.disabled = true; if (k === q.a) b.classList.add('right'); else if (k === j) b.classList.add('wrong'); else b.classList.add('dim'); });
+    $$('.qdots i', box)[qi].className = right ? 'ok' : 'ko';
+    const last = qi === s.questions.length - 1;
+    $('.qfb', box).innerHTML = `<div class="why ${right ? 'ok' : 'ko'}"><b>${right ? '¡Correcto!' : 'No es correcto.'}</b>${esc(q.why)}</div>
+      <div class="qnav"><button class="btn nextq">${last ? 'Ver resultado' : 'Siguiente pregunta'}</button></div>`;
+    const nb = $('.nextq', box); nb.focus({ preventScroll: true });
+    nb.onclick = () => { if (last) result(); else { qi++; show(); } };
+  };
+  const result = () => {
+    const t = s.questions.length, prev = scores[s.qid]?.c || 0;
+    scores[s.qid] = { c: Math.max(prev, ok), t }; store.set('scores', scores); updateScore(); buildDrawer();
+    const pct = ok / t, C = 2 * Math.PI * 54;
+    const msg = pct === 1 ? ['¡Puntaje perfecto!', 'Respondiste todo bien. Seguí con el próximo tema.'] : pct >= .6 ? ['¡Bien hecho!', 'Repasá las explicaciones de las que fallaste y seguí adelante.'] : ['A repasar un poco', 'Volvé a las diapositivas anteriores y reintentá el cuestionario.'];
+    box.innerHTML = `<div class="result"><svg class="ring" viewBox="0 0 132 132" role="img" aria-label="${ok} de ${t} correctas"><circle class="bgc" cx="66" cy="66" r="54"/><circle class="fgc" cx="66" cy="66" r="54" stroke-dasharray="${C}" stroke-dashoffset="${C}"/><text x="66" y="74" text-anchor="middle" font-size="26">${ok}/${t}</text></svg>
+      <div><h3>${msg[0]}</h3><p class="muted" style="margin:0 0 14px">${msg[1]}${prev > ok ? ` Tu mejor puntaje sigue siendo ${prev}/${t}.` : ''}</p>
+      <div class="qnav"><button class="btn ghost retry">${ICON.redo}Reintentar</button><button class="btn" data-go="next">Continuar</button></div></div></div>`;
+    requestAnimationFrame(() => setTimeout(() => { const c = $('.fgc', box); if (c) c.style.strokeDashoffset = C * (1 - pct); }, 60));
+    if (pct === 1) confetti(box);
+    $('.retry', box).onclick = () => { qi = 0; ok = 0; marks.length = 0; show(); };
+  };
+  show();
+}
+function confetti(box) {
+  if (RM.matches) return;
+  const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:30;width:100%;height:100%'; document.body.appendChild(cv);
+  const ctx = cv.getContext('2d'), W = cv.width = innerWidth, Hh = cv.height = innerHeight, cs = getComputedStyle(document.documentElement);
+  const cols = ['--accent', '--amber', '--mint', '--coral'].map(v => cs.getPropertyValue(v).trim());
+  const ps = Array.from({ length: 110 }, () => ({ x: W / 2 + (Math.random() - .5) * 200, y: Hh * .45, vx: (Math.random() - .5) * 12, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * 4 | 0], a: Math.random() * 6 }));
+  let f = 0; (function tick() { ctx.clearRect(0, 0, W, Hh); ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += .2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
+    if (++f < 110) requestAnimationFrame(tick); else cv.remove(); })();
+}
+
+/* ---------- Demos interactivas ---------- */
+const DEMOS = {
+  mate(box) {
+    const ok = ['Calentar el agua sin que hierva', 'Llenar el mate con yerba', 'Colocar la bombilla', 'Cebar con el agua caliente', 'Tomar el mate'];
+    const pool = [3, 0, 4, 2, 1]; let chosen = [];
+    const draw = (check) => {
+      const left = pool.filter(i => !chosen.includes(i));
+      box.innerHTML = `<div class="two"><div class="panel"><h4>Pasos disponibles</h4><div class="pool">${left.map(i => `<button class="chip" data-i="${i}">${ok[i]}</button>`).join('') || '<span class="muted">Ya usaste todos los pasos.</span>'}</div></div>
+        <div class="panel"><h4>Tu algoritmo</h4><ol class="order">${chosen.map((i, k) => `<li class="${check ? (i === k ? 'good' : 'bad') : ''}"><button class="chip" data-r="${k}">${ok[i]}</button></li>`).join('') || '<li class="muted">Tocá los pasos de la izquierda para agregarlos.</li>'}</ol></div></div><div class="res"></div>`;
+      $$('[data-i]', box).forEach(b => b.onclick = () => { chosen.push(+b.dataset.i); draw(chosen.length === ok.length); });
+      $$('[data-r]', box).forEach(b => b.onclick = () => { if (check && chosen.every((i, k) => i === k)) return; chosen.splice(+b.dataset.r, 1); draw(false); });
+      if (check) { const good = chosen.every((i, k) => i === k);
+        $('.res', box).innerHTML = good ? `<div class="msg ok"><b>¡Algoritmo correcto!</b> Es <b>preciso</b> (cada paso es claro), <b>finito</b> (termina) y tiene <b>entrada</b> (agua y yerba), <b>proceso</b> (los pasos) y <b>salida</b> (el mate listo).</div>`
+          : `<div class="msg ko"><b>El orden no es correcto.</b> Los pasos en rojo están fuera de lugar. Tocalos para quitarlos y volvé a intentarlo.</div>`; }
+    };
+    draw(false);
+  },
+
+  bug(box) {
+    const code = P`<?php
+function promedio(array $notas): float {
+    $suma = 0;
+    for ($i = 0; $i < count($notas) - 1; $i++) {
+        $suma += $notas[$i];
+    }
+    var_dump($suma);          // depuramos: ¿cuánto suma?
+    return $suma / count($notas);
+}
+
+var_dump(promedio([6, 8, 10]));`;
+    box.innerHTML = `<div class="code-layout"><pre class="code">${codeLines(code)}</pre><div class="side"><div class="term"><div class="term-h"><span class="p">$</span> php depurar.php</div><pre class="term-out">int(14)\nfloat(4.666666666666667)</pre></div><div class="res msg">La suma da 14, pero 6 + 8 + 10 = 24. Algo deja afuera la última nota. ¿Qué línea es?</div></div></div>`;
+    let tries = 0;
+    $$('.ln', box).forEach(l => { l.classList.add('click'); l.onclick = () => {
+      $$('.ln', box).forEach(x => x.classList.remove('bad'));
+      if (+l.dataset.l === 3) {
+        l.classList.add('good'); l.innerHTML = hl('    for ($i = 0; $i < count($notas); $i++) {   // corregido');
+        $$('.ln', box).forEach(x => { x.classList.remove('click'); x.onclick = null; });
+        $('.res', box).className = 'res msg ok'; $('.res', box).innerHTML = '<b>¡Encontraste el bug!</b> El <code>- 1</code> hacía que el bucle terminara antes y no sumara la última nota. Es un error clásico, llamado "off by one".';
+        typeOut($('.term-out', box), 'int(24)\nfloat(8)');
+      } else { l.classList.add('bad'); tries++; $('.res', box).className = 'res msg ko';
+        $('.res', box).innerHTML = tries > 1 ? 'Esa línea está bien. Pista: mirá la condición del <code>for</code>. ¿Cuántas veces se repite el bucle con 3 notas?' : 'Esa línea está bien. Seguí buscando.'; }
+    }; });
+  },
+
+  bigo(box) {
+    const F = [{k:'O(1)',f:()=>1,c:'var(--mint)',ex:'acceder a $lista[3]'},{k:'O(log n)',f:n=>Math.log2(n),c:'var(--t-fn)',ex:'búsqueda binaria'},{k:'O(n)',f:n=>n,c:'var(--accent)',ex:'un foreach'},{k:'O(n log n)',f:n=>n*Math.log2(n),c:'var(--amber)',ex:'sort() de PHP'},{k:'O(n²)',f:n=>n*n,c:'var(--coral)',ex:'dos foreach anidados'}];
+    box.innerHTML = `<label class="ctrl"><span>Tamaño de la entrada: <output>n = 16</output></span><input type="range" min="2" max="64" value="16" aria-label="Tamaño de la entrada n"></label>
+      <div class="bigo-grid"><svg class="chart" viewBox="0 0 640 300" role="img" aria-label="Gráfico de crecimiento de operaciones"><defs><clipPath id="clipc"><rect x="50" y="10" width="580" height="250"/></clipPath></defs>
+      <line class="ax" x1="50" y1="260" x2="630" y2="260"/><line class="ax" x1="50" y1="10" x2="50" y2="260"/>
+      <text x="630" y="285" text-anchor="end">n (tamaño de la entrada)</text><text x="44" y="264" text-anchor="end">0</text><text class="ymax" x="44" y="22" text-anchor="end"></text><text x="58" y="26">operaciones</text>
+      <g clip-path="url(#clipc)">${F.map((f, i) => `<path data-i="${i}" style="stroke:${f.c}"/>`).join('')}</g></svg>
+      <div class="bigo-legend">${F.map((f, i) => `<div class="lg" style="border-left-color:${f.c}"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${f.k}</b><em data-v="${i}"></em></div><span>${f.ex}</span></div>`).join('')}</div></div>`;
+    const inp = $('input', box);
+    const draw = () => { const n = +inp.value, ymax = Math.max(10, n * 2.5);
+      $('output', box).textContent = 'n = ' + n; $('.ymax', box).textContent = Math.round(ymax);
+      F.forEach((f, i) => { let d = ''; for (let k = 0; k <= 60; k++) { const x = 1 + (n - 1) * k / 60, y = f.f(x); d += (k ? 'L' : 'M') + (50 + 580 * k / 60).toFixed(1) + ' ' + (260 - 250 * Math.min(y, ymax * 1.2) / ymax).toFixed(1); }
+        $(`path[data-i="${i}"]`, box).setAttribute('d', d); $(`[data-v="${i}"]`, box).textContent = (v => v.toLocaleString('es-AR') + (v === 1 ? ' operación' : ' operaciones'))(Math.ceil(f.f(n))); }); };
+    inp.oninput = draw; draw();
+  },
+
+  search(box) {
+    const A = [3, 7, 12, 15, 19, 24, 28, 31, 36, 40, 44, 51, 57, 63, 70];
+    const CODE = { lin: P`<?php
+function busquedaSecuencial(array $lista, int $buscado): int {
+    foreach ($lista as $i => $valor) {
+        if ($valor === $buscado) {
+            return $i;              // encontrado
+        }
+    }
+    return -1;                      // no está
+}`, bin: P`<?php
+function busquedaBinaria(array $lista, int $buscado): int {
+    $inicio = 0;
+    $fin = count($lista) - 1;
+    while ($inicio <= $fin) {
+        $medio = intdiv($inicio + $fin, 2);
+        if ($lista[$medio] === $buscado) return $medio;
+        if ($lista[$medio] < $buscado) $inicio = $medio + 1;
+        else $fin = $medio - 1;
+    }
+    return -1;                      // no está
+}` };
+    let mode = 'lin', target = 51, tk = 0;
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));align-items:end">
+      <div class="ctrl"><span>Algoritmo</span><div class="seg"><button data-m="lin" aria-pressed="true">Secuencial</button><button data-m="bin" aria-pressed="false">Binaria</button></div></div>
+      <label class="ctrl"><span>Número buscado</span><select>${A.map(x => `<option ${x === 51 ? 'selected' : ''}>${x}</option>`).join('')}<option value="50">50 (no está)</option></select></label>
+      <div><button class="btn go">${ICON.play}Buscar</button></div></div>
+      <div class="panel"><div class="cells">${A.map((x, i) => `<div class="cell">${x}<small>${i}</small></div>`).join('')}</div><div style="height:22px"></div><div class="status">Elegí un número y tocá «Buscar».</div></div>
+      <pre class="code"></pre>`;
+    const cells = $$('.cell', box), st = $('.status', box), pre = $('pre', box);
+    const paint = () => { pre.innerHTML = codeLines(CODE[mode]); };
+    const reset = () => cells.forEach(c => c.className = 'cell');
+    paint();
+    $$('[data-m]', box).forEach(b => b.onclick = () => { mode = b.dataset.m; $$('[data-m]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); paint(); reset(); tk++; st.textContent = 'Listo para buscar.'; });
+    $('select', box).onchange = e => { target = +e.target.value; reset(); tk++; };
+    $('.go', box).onclick = async () => {
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; reset(); let cmp = 0, found = -1;
+      if (mode === 'lin') { for (let i = 0; i < A.length; i++) { cells[i].classList.add('cur'); cmp++; st.textContent = `Comparación ${cmp}: ¿${A[i]} === ${target}? ${A[i] === target ? 'Sí' : 'No'}`; await sleep(420); if (!alive()) return;
+          cells[i].classList.remove('cur'); if (A[i] === target) { cells[i].classList.add('found'); found = i; break; } cells[i].classList.add('seen'); } }
+      else { let lo = 0, hi = A.length - 1; while (lo <= hi) { const mid = (lo + hi) >> 1; cells.forEach((c, i) => c.classList.toggle('out', i < lo || i > hi)); cells[mid].classList.add('cur'); cmp++;
+          const rel = A[mid] === target ? 'es el buscado' : A[mid] < target ? `es menor: descarto la mitad izquierda` : `es mayor: descarto la mitad derecha`;
+          st.textContent = `Comparación ${cmp}: el medio es ${A[mid]} y ${rel}`; await sleep(900); if (!alive()) return; cells[mid].classList.remove('cur');
+          if (A[mid] === target) { cells[mid].classList.add('found'); found = mid; break; } if (A[mid] < target) lo = mid + 1; else hi = mid - 1; }
+        if (found < 0) cells.forEach(c => c.classList.add('out')); }
+      st.innerHTML = found >= 0 ? `<b>Encontrado</b> en la posición ${found} con <b>${cmp}</b> comparaciones. La función devuelve ${found}.` : `<b>No está</b> en la lista: se hicieron <b>${cmp}</b> comparaciones. La función devuelve -1.`;
+    };
+  },
+
+  bubble(box) {
+    const CODE = P`<?php
+function burbuja(array $a): array {
+    $n = count($a);
+    for ($i = 0; $i < $n - 1; $i++) {
+        for ($j = 0; $j < $n - 1 - $i; $j++) {
+            if ($a[$j] > $a[$j + 1]) {             // comparar vecinos
+                [$a[$j], $a[$j + 1]] = [$a[$j + 1], $a[$j]];   // intercambiar
+            }
+        }
+    }
+    return $a;
+}
+
+echo implode(", ", burbuja($numeros));`;
+    let arr, tk = 0;
+    box.innerHTML = `<div class="two"><div class="panel"><div class="bars"></div><div style="height:12px"></div><div class="counters"><span>Comparaciones: <b class="cc">0</b></span><span>Intercambios: <b class="ci">0</b></span></div>
+      <div class="qnav"><button class="btn go">${ICON.play}Ordenar</button><button class="btn ghost mix">${ICON.redo}Mezclar</button></div>
+      <div class="term" style="margin-top:14px"><div class="term-h"><span class="p">$</span> php burbuja.php</div><pre class="term-out"><span class="dim">Esperando…</span></pre></div></div>
+      <pre class="code">${codeLines(CODE)}</pre></div>`;
+    const bars = $('.bars', box), lines = $$('.ln', box);
+    const mix = () => { tk++; arr = Array.from({ length: 9 }, () => 8 + Math.floor(Math.random() * 90)); draw(); $('.cc', box).textContent = 0; $('.ci', box).textContent = 0; $('.term-out', box).innerHTML = `<span class="dim">$numeros = [${arr.join(', ')}];</span>`; lines.forEach(l => l.classList.remove('hl')); };
+    const draw = (a = -1, b = -1, cls = '', done = 99) => { bars.innerHTML = arr.map((v, i) => `<div class="bar ${i >= done ? 'done' : (i === a || i === b) ? cls : ''}" style="height:${v}%">${v}</div>`).join(''); };
+    const mark = n => lines.forEach((l, i) => l.classList.toggle('hl', i === n));
+    $('.mix', box).onclick = mix;
+    $('.go', box).onclick = async () => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; let c = 0, s = 0; const n = arr.length;
+      for (let i = 0; i < n - 1; i++) { for (let j = 0; j < n - 1 - i; j++) { c++; $('.cc', box).textContent = c; mark(5); draw(j, j + 1, 'cmp', n - i); await sleep(330); if (!alive()) return;
+          if (arr[j] > arr[j + 1]) { [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]; s++; $('.ci', box).textContent = s; mark(6); draw(j, j + 1, 'swp', n - i); await sleep(330); if (!alive()) return; } } }
+      draw(-1, -1, '', 0); mark(12); typeOut($('.term-out', box), arr.join(', ')); };
+    mix();
+  },
+
+  recursion(box) {
+    const CODE = P`<?php
+function factorial(int $n): int {
+    if ($n <= 1) {
+        return 1;                       // caso base
+    }
+    return $n * factorial($n - 1);      // llamada recursiva
+}
+
+echo factorial($n);`;
+    let tk = 0;
+    box.innerHTML = `<div class="two"><div><pre class="code">${codeLines(CODE)}</pre>
+      <div class="ctrls" style="margin-top:14px;grid-template-columns:1fr auto;align-items:end"><label class="ctrl"><span>Valor de $n: <output>5</output></span><input type="range" min="1" max="7" value="5"></label><button class="btn go">${ICON.play}Ejecutar</button></div>
+      <div class="status"></div></div>
+      <div class="panel"><h4>Pila de llamadas</h4><div class="stack"></div></div></div>`;
+    const lines = $$('.ln', box), stack = $('.stack', box), st = $('.status', box), inp = $('input', box);
+    const mark = n => lines.forEach((l, i) => l.classList.toggle('hl', i === n));
+    inp.oninput = () => { $('output', box).textContent = inp.value; tk++; stack.innerHTML = ''; st.textContent = ''; mark(-1); };
+    $('.go', box).onclick = async () => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV, n = +inp.value; stack.innerHTML = ''; const frames = [];
+      for (let k = n; k >= 1; k--) { $$('.frame-c', stack).forEach(f => f.classList.remove('top'));
+        const f = document.createElement('div'); f.className = 'frame-c top'; f.innerHTML = `<span>factorial(${k})</span><span class="muted">${k <= 1 ? 'caso base' : `${k} × factorial(${k - 1})`}</span>`; stack.appendChild(f); frames.push(f);
+        mark(k <= 1 ? 3 : 5); st.textContent = k <= 1 ? `Llegamos al caso base: factorial(1) devuelve 1.` : `Se apila factorial(${k}); espera el resultado de factorial(${k - 1}).`; await sleep(650); if (!alive()) return; }
+      let acc = 1;
+      for (let k = 1; k <= n; k++) { const f = frames[n - k]; acc = k <= 1 ? 1 : acc * k; f.className = 'frame-c ret'; f.innerHTML = `<span>factorial(${k})</span><b>devuelve ${acc}</b>`; mark(k <= 1 ? 3 : 5);
+        st.textContent = `Se desapila factorial(${k}) = ${acc}`; await sleep(600); if (!alive()) return; f.remove(); }
+      mark(8); st.innerHTML = `<b>Resultado:</b> factorial(${n}) = ${acc}`; };
+  },
+
+  perro(box) {
+    const o = { nombre: 'Max', raza: 'Labrador', edad: 3, energia: 80, hambre: 30 };
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Objeto $max (clase Perro)</h4><div class="inspect">
+      <div class="attr"><span>$nombre</span><span class="str">"Max"</span></div><div class="attr"><span>$raza</span><span>"Labrador"</span></div>
+      <div class="attr"><span>$edad</span><span class="v-edad">3</span></div>
+      <div class="attr"><span>$energia</span><div class="meter"><i class="m-en"></i></div></div><div class="attr"><span>$hambre</span><div class="meter h"><i class="m-ha"></i></div></div></div>
+      <div class="qnav">${['ladrar', 'correr', 'comer', 'cumplirAnios'].map(m => `<button class="btn ghost mono" data-m="${m}">${m}()</button>`).join('')}</div></div>
+      <div><div class="log" aria-live="polite"><div class="c">$max = new Perro("Max", "Labrador", 3);</div></div></div></div>`;
+    const log = $('.log', box);
+    const upd = () => { $('.m-en', box).style.width = o.energia + '%'; $('.m-ha', box).style.width = o.hambre + '%'; $('.v-edad', box).textContent = o.edad; };
+    const say = (m, out) => { log.insertAdjacentHTML('beforeend', `<div class="c">$max->${m}();</div><div>${esc(out)}</div>`); log.scrollTop = log.scrollHeight; };
+    $$('[data-m]', box).forEach(b => b.onclick = () => { const m = b.dataset.m; let out;
+      if (m === 'ladrar') out = `¡Guau! Soy ${o.nombre}`;
+      if (m === 'correr') { if (o.energia < 25) out = `${o.nombre} está muy cansado para correr.`; else { o.energia -= 25; o.hambre = Math.min(100, o.hambre + 20); out = `${o.nombre} corre feliz por el patio.`; } }
+      if (m === 'comer') { o.hambre = Math.max(0, o.hambre - 40); o.energia = Math.min(100, o.energia + 25); out = `${o.nombre} come y recupera energía.`; }
+      if (m === 'cumplirAnios') { o.edad++; out = `¡Feliz cumpleaños! ${o.nombre} ahora tiene ${o.edad} años.`; const v = $('.v-edad', box); v.classList.remove('pop'); void v.offsetWidth; v.classList.add('pop'); }
+      upd(); say(m, out); });
+    requestAnimationFrame(upd);
+  },
+
+  factory(box) {
+    const colors = { rojo: '#D64545', azul: '#3B6FD4', verde: '#2E9E6B', amarillo: '#E2B228', negro: '#2B2D3A' };
+    let col = 'rojo'; const objs = [];
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Valores para el constructor</h4><div class="ctrls">
+      <label class="ctrl"><span>Marca</span><select class="mk">${['Fiat', 'Ford', 'Toyota', 'Renault', 'Volkswagen'].map(m => `<option>${m}</option>`).join('')}</select></label>
+      <div class="ctrl"><span>Color</span><div class="swatches">${Object.entries(colors).map(([k, c]) => `<button style="background:${c}" data-c="${k}" aria-label="${k}" aria-pressed="${k === col}"></button>`).join('')}</div></div></div>
+      <pre class="code line1"></pre><div class="qnav"><button class="btn make">${ICON.play}Crear objeto</button><button class="btn ghost clear">Vaciar</button></div></div>
+      <div class="panel"><h4 class="cnt">1 clase, 0 objetos</h4><div class="objs"></div></div></div>`;
+    const line = () => `$coche${objs.length + 1} = new Coche("${$('.mk', box).value}", "${col}");`;
+    const paint = () => { $('.line1', box).innerHTML = codeLines(line()); };
+    $('.mk', box).onchange = paint;
+    $$('[data-c]', box).forEach(b => b.onclick = () => { col = b.dataset.c; $$('[data-c]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); paint(); });
+    const car = c => `<svg viewBox="0 0 120 56"><path d="M10 38 L18 22 Q22 15 30 15 L76 15 Q84 15 90 22 L100 32 L110 34 Q116 35 116 41 L116 44 L6 44 L6 41 Q6 38 10 38Z" fill="${c}"/><path d="M30 20 L46 20 L46 31 L22 31Z M51 20 L74 20 Q80 20 84 25 L88 31 L51 31Z" fill="#fff" opacity=".7"/><circle cx="30" cy="44" r="9" fill="#1f2030"/><circle cx="30" cy="44" r="4" fill="#bbb"/><circle cx="92" cy="44" r="9" fill="#1f2030"/><circle cx="92" cy="44" r="4" fill="#bbb"/></svg>`;
+    const render = () => { $('.objs', box).innerHTML = objs.map((o, i) => `<div class="obj"><b>$coche${i + 1}</b>${car(colors[o.c])}marca: "${o.m}"<br>color: "${o.c}"</div>`).join('') || '<span class="muted">Todavía no hay instancias. La clase existe, pero sin objetos.</span>'; $('.cnt', box).textContent = `1 clase, ${objs.length} objeto${objs.length === 1 ? '' : 's'}`; paint(); };
+    $('.make', box).onclick = () => { if (objs.length >= 8) objs.shift(); objs.push({ m: $('.mk', box).value, c: col }); render(); };
+    $('.clear', box).onclick = () => { objs.length = 0; render(); };
+    render();
+  },
+
+  refs(box) {
+    let mode = null, changed = false;
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Ejecutá paso a paso</h4><pre class="code src"></pre>
+      <div class="qnav"><button class="btn ghost mono" data-a="asig">$b = $a;</button><button class="btn ghost mono" data-a="clon">$b = clone $a;</button></div>
+      <div class="qnav"><button class="btn mono mod" disabled>$b->nombre = "Rocky";</button><button class="btn ghost rst">${ICON.redo}Reiniciar</button></div></div>
+      <div class="panel"><h4>Memoria</h4><div class="mem"></div><div style="height:12px"></div><div class="term"><div class="term-h"><span class="p">$</span> echo $a->nombre;</div><pre class="term-out"></pre></div></div></div>`;
+    const draw = () => {
+      const lines = ['<?php', 'class Mascota {', '    public function __construct(public string $nombre) {}', '}', '', '$a = new Mascota("Toby");'];
+      if (mode) lines.push(mode === 'asig' ? '$b = $a;           // copia la referencia' : '$b = clone $a;     // copia el objeto');
+      if (changed) lines.push('$b->nombre = "Rocky";');
+      $('.src', box).innerHTML = codeLines(lines.join('\n'));
+      const a = changed && mode === 'asig' ? 'Rocky' : 'Toby', b = changed ? 'Rocky' : 'Toby';
+      let h = `<div class="refs"><span class="vbox">$a</span><span class="arrow">apunta a → <span class="objbox o1">Mascota #1 { nombre: "${a}" }</span></span>`;
+      if (mode === 'asig') h += `<span class="vbox">$b</span><span class="arrow">apunta a → <span class="objbox o1">Mascota #1</span> (el mismo)</span>`;
+      if (mode === 'clon') h += `<span class="vbox">$b</span><span class="arrow">apunta a → <span class="objbox o2">Mascota #2 { nombre: "${b}" }</span></span>`;
+      $('.mem', box).innerHTML = h + '</div>';
+      $('.mod', box).disabled = !mode || changed;
+      $$('[data-a]', box).forEach(x => x.disabled = !!mode);
+      $('.term-out', box).innerHTML = changed ? colorize(a) + `\n<span class="dim">${mode === 'asig' ? '$a también cambió: ambas variables apuntan al mismo objeto.' : '$a no cambió: clone creó un objeto independiente.'}</span>` : esc(a);
+    };
+    $$('[data-a]', box).forEach(x => x.onclick = () => { mode = x.dataset.a; draw(); });
+    $('.mod', box).onclick = () => { changed = true; draw(); const m = $('.mem', box); m.classList.remove('pop'); void m.offsetWidth; m.classList.add('pop'); };
+    $('.rst', box).onclick = () => { mode = null; changed = false; draw(); };
+    draw();
+  },
+};
+
+/* ---------- Navegación ---------- */
+const wrap = $('#wrap');
+function go(i, dir) {
+  i = Math.max(0, Math.min(SLIDES.length - 1, i)); if (i === cur) return;
+  dir = dir ?? (i > cur ? 1 : -1); NAV++;
+  const s = SLIDES[i], m = MODULES[s.mi];
+  const old = $('.slide:not(.leave)', wrap);
+  if (old) { old.style.setProperty('--dir', dir); old.classList.add('leave'); setTimeout(() => old.remove(), 230); }
+  const el = document.createElement('section'); el.className = 'slide enter'; el.style.setProperty('--dir', dir);
+  el.setAttribute('aria-label', s.title); el.innerHTML = R[s.type](s); wrap.appendChild(el);
+  H[s.type]?.(el, s);
+  $$('[data-go="next"]', el).forEach(b => b.onclick = () => go(cur + 1));
+  cur = i;
+  $('#tabName').textContent = s.file || 'slide.php';
+  $('#crumb').textContent = `${m.unit}, ${m.part.replace('Parte','parte')}`;
+  $('#modName').textContent = `${s.mi + 1}. ${m.title}`;
+  $('#pos').innerHTML = `<b>${i + 1}</b> de ${SLIDES.length}`;
+  $('#bar').style.width = ((i + 1) / SLIDES.length * 100) + '%';
+  $('#prev').disabled = i === 0; $('#next').disabled = i === SLIDES.length - 1;
+  store.set('pos', i);
+  try { history.replaceState(null, '', '#' + (i + 1)); } catch {}
+  markDrawer();
+}
+
+/* ---------- Índice lateral ---------- */
+function buildDrawer() {
+  const open = new Set($$('.dmod.open').map(d => +d.dataset.mi)); if (!open.size && cur >= 0) open.add(SLIDES[cur].mi);
+  $('#dlist').innerHTML = MODULES.map((m, mi) => {
+    const qs = QUIZZES.filter(q => q.mi === mi), t = qs.reduce((a, q) => a + q.questions.length, 0), c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0);
+    return `<div class="dmod ${open.has(mi) ? 'open' : ''}" data-mi="${mi}"><button aria-expanded="${open.has(mi)}"><span class="num">${mi + 1}</span><span class="mt"><b>${m.title}</b><span>${m.unit}, ${m.part.replace('Parte','parte')}: ${c}/${t} correctas</span></span>${ICON.chev}</button>
+      <ul class="dslides">${m.slides.map(s => `<li><button data-i="${s.idx}">${s.type === 'quiz' ? 'Cuestionario' : s.type === 'cover' ? 'Portada' : s.title}${s.type === 'quiz' ? `<span class="qb ${scores[s.qid] ? 'done' : ''}">${scores[s.qid] ? scores[s.qid].c + '/' + scores[s.qid].t : s.questions.length + ' preg.'}</span>` : ''}</button></li>`).join('')}</ul></div>`;
+  }).join('');
+  $$('.dmod>button').forEach(b => b.onclick = () => { const d = b.parentElement; d.classList.toggle('open'); b.setAttribute('aria-expanded', d.classList.contains('open')); });
+  $$('.dslides button').forEach(b => b.onclick = () => { go(+b.dataset.i); drawer(false); });
+  markDrawer();
+}
+function markDrawer() { $$('.dslides button').forEach(b => b.classList.toggle('cur', +b.dataset.i === cur)); }
+function drawer(on) { $('#drawer').classList.toggle('on', on); $('#backdrop').classList.toggle('on', on); $('#menuBtn').setAttribute('aria-expanded', on);
+  if (on) { const s = SLIDES[cur]; const d = $(`.dmod[data-mi="${s.mi}"]`); if (d && !d.classList.contains('open')) d.firstElementChild.click(); setTimeout(() => $('.dslides button.cur')?.scrollIntoView({ block: 'center' }), 50); } }
+function updateScore() { const c = Object.values(scores).reduce((a, x) => a + x.c, 0); $('#scoreTxt').textContent = `${c}/${TOTALQ}`; }
+
+/* ---------- Tema ---------- */
+const root = document.documentElement;
+function setTheme(t) { root.setAttribute('data-theme', t); store.set('theme', t); }
+setTheme(store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#themeBtn').onclick = () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+/* ---------- Eventos globales ---------- */
+$('#prev').onclick = () => go(cur - 1);
+$('#next').onclick = () => go(cur + 1);
+$('#menuBtn').onclick = () => drawer(true);
+$('#closeDrawer').onclick = $('#backdrop').onclick = () => drawer(false);
+$('#scoreBtn').onclick = () => go(SLIDES.length - 1);
+if (!document.fullscreenEnabled) $('#fsBtn').style.display = 'none';
+$('#fsBtn').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen(); } catch {} };
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea') || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape') return drawer(false);
+  if ($('#drawer').classList.contains('on')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0); else if (e.key === 'End') go(SLIDES.length - 1);
+  else if (SLIDES[cur].type === 'quiz' && /^[a-dA-D1-4]$/.test(e.key)) { const j = isNaN(e.key) ? 'abcd'.indexOf(e.key.toLowerCase()) : +e.key - 1; $$('.slide:not(.leave) .opt:not([disabled])')[j]?.click(); }
+});
+let tx = null, ty = 0;
+$('#stage').addEventListener('touchstart', e => { tx = e.target.closest('.code,.twrap,input,.bars,.cells,.log,.chart,.flip') ? null : e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; }, { passive: true });
+
+/* ---------- Inicio ---------- */
+const fromHash = parseInt(location.hash.slice(1), 10);
+updateScore(); buildDrawer();
+go(!isNaN(fromHash) ? fromHash - 1 : store.get('pos', 0), 1);
+</script>
+</body>
+</html>
