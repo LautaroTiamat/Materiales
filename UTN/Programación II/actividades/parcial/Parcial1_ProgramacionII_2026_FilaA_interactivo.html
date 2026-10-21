@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II — Primer Parcial 2026 · Fila A</title>
+<meta name="description" content="Primer examen parcial interactivo de Programación II (UTN FRRe · Sede Formosa) con corrección automática y justificación de cada respuesta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#eef0f5; --surface:#ffffff; --surface-2:#f4f5f9; --surface-3:#e9ecf3;
+  --border:#d6dae5; --border-strong:#b8bfd0;
+  --text:#18203a; --muted:#576079; --faint:#868ea3;
+  --navy:#1f2b52; --navy-2:#2c3b6c; --on-navy:#ffffff;
+  --accent:#2f54c8; --accent-soft:#e7ecfc;
+  --red:#c23232; --red-soft:#fbeaea; --green:#1b7a4c; --green-soft:#e3f3ea; --amber:#9c620a; --amber-soft:#fdf3dc;
+  --term-bg:#e8e9ed; --term-bd:#4b5163; --io-bg:#e1f2e9; --io-bd:#2e7b57;
+  --proc-bg:#e7edfc; --proc-bd:#3c5bc6; --dec-bg:#fdf1d6; --dec-bd:#b07816;
+  --code-bg:#f9f9f6; --c-kw:#7b3db8; --c-str:#1b7a4c; --c-var:#b4471a; --c-num:#a8650e; --c-com:#868b98; --c-fn:#2a55b8;
+  --topbar:rgba(255,255,255,.86);
+  --shadow:0 1px 2px rgba(20,28,56,.05),0 6px 20px rgba(20,28,56,.06);
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1120; --surface:#151a2b; --surface-2:#1a2033; --surface-3:#212841;
+    --border:#2b3450; --border-strong:#3d4868;
+    --text:#e7eaf3; --muted:#a2aac0; --faint:#7d86a0;
+    --navy:#24315f; --navy-2:#30407a; --on-navy:#ffffff;
+    --accent:#86a2ff; --accent-soft:#1d2747;
+    --red:#ff8080; --red-soft:rgba(255,110,110,.12); --green:#5fd39a; --green-soft:rgba(80,200,140,.13); --amber:#f0b54a; --amber-soft:rgba(240,181,74,.12);
+    --term-bg:#2a3042; --term-bd:#a4abbd; --io-bg:#163428; --io-bd:#55c993;
+    --proc-bg:#1a2649; --proc-bd:#7f9dff; --dec-bg:#3a2d10; --dec-bd:#e7ae43;
+    --code-bg:#0f1426; --c-kw:#c99bff; --c-str:#9be3b0; --c-var:#ffad80; --c-num:#f2c46e; --c-com:#7b839b; --c-fn:#8fb0ff;
+    --topbar:rgba(17,22,38,.86);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1120; --surface:#151a2b; --surface-2:#1a2033; --surface-3:#212841;
+  --border:#2b3450; --border-strong:#3d4868;
+  --text:#e7eaf3; --muted:#a2aac0; --faint:#7d86a0;
+  --navy:#24315f; --navy-2:#30407a; --on-navy:#ffffff;
+  --accent:#86a2ff; --accent-soft:#1d2747;
+  --red:#ff8080; --red-soft:rgba(255,110,110,.12); --green:#5fd39a; --green-soft:rgba(80,200,140,.13); --amber:#f0b54a; --amber-soft:rgba(240,181,74,.12);
+  --term-bg:#2a3042; --term-bd:#a4abbd; --io-bg:#163428; --io-bd:#55c993;
+  --proc-bg:#1a2649; --proc-bd:#7f9dff; --dec-bg:#3a2d10; --dec-bd:#e7ae43;
+  --code-bg:#0f1426; --c-kw:#c99bff; --c-str:#9be3b0; --c-var:#ffad80; --c-num:#f2c46e; --c-com:#7b839b; --c-fn:#8fb0ff;
+  --topbar:rgba(17,22,38,.86);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+
+/* ============ BASE ============ */
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+body.noscroll{overflow:hidden}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface-3);border:1px solid var(--border);padding:.05em .38em;border-radius:5px;white-space:nowrap}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1060px;margin:0 auto;padding:22px 18px 80px}
+
+/* ============ TOPBAR ============ */
+.topbar{position:sticky;top:0;z-index:50;background:var(--topbar);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--border);padding-top:env(safe-area-inset-top,0px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:49;background:var(--topbar)}
+.topbar-in{max-width:1060px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px}
+.tb-brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 auto}
+.tb-brand > div:last-child{min-width:0;overflow:hidden}
+.tb-logo{width:34px;height:34px;border-radius:9px;background:var(--navy);color:var(--on-navy);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+.tb-title{font-weight:700;font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-sub{font-size:12px;color:var(--muted)}
+.tb-nav{display:flex;gap:4px;flex:none}
+.tb-nav a{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+.tb-nav a:hover{background:var(--surface-3);color:var(--text)}
+.tb-prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb-prog b{color:var(--text)}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.icon-btn:hover{border-color:var(--border-strong)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn .i-sun{display:none}
+.icon-btn[data-mode="dark"] .i-sun{display:block}
+.icon-btn[data-mode="dark"] .i-moon{display:none}
+.progress-line{height:3px;background:transparent}
+.progress-line span{display:block;height:100%;width:0;background:var(--accent);transition:width .35s ease}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid transparent;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s,border-color .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--navy);color:var(--on-navy)}
+.btn-primary:hover{background:var(--navy-2)}
+.btn-ghost{background:var(--surface);border-color:var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--border-strong);background:var(--surface-2)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-lg{padding:13px 22px;font-size:15px;border-radius:12px}
+
+@media (max-width:860px){.tb-nav{display:none}.tb-prog{margin-left:auto}}
+@media (max-width:560px){
+  .tb-sub,.tb-prog .lbl{display:none}
+  .topbar-in{gap:8px;padding:8px 12px}
+  #finishTop span{display:none}
+  #finishTop{padding:9px 11px}
+}
+
+/* ============ CARDS / HEADER ============ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.exam-head{display:grid;grid-template-columns:1fr auto;overflow:hidden;border-color:var(--navy)}
+.eh-main{padding:20px 22px}
+.eh-uni{font-weight:800;color:var(--navy);font-size:17px;letter-spacing:.01em}
+:root[data-theme="dark"] .eh-uni{color:#b9c8ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .eh-uni{color:#b9c8ff}}
+.eh-fac{font-size:13px;color:var(--muted)}
+.eh-title{font-size:clamp(20px,3.2vw,26px);font-weight:800;margin:12px 0 6px;letter-spacing:-.01em;line-height:1.2}
+.eh-badge{display:inline-block;background:var(--navy);color:var(--on-navy);font-weight:700;font-size:11.5px;letter-spacing:.08em;padding:4px 10px;border-radius:5px}
+.eh-sub{font-size:13.5px;color:var(--muted);margin-top:6px}
+.eh-fila{background:var(--navy);color:var(--on-navy);min-width:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;text-align:center}
+.eh-fila small{font-size:11px;letter-spacing:.2em;opacity:.8}
+.eh-fila strong{font-size:44px;line-height:1;margin:4px 0}
+.eh-fila span{font-size:13px;opacity:.9}
+@media (max-width:560px){.exam-head{grid-template-columns:1fr}.eh-fila{flex-direction:row;gap:12px;min-width:0;padding:10px}.eh-fila strong{font-size:26px;margin:0}}
+
+.student{display:grid;grid-template-columns:2fr 1.2fr 1fr;border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;background:var(--surface);margin:0 14px 18px}
+.student label{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+.student label:nth-child(3n){border-right:none}
+.student label:nth-last-child(-n+3){border-bottom:none}
+.student input{border:none;background:transparent;padding:2px 0;font-size:14.5px;color:var(--text);outline:none;min-width:0}
+.student input:focus{box-shadow:0 2px 0 var(--accent)}
+.student .nota{font-weight:800;font-size:15px;color:var(--text);padding-top:2px}
+@media (max-width:640px){
+  .student{grid-template-columns:1fr 1fr;margin:0 8px 18px}
+  .student label{border-right:1px solid var(--border)!important;border-bottom:1px solid var(--border)!important}
+  .student label:nth-child(2n){border-right:none!important}
+  .student label:nth-last-child(-n+2){border-bottom:none!important}
+  .student label:first-child{grid-column:1/-1;border-right:none!important}
+}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:26px}
+@media (max-width:760px){.info-grid{grid-template-columns:1fr}}
+.panel{padding:16px 18px}
+.panel h2{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.06em;margin:0 0 10px}
+:root[data-theme="dark"] .panel h2{color:#b9c8ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .panel h2{color:#b9c8ff}}
+.panel ul{margin:0;padding-left:18px;font-size:14px}
+.panel li{margin:3px 0}
+.score-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.score-table th,.score-table td{border:1px solid var(--border);padding:7px 9px;text-align:left}
+.score-table th{background:var(--surface-3);font-weight:700}
+.score-table td.n{text-align:center;font-variant-numeric:tabular-nums}
+.score-table tr.tot td{background:var(--surface-3);font-weight:800}
+.score-table .ob{font-weight:800;text-align:center}
+
+/* ============ SECTIONS ============ */
+.band{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--navy);color:var(--on-navy);border-radius:12px;padding:12px 18px;margin:34px 0 16px;scroll-margin-top:80px}
+.band h2{margin:0;font-size:18px;font-weight:700}
+.band span{font-size:13.5px;opacity:.9;white-space:nowrap}
+@media (max-width:480px){.band{flex-direction:column;align-items:flex-start;gap:2px}}
+.case{background:var(--surface-2);border:1px solid var(--border);border-left:5px solid var(--navy);border-radius:10px;padding:14px 18px;font-size:14.5px;margin-bottom:18px}
+:root[data-theme="dark"] .case{border-left-color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .case{border-left-color:var(--accent)}}
+.case p{margin:0 0 6px}.case p:last-child{margin:0}
+
+/* ============ PART 1 ============ */
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.qgrid{grid-template-columns:1fr}}
+.q{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px 12px;scroll-margin-top:84px;position:relative;transition:border-color .2s}
+.q-h{display:flex;gap:8px;margin-bottom:10px}
+.q-n{font-weight:800;color:var(--navy);min-width:24px}
+:root[data-theme="dark"] .q-n{color:#b9c8ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .q-n{color:#b9c8ff}}
+.q-t{font-size:15px;font-weight:700;margin:0;line-height:1.4}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid transparent;border-radius:9px;cursor:pointer;font-size:14.2px;transition:background .15s,border-color .15s}
+.opt:hover{background:var(--surface-2)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.lt{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-strong);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);margin-top:-1px;transition:all .15s}
+.opt.sel{background:var(--accent-soft);border-color:var(--accent)}
+.opt.sel .lt{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .opt.sel .lt{color:#0d1120}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .opt.sel .lt{color:#0d1120}}
+.opt:has(input:focus-visible){outline:2.5px solid var(--accent);outline-offset:1px}
+.q-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+.q-st{font-size:13px;font-weight:700}
+/* corrected */
+body.finished .opt{cursor:default}
+body.finished .opt:hover{background:transparent}
+body.finished .opt.sel{background:transparent;border-color:transparent}
+body.finished .opt.sel .lt{background:transparent;color:var(--muted);border-color:var(--border-strong)}
+body.finished .opt.right{background:var(--green-soft);border-color:var(--green)}
+body.finished .opt.right .lt{background:var(--green);border-color:var(--green);color:#fff}
+body.finished .opt.right .ot{font-weight:600;color:var(--green)}
+body.finished .opt.wrong{background:var(--red-soft);border-color:var(--red)}
+body.finished .opt.wrong .lt{background:var(--red);border-color:var(--red);color:#fff}
+body.finished .opt.wrong .ot{text-decoration:line-through;text-decoration-color:var(--red)}
+.q.q-ok{border-color:var(--green)}
+.q.q-bad{border-color:var(--red)}
+.q.q-empty{border-color:var(--amber)}
+.st-ok{color:var(--green)}.st-bad{color:var(--red)}.st-empty{color:var(--amber)}
+body.only-wrong .q.q-ok{display:none}
+
+/* tooltips */
+.why-wrap{position:relative}
+.why-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface-2);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent)}
+.why-btn:hover{border-color:var(--accent)}
+.why-btn svg{width:15px;height:15px}
+.tip{display:none;position:absolute;right:0;top:calc(100% + 10px);width:min(450px,82vw);z-index:40;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;box-shadow:0 12px 40px rgba(10,16,40,.22);padding:14px 16px;font-size:13.8px;line-height:1.55;text-align:left}
+.tip::before{content:"";position:absolute;top:-7px;right:26px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--border-strong);border-top:1px solid var(--border-strong);transform:rotate(45deg)}
+.why-wrap.open .tip{display:block;animation:pop .16s ease-out}
+@media (hover:hover) and (min-width:761px){.why-wrap:hover .tip{display:block}}
+@keyframes pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.tip-h{font-weight:800;color:var(--green);margin-bottom:6px;font-size:14px}
+.tip p{margin:0 0 8px}
+.tip ul{margin:6px 0 0;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
+.tip li{margin:4px 0;color:var(--muted);font-size:13.2px}
+.tip li b{color:var(--red)}
+@media (max-width:760px){
+  .why-wrap{width:100%}
+  .tip{position:static;width:auto;margin-top:10px;box-shadow:none}
+  .tip::before{display:none}
+}
+
+/* answer grid */
+.agrid-card{margin-top:18px;padding:16px 18px}
+.agrid-wrap{overflow-x:auto}
+.agrid{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+.agrid th,.agrid td{border:1px solid var(--border-strong);text-align:center;padding:0;height:36px}
+.agrid th{background:var(--surface-3);font-weight:700;width:76px}
+.agrid td{width:9%}
+.gc{width:100%;height:100%;min-height:36px;border:none;background:transparent;font-weight:800;cursor:pointer;font-size:14px;color:var(--text)}
+.gc:hover{background:var(--surface-2)}
+.gc.has{color:var(--accent)}
+.gc.ok{background:var(--green);color:#fff}
+.gc.bad{background:var(--red);color:#fff}
+.gc.empty{background:var(--amber-soft);color:var(--amber)}
+.note{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.toolrow{display:flex;justify-content:flex-end;margin:-4px 0 12px}
+.switch{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:38px;height:22px;border-radius:99px;background:var(--border-strong);position:relative;cursor:pointer;transition:background .2s;margin:0}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{left:19px}
+
+/* ============ PART 2 ============ */
+.flow-card{padding:14px}
+.flow-hint{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--muted);margin:0 4px 8px}
+.flow-hint svg{width:16px;height:16px;flex:none}
+.flow-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.flow-svg{display:block;width:100%;min-width:540px;max-width:720px;margin:0 auto;height:auto}
+.flow-svg .edge{fill:none;stroke:var(--text);stroke-width:1.6;opacity:.8}
+.flow-svg .arrowhead{fill:var(--text)}
+.flow-svg .elbl{font:700 12px var(--font);fill:var(--text)}
+.flow-svg .mdot{fill:var(--text)}
+.flow-svg .shp{stroke-width:1.6}
+.sh-term{fill:var(--term-bg);stroke:var(--term-bd)}
+.sh-io{fill:var(--io-bg);stroke:var(--io-bd)}
+.sh-proc{fill:var(--proc-bg);stroke:var(--proc-bd)}
+.sh-dec{fill:var(--dec-bg);stroke:var(--dec-bd)}
+.sh-empty{fill:var(--surface);stroke:var(--faint);stroke-dasharray:6 5}
+.flow-svg .ntx{font:700 11.5px var(--mono);fill:var(--text);text-anchor:middle;dominant-baseline:central}
+.flow-svg .ph{font:500 11.5px var(--font);fill:var(--faint)}
+.flow-svg .bdg{fill:var(--navy);stroke:var(--surface);stroke-width:2}
+.flow-svg .bdg-t{font:800 11px var(--font);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.flow-svg .ltag{font:800 13px var(--mono);fill:var(--green);text-anchor:middle;dominant-baseline:central}
+.flow-svg .node.click{cursor:pointer}
+.flow-svg .node.click:hover .shp{stroke-width:2.6}
+.flow-svg .node.click:hover .sh-empty{fill:var(--accent-soft);stroke:var(--accent)}
+.flow-svg .node:focus{outline:none}
+.flow-svg .node:focus-visible .shp{stroke:var(--accent);stroke-width:3}
+.flow-svg .node.ok .bdg{fill:var(--green)}
+.flow-svg .node.bad .bdg{fill:var(--red)}
+.flow-svg .node.bad .ltag{fill:var(--red)}
+.flow-svg .fix rect{fill:var(--red)}
+.flow-svg .fix text{font:700 10.5px var(--font);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.flow-svg .node.sim-on .shp{stroke:var(--accent);stroke-width:2.6}
+.flow-svg .node.sim-cur .shp{stroke:var(--accent);stroke-width:3.5;filter:drop-shadow(0 0 6px var(--accent))}
+.flow-svg .edge.sim-on{stroke:var(--accent);stroke-width:3;opacity:1}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin:14px 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:30px;height:16px}
+
+.ans-table-wrap{overflow-x:auto;margin:16px 0}
+.ans-table{border-collapse:collapse;width:100%;min-width:620px;font-size:13.5px;background:var(--surface)}
+.ans-table th,.ans-table td{border:1px solid var(--border-strong);text-align:center;padding:6px 4px}
+.ans-table th{background:var(--surface-3);font-weight:700}
+.ans-table th:first-child{width:90px}
+.ans-table select{width:100%;max-width:70px;border:1px solid var(--border);border-radius:7px;background:var(--surface-2);padding:5px 4px;font-family:var(--mono);font-weight:700;text-align:center;cursor:pointer}
+.ans-table td.ok{background:var(--green-soft);color:var(--green);font-weight:800}
+.ans-table td.bad{background:var(--red-soft);color:var(--red);font-weight:800}
+.ans-table td.bad small,.ans-table td.ok small{display:block;font-weight:600;font-size:11px}
+.ans-table .w{font-family:var(--mono);font-weight:700;font-size:12.5px}
+
+.bank-h{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.06em;margin:22px 0 4px}
+:root[data-theme="dark"] .bank-h{color:#b9c8ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bank-h{color:#b9c8ff}}
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.bk{display:flex;align-items:center;gap:10px;position:relative}
+.bk-l{flex:none;width:28px;height:28px;border-radius:7px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.bk.used{opacity:.42}
+.bk .used-in{position:absolute;right:6px;top:-8px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;border-radius:99px;padding:1px 7px}
+:root[data-theme="dark"] .bk .used-in{color:#0d1120}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bk .used-in{color:#0d1120}}
+.blk{position:relative;flex:1;min-height:46px;display:grid;place-items:center;padding:6px 18px;font-family:var(--mono);font-weight:700;font-size:12.5px;text-align:center;color:var(--text);isolation:isolate}
+.blk.dec{min-height:54px;padding:6px 34px}
+.blk svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible}
+.blk svg *{vector-effect:non-scaling-stroke;stroke-width:1.5}
+
+/* ============ PART 3 ============ */
+.code-layout{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:16px;align-items:start}
+@media (max-width:860px){.code-layout{grid-template-columns:1fr}}
+.code{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;overflow-x:auto;padding:12px 0;font-family:var(--mono);font-size:13px;line-height:1.85}
+.ln{display:flex;min-width:max-content;padding-right:16px}
+.ln .no{flex:none;width:44px;text-align:right;padding-right:14px;color:var(--faint);user-select:none}
+.ln .src{white-space:pre}
+.k{color:var(--c-kw);font-weight:600}.s{color:var(--c-str)}.v{color:var(--c-var)}.nu{color:var(--c-num)}.c{color:var(--c-com);font-style:italic}.f{color:var(--c-fn)}
+.blank{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;position:relative}
+.bn{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--navy);color:#fff;font:800 10px var(--font)}
+.blank select{appearance:none;-webkit-appearance:none;border:none;border-bottom:2px solid var(--text);border-radius:4px 4px 0 0;background:var(--accent-soft);font:700 12.5px var(--mono);color:var(--text);padding:1px 20px 1px 6px;cursor:pointer;min-width:110px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 10px) 55%,calc(100% - 6px) 55%;background-size:4px 4px;background-repeat:no-repeat}
+.blank select.empty{background-color:transparent;color:var(--faint)}
+.blank-done{display:inline-flex;align-items:center;gap:5px;border:1.5px solid;border-radius:6px;padding:0 6px;font:700 12.5px var(--mono);cursor:pointer;background:transparent;line-height:1.6}
+.blank-done.ok{border-color:var(--green);color:var(--green);background:var(--green-soft)}
+.blank-done.bad{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+.blank-done.bad .wrongw{text-decoration:line-through}
+.blank-done .fixw{color:var(--green);text-decoration:none}
+.wbank{padding:14px;position:sticky;top:90px}
+.wbank h3{margin:0;font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.06em}
+:root[data-theme="dark"] .wbank h3{color:#b9c8ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .wbank h3{color:#b9c8ff}}
+.wbank p{font-size:12px;color:var(--muted);margin:2px 0 10px}
+.chips{display:flex;flex-direction:column;gap:6px}
+@media (max-width:860px){.wbank{position:static}.chips{flex-direction:row;flex-wrap:wrap}}
+.chip{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--border);background:var(--accent-soft);border-radius:7px;padding:5px 10px;font:600 12.5px var(--mono)}
+.chip em{font:800 10.5px var(--font);font-style:normal;background:var(--navy);color:#fff;border-radius:99px;padding:1px 7px}
+.chip.used{opacity:.5;text-decoration:line-through}
+.chip.used em{text-decoration:none}
+
+/* ============ POST / CORRECTION ============ */
+body:not(.finished) .post{display:none!important}
+body.finished .pre{display:none!important}
+.sub-h{font-size:17px;font-weight:800;margin:30px 0 10px;display:flex;align-items:center;gap:10px}
+.sub-h::before{content:"";width:6px;height:22px;border-radius:3px;background:var(--accent)}
+.corr{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.ci{background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--green);border-radius:10px;padding:12px 14px;font-size:14px}
+.ci.bad{border-left-color:var(--red)}
+.ci.empty{border-left-color:var(--amber)}
+.ci-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.ci-h b{font-size:14.5px}
+.pill{font-size:11.5px;font-weight:800;border-radius:99px;padding:2px 9px}
+.pill.ok{background:var(--green-soft);color:var(--green)}
+.pill.bad{background:var(--red-soft);color:var(--red)}
+.pill.empty{background:var(--amber-soft);color:var(--amber)}
+.ci-r{font-size:13px;color:var(--muted);margin:2px 0}
+.ci-r code{font-size:12px}
+.ci-why{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:13.6px}
+.ci-trap{margin-top:8px;font-size:13px;background:var(--red-soft);border-radius:7px;padding:7px 10px;color:var(--text)}
+
+.analysis{padding:22px 24px}
+@media (max-width:560px){.analysis{padding:16px}}
+.analysis > p{max-width:78ch}
+.steps{list-style:none;margin:0;padding:0;counter-reset:st}
+.steps > li{position:relative;padding:0 0 22px 50px;counter-increment:st}
+.steps > li::before{content:counter(st);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.steps > li::after{content:"";position:absolute;left:16px;top:38px;bottom:4px;width:2px;background:var(--border)}
+.steps > li:last-child::after{display:none}
+.steps h4{margin:5px 0 6px;font-size:15.5px}
+.steps p{margin:0 0 8px;max-width:80ch}
+.tbl-wrap{overflow-x:auto;margin:8px 0 10px}
+.tbl{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+.tbl th,.tbl td{border:1px solid var(--border);padding:7px 9px;text-align:left;vertical-align:top}
+.tbl th{background:var(--surface-3);font-weight:700}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.tbl tr.hl td{background:var(--accent-soft)}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:8px 0}
+.grp{border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--surface-2)}
+.grp h5{margin:0 0 8px;font-size:13px;display:flex;align-items:center;gap:8px}
+.grp h5 svg{width:28px;height:15px}
+.grp .mini{font:600 12px var(--mono);margin:3px 0;color:var(--text)}
+.grp .mini b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:var(--navy);color:#fff;font:800 11px var(--font);margin-right:6px}
+.grp .mini.trap{color:var(--red);text-decoration:line-through}
+.grp .mini.trap b{background:var(--red)}
+.ranges{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin:10px 0 4px;font-size:13px}
+.ranges div{padding:10px;text-align:center;flex:1}
+.ranges div b{display:block;font-size:17px}
+.r0{background:var(--surface-3)}.r5{background:var(--amber-soft)}.r15{background:var(--green-soft)}
+.ranges-ax{display:flex;justify-content:space-between;font:600 12px var(--mono);color:var(--muted);padding:0 2px}
+.callout{border-radius:10px;padding:12px 14px;font-size:14px;margin:10px 0;border:1px solid}
+.callout.warn{background:var(--red-soft);border-color:var(--red)}
+.callout.info{background:var(--accent-soft);border-color:var(--accent)}
+.callout.good{background:var(--green-soft);border-color:var(--green)}
+.callout b:first-child{display:block;margin-bottom:2px}
+
+.sim{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.sim{grid-template-columns:1fr}}
+.sim-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);font-weight:600}
+.fld input{width:130px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);padding:8px 10px;font-family:var(--mono);font-size:14px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.presets button{border:1px solid var(--border);background:var(--surface-2);border-radius:99px;padding:4px 11px;font-size:12.5px;cursor:pointer}
+.presets button:hover{border-color:var(--accent);color:var(--accent)}
+.log{list-style:none;margin:0;padding:0;font-size:13.5px;counter-reset:lg;max-height:380px;overflow:auto}
+.log li{padding:7px 10px 7px 34px;border-left:2px solid var(--accent);position:relative;margin-bottom:4px;background:var(--surface-2);border-radius:0 8px 8px 0;animation:pop .2s ease-out;counter-increment:lg}
+.log li::before{content:counter(lg);position:absolute;left:8px;top:7px;font:800 11px var(--font);color:var(--accent)}
+.log-empty{color:var(--muted);font-size:13.5px;padding:10px 0}
+.sim-res{margin-top:10px;font-size:15px;font-weight:800;padding:12px 14px;border-radius:10px;background:var(--green-soft);color:var(--green);display:none}
+.sim-res.show{display:block}
+
+/* ============ RESULTS ============ */
+.results{padding:22px;margin-bottom:24px;border-width:2px;scroll-margin-top:84px}
+.results.pass{border-color:var(--green)}
+.results.fail{border-color:var(--red)}
+.res-top{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.ring{--p:0;--c:var(--green);width:132px;height:132px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--surface-3) 0);display:grid;place-items:center;flex:none}
+.ring-in{width:104px;height:104px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-in b{font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.ring-in small{font-size:12px;color:var(--muted)}
+.res-main{flex:1;min-width:220px}
+.res-status{font-size:22px;font-weight:800;margin:0 0 2px}
+.results.pass .res-status{color:var(--green)}
+.results.fail .res-status{color:var(--red)}
+.res-who{color:var(--muted);font-size:14px;margin:0 0 12px}
+.res-parts{display:grid;gap:9px}
+.rp{display:grid;grid-template-columns:150px 1fr 74px;gap:10px;align-items:center;font-size:13.5px}
+.rp-bar{height:9px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.rp-bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .6s ease}
+.rp b{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.rp{grid-template-columns:1fr 64px}.rp-bar{grid-column:1/-1;order:3}}
+.res-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+
+.finish-card{padding:24px;text-align:center;margin-top:34px}
+.finish-card h3{margin:0 0 6px;font-size:19px}
+.finish-card p{margin:0 auto 16px;color:var(--muted);max-width:60ch}
+.foot{text-align:center;font-size:12.5px;color:var(--faint);margin-top:40px}
+.sign{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin:40px 10px 0}
+.sign div{border-top:1px solid var(--text);text-align:center;font-size:12.5px;color:var(--muted);padding-top:6px}
+
+/* ============ MODAL / TOAST ============ */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(8,12,28,.55);backdrop-filter:blur(2px)}
+.modal-box{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;width:min(680px,100%);max-height:min(86vh,760px);display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .18s ease-out}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.modal-h h3{margin:0;font-size:17px}
+.modal-b{padding:16px 18px;overflow:auto}
+.modal-b > p.lead{margin:0 0 12px;color:var(--muted);font-size:14px}
+@media (max-width:600px){
+  .modal{align-items:flex-end;padding:0}
+  .modal-box{border-radius:18px 18px 0 0;max-height:88vh;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+.pk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.pk{display:flex;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:11px;background:var(--surface);padding:8px 10px;cursor:pointer;text-align:left;position:relative}
+.pk:hover{border-color:var(--accent);background:var(--surface-2)}
+.pk.cur{border-color:var(--accent);background:var(--accent-soft)}
+.pk-u{position:absolute;top:-8px;right:8px;font-size:10.5px;font-weight:700;background:var(--amber);color:#fff;border-radius:99px;padding:1px 7px}
+.modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px}
+.ex-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media (max-width:520px){.ex-row{grid-template-columns:1fr}}
+.ex-k{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.ex-b{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:10px;padding:6px 8px}
+.ex-b.ok{border-color:var(--green)}.ex-b.bad{border-color:var(--red)}
+.ex-none{font-size:14px;color:var(--amber);font-weight:700;padding:10px 0}
+.ex-why{font-size:14.2px;background:var(--surface-2);border-radius:10px;padding:12px 14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:13.5px;font-weight:600;max-width:min(92vw,520px);text-align:center;transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media print{
+  .topbar,.no-print,.why-btn,.modal,.toast,body::before{display:none!important}
+  body{background:#fff}
+  .card,.q{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="topbar-in">
+    <div class="tb-brand">
+      <div class="tb-logo" aria-hidden="true">A</div>
+      <div>
+        <div class="tb-title">Programación II · Primer Parcial</div>
+        <div class="tb-sub">UTN FRRe · Sede Formosa · 2026</div>
+      </div>
+    </div>
+    <nav class="tb-nav" aria-label="Secciones">
+      <a href="#parte1">Parte 1</a><a href="#parte2">Parte 2</a><a href="#parte3">Parte 3</a>
+    </nav>
+    <div class="tb-prog" aria-live="polite"><span class="lbl">Respondidas</span> <b id="progTxt">0/40</b></div>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar tema">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="btn btn-primary" id="finishTop" type="button" aria-label="Finalizar examen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>Finalizar</span>
+    </button>
+  </div>
+  <div class="progress-line"><span id="progBar"></span></div>
+</header>
+
+<main class="wrap">
+
+  <!-- ENCABEZADO -->
+  <section class="card exam-head" aria-label="Encabezado del examen">
+    <div class="eh-main">
+      <div class="eh-uni">UNIVERSIDAD TECNOLÓGICA NACIONAL</div>
+      <div class="eh-fac">Facultad Regional Resistencia · Sede Formosa</div>
+      <h1 class="eh-title">Programación II — Primer Examen Parcial</h1>
+      <span class="eh-badge">VERSIÓN INTERACTIVA</span>
+      <div class="eh-sub">Paradigma Orientado a Objetos y algoritmos en PHP · Ciclo lectivo 2026</div>
+    </div>
+    <div class="eh-fila"><small>FILA</small><strong>A</strong><span>Total: 100 pts</span></div>
+  </section>
+  <div class="student">
+    <label>Apellido y nombre<input id="fName" autocomplete="name" placeholder="Escribí tu nombre"></label>
+    <label>DNI / Legajo<input id="fDni" inputmode="numeric"></label>
+    <label>Fecha<input id="fDate"></label>
+    <label>Carrera<input id="fCarrera"></label>
+    <label>Comisión<input id="fCom"></label>
+    <label>Nota<span class="nota" id="fNota">—</span></label>
+  </div>
+
+  <!-- RESULTADOS -->
+  <section class="card results post" id="results" aria-live="polite"></section>
+
+  <!-- INSTRUCCIONES + PUNTAJE -->
+  <div class="info-grid">
+    <section class="card panel">
+      <h2>INSTRUCCIONES</h2>
+      <ul>
+        <li>Completá tus datos antes de comenzar.</li>
+        <li>Duración: <b>120 minutos</b>. No se permite el uso de apuntes ni de otras pestañas.</li>
+        <li><b>Parte 1:</b> cada pregunta tiene <b>una sola</b> respuesta correcta. La grilla de la Parte 1 se completa sola.</li>
+        <li><b>Partes 2 y 3:</b> tocá cada casillero o espacio numerado y elegí la opción del banco.</li>
+        <li>Las respuestas incorrectas <b>no restan</b> puntos.</li>
+        <li>Al terminar, presioná <b>Finalizar</b> para ver tu nota y la justificación de cada respuesta.</li>
+      </ul>
+    </section>
+    <section class="card panel">
+      <h2>PUNTAJE</h2>
+      <table class="score-table">
+        <thead><tr><th>Parte</th><th>Detalle</th><th>Pts</th><th>Obtenido</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Múltiple choice</td><td>20 × 3 pts</td><td class="n">60</td><td class="ob" id="ob1"></td></tr>
+          <tr><td>2 · Diagrama de flujo</td><td>10 × 2 pts</td><td class="n">20</td><td class="ob" id="ob2"></td></tr>
+          <tr><td>3 · Código PHP</td><td>10 × 2 pts</td><td class="n">20</td><td class="ob" id="ob3"></td></tr>
+          <tr class="tot"><td colspan="2">Total · Se aprueba con 60 pts</td><td class="n">100</td><td class="ob" id="obT"></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- PARTE 1 -->
+  <div class="band" id="parte1"><h2>Parte 1 · Múltiple choice</h2><span>20 preguntas × 3 pts = 60 pts</span></div>
+  <div class="toolrow post">
+    <label class="switch"><input type="checkbox" id="onlyWrong"> Mostrar solo las preguntas no acertadas</label>
+  </div>
+  <div class="qgrid" id="p1list"></div>
+
+  <section class="card agrid-card">
+    <div class="bank-h" style="margin-top:0">GRILLA DE RESPUESTAS · PARTE 1</div>
+    <p class="note pre" style="margin:0 0 10px">Se completa automáticamente con tus elecciones. Tocá un casillero para ir a la pregunta.</p>
+    <p class="note post" style="margin:0 0 10px">Verde: correcta · Rojo: incorrecta · Ámbar: sin responder.</p>
+    <div class="agrid-wrap"><table class="agrid" id="agrid"></table></div>
+  </section>
+
+  <!-- PARTE 2 -->
+  <div class="band" id="parte2"><h2>Parte 2 · Diagrama de flujo</h2><span>10 casilleros × 2 pts = 20 pts</span></div>
+  <div class="case">
+    <p><b>Caso: descuento en una compra.</b> Un comercio quiere calcular cuánto debe pagar un cliente. El programa lee el <b>precio</b> unitario de un artículo y la <b>cantidad</b> comprada, y calcula el <b>total</b> (precio × cantidad).</p>
+    <p>Si el total es de <b>$50 000 o más</b>, se descuenta el <b>15 %</b>; si es de <b>$20 000 o más</b> (pero menor a $50 000), se descuenta el <b>5 %</b>; en cualquier otro caso <b>no hay descuento</b>. Al final se muestra el importe a pagar.</p>
+    <p><b>Consigna:</b> completá cada casillero numerado del diagrama con el bloque correcto del banco. Cada bloque se usa una sola vez. <b>Atención: en el banco sobran 3 bloques</b> (forma o contenido incorrectos).</p>
+  </div>
+
+  <section class="card flow-card">
+    <p class="flow-hint pre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11V5a2 2 0 1 1 4 0v6m0-1a2 2 0 1 1 4 0v2m0-1a2 2 0 1 1 4 0v4a6 6 0 0 1-6 6h-2a7 7 0 0 1-6-3.5L4.5 14a2 2 0 0 1 3.4-2.1L9 13"/></svg>Tocá un casillero para elegir su bloque. En pantallas chicas podés desplazar el diagrama hacia los costados.</p>
+    <p class="flow-hint post"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Tocá cualquier casillero para ver por qué lleva ese bloque.</p>
+    <div class="flow-scroll"><div id="flowStudent"></div></div>
+  </section>
+
+  <div class="ans-table-wrap">
+    <table class="ans-table" id="t2"></table>
+  </div>
+
+  <div class="bank-h">BANCO DE BLOQUES</div>
+  <div class="legend" id="legend"></div>
+  <div class="bank" id="bank2"></div>
+
+  <!-- Corrección Parte 2 -->
+  <div class="post">
+    <h3 class="sub-h">Corrección casillero por casillero</h3>
+    <div class="corr" id="corr2"></div>
+
+    <h3 class="sub-h">Análisis paso a paso: cómo se resuelve el diagrama</h3>
+    <section class="card analysis">
+      <ol class="steps">
+        <li>
+          <h4>Entender el problema: entrada, proceso y salida</h4>
+          <p>Antes de mirar el banco, hay que identificar las tres partes de todo algoritmo (pregunta 14):</p>
+          <div class="tbl-wrap"><table class="tbl" style="min-width:420px">
+            <tr><th style="width:120px">Entrada</th><td>Los datos que el programa necesita: <b>precio</b> y <b>cantidad</b>.</td></tr>
+            <tr><th>Proceso</th><td>Calcular <code>total = precio × cantidad</code> y, según el rango del total, determinar el descuento <code>desc</code>.</td></tr>
+            <tr><th>Salida</th><td>Mostrar el importe a pagar: <code>total − desc</code>.</td></tr>
+          </table></div>
+          <p>La regla del descuento divide los totales en tres rangos que no se superponen:</p>
+          <div class="ranges"><div class="r0">menos de $20 000<b>0 %</b></div><div class="r5">$20 000 a $49 999<b>5 %</b></div><div class="r15">$50 000 o más<b>15 %</b></div></div>
+          <div class="ranges-ax"><span>0</span><span>20 000</span><span>50 000</span><span>∞</span></div>
+          <p style="margin-top:8px">Tres rangos significan <b>tres caminos posibles</b>, y para separar tres caminos alcanzan <b>dos decisiones</b>. Eso coincide con los dos rombos del diagrama.</p>
+        </li>
+        <li>
+          <h4>Clasificar el banco por la forma de cada bloque</h4>
+          <p>En un diagrama de flujo la forma tiene significado. Agrupar el banco por forma reduce enormemente las opciones de cada casillero:</p>
+          <div class="groups" id="groups"></div>
+        </li>
+        <li>
+          <h4>Detectar los 3 bloques trampa</h4>
+          <p>El enunciado avisa que sobran 3 bloques por <b>forma</b> o <b>contenido</b> incorrecto. Comparando cada bloque con el enunciado:</p>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Bloque</th><th>Forma</th><th>Contenido</th><th>Veredicto</th></tr>
+            <tr><td><b>B</b> · <code>¿cantidad ≥ 50000?</code></td><td>Correcta (decisión)</td><td>Incorrecto: la regla se aplica al <b>total</b>, no a la cantidad.</td><td>Sobra</td></tr>
+            <tr><td><b>E</b> · <code>total ← precio + cantidad</code></td><td>Correcta (proceso)</td><td>Incorrecto: el total es precio <b>×</b> cantidad, no la suma.</td><td>Sobra</td></tr>
+            <tr><td><b>J</b> · <code>Leer precio, cantidad</code></td><td>Incorrecta: rectángulo de proceso</td><td>Correcto</td><td>Sobra: leer datos es <b>entrada</b> → paralelogramo (ese es G).</td></tr>
+          </table></div>
+          <p>Quedan exactamente 10 bloques para 10 casilleros, y cada uno se usa una vez.</p>
+        </li>
+        <li>
+          <h4>Leer la estructura del diagrama vacío</h4>
+          <p>Aunque los casilleros estén vacíos, las flechas revelan qué tipo de bloque va en cada uno:</p>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Casilleros</th><th>Qué se observa</th><th>Conclusión</th></tr>
+            <tr><td>1 y 10</td><td>Uno no tiene flechas de entrada; el otro no tiene flechas de salida.</td><td>Terminales: <b>1 = C (Inicio)</b>, <b>10 = I (Fin)</b>.</td></tr>
+            <tr><td>4 y 6</td><td>Tienen dos salidas rotuladas <b>Sí</b> y <b>No</b>.</td><td>Decisiones (rombos): L y F.</td></tr>
+            <tr><td>2 y 3</td><td>Están en secuencia entre el Inicio y la primera decisión.</td><td>Primero se <b>lee</b> (G) y después se <b>calcula</b> (K): no se puede multiplicar sin tener los datos.</td></tr>
+            <tr><td>5, 7 y 8</td><td>Cada uno cuelga de una rama distinta.</td><td>Las tres asignaciones de descuento: H, M y A.</td></tr>
+            <tr><td>9</td><td>Los tres caminos se unen antes del Fin.</td><td>Salida común: <b>D (Mostrar total − desc)</b>.</td></tr>
+          </table></div>
+        </li>
+        <li>
+          <h4>Ordenar las condiciones: de mayor a menor</h4>
+          <p>El casillero 4 es la primera pregunta. Entre <b>L (≥ 50000)</b> y <b>F (≥ 20000)</b>, la primera debe ser <b>L</b>, porque un total alto cumple <i>ambas</i> condiciones y solo debe recibir el descuento mayor.</p>
+          <div class="callout warn"><b>Error típico: invertir el orden</b>Si se pregunta primero <code>¿total ≥ 20000?</code>, un total de $60 000 responde “Sí” y recibe el 5 % ($3 000) en lugar del 15 % ($9 000): pagaría $57 000 en vez de $51 000. Nunca llegaría a evaluarse la condición de $50 000.</div>
+          <p>Cuando se llega al casillero 6 por la rama <b>No</b>, ya se sabe que <code>total &lt; 50000</code>. Por eso alcanza con preguntar <code>¿total ≥ 20000?</code> para identificar el rango del 5 %: la condición “pero menor a $50 000” ya quedó garantizada por la primera decisión.</p>
+        </li>
+        <li>
+          <h4>Asignar la acción de cada rama</h4>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Camino</th><th>Qué se sabe del total</th><th>Casillero</th><th>Bloque</th></tr>
+            <tr><td>4: Sí</td><td>total ≥ 50 000</td><td>5</td><td><b>H</b> · <code>desc ← total * 0.15</code></td></tr>
+            <tr><td>4: No → 6: Sí</td><td>20 000 ≤ total &lt; 50 000</td><td>7</td><td><b>M</b> · <code>desc ← total * 0.05</code></td></tr>
+            <tr><td>4: No → 6: No</td><td>total &lt; 20 000</td><td>8</td><td><b>A</b> · <code>desc ← 0</code></td></tr>
+          </table></div>
+          <div class="callout info"><b>¿Por qué hace falta <code>desc ← 0</code> si “no hay descuento”?</b>Porque el casillero 9 calcula <code>total − desc</code> en los tres caminos. Si en la rama sin descuento no se asigna un valor, <code>desc</code> no existiría en ese camino. Toda variable que se usa después de una bifurcación debe quedar definida en todas las ramas.</div>
+        </li>
+        <li>
+          <h4>Verificar con una prueba de escritorio</h4>
+          <p>La prueba de escritorio consiste en “ejecutar a mano” el diagrama con datos concretos y comprobar que el resultado es el esperado. Conviene elegir un caso por rango y los <b>valores límite</b> (exactamente 20 000 y 50 000), que es donde se cometen los errores de ≥ versus &gt;.</p>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Caso</th><th>precio</th><th>cantidad</th><th>total</th><th>¿≥ 50000?</th><th>¿≥ 20000?</th><th>desc</th><th>A pagar</th></tr>
+            <tr><td>Rango alto</td><td class="n">1 000</td><td class="n">60</td><td class="n">60 000</td><td>Sí</td><td>—</td><td class="n">9 000</td><td class="n">51 000</td></tr>
+            <tr class="hl"><td>Rango medio</td><td class="n">2 500</td><td class="n">10</td><td class="n">25 000</td><td>No</td><td>Sí</td><td class="n">1 250</td><td class="n">23 750</td></tr>
+            <tr><td>Sin descuento</td><td class="n">500</td><td class="n">20</td><td class="n">10 000</td><td>No</td><td>No</td><td class="n">0</td><td class="n">10 000</td></tr>
+            <tr><td>Límite 50 000</td><td class="n">1 000</td><td class="n">50</td><td class="n">50 000</td><td>Sí</td><td>—</td><td class="n">7 500</td><td class="n">42 500</td></tr>
+            <tr><td>Límite 20 000</td><td class="n">1 000</td><td class="n">20</td><td class="n">20 000</td><td>No</td><td>Sí</td><td class="n">1 000</td><td class="n">19 000</td></tr>
+          </table></div>
+          <p>El caso resaltado (total $25 000 → paga $23 750) es exactamente el mismo resultado que imprime el código de la Parte 3: los dos ejercicios resuelven el mismo problema.</p>
+        </li>
+      </ol>
+    </section>
+
+    <h3 class="sub-h">Diagrama resuelto y simulador</h3>
+    <section class="card analysis">
+      <p style="margin-top:0">Ingresá un precio y una cantidad, o elegí un caso de la prueba de escritorio, y presioná <b>Ejecutar</b>: el diagrama marca el camino que sigue el algoritmo y registra cada paso.</p>
+      <div class="sim">
+        <div class="flow-scroll"><div id="flowSol"></div></div>
+        <div>
+          <div class="sim-ctrl">
+            <label class="fld">Precio<input id="simP" type="number" min="0" step="any" value="2500" inputmode="decimal"></label>
+            <label class="fld">Cantidad<input id="simC" type="number" min="0" step="any" value="10" inputmode="decimal"></label>
+            <button class="btn btn-primary" id="simRun" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>Ejecutar</button>
+          </div>
+          <div class="presets" id="presets"></div>
+          <ol class="log" id="simLog"></ol>
+          <p class="log-empty" id="simEmpty">Todavía no se ejecutó ningún caso.</p>
+          <div class="sim-res" id="simRes"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- PARTE 3 -->
+  <div class="band" id="parte3"><h2>Parte 3 · Código PHP</h2><span>10 espacios × 2 pts = 20 pts</span></div>
+  <div class="case">
+    <p><b>El mismo caso, ahora con objetos.</b> Se define una interfaz <code>Facturable</code>, una clase base abstracta <code>Cliente</code> y una clase <code>ClienteMinorista</code> que acumula sus compras y calcula el descuento y el total a pagar con la misma regla de la Parte 2.</p>
+    <p><b>Consigna:</b> completá los 10 espacios numerados con la palabra clave correcta del banco. Cada palabra se usa una sola vez y <b>sobran 5</b>. Tené en cuenta los comentarios del código.</p>
+  </div>
+  <div class="code-layout">
+    <div class="code" id="code" aria-label="Código PHP con espacios para completar"></div>
+    <aside class="card wbank" aria-label="Banco de palabras">
+      <h3>BANCO DE PALABRAS</h3>
+      <p>15 palabras · se usan 10</p>
+      <div class="chips" id="chips"></div>
+    </aside>
+  </div>
+  <div class="ans-table-wrap">
+    <table class="ans-table" id="t3"></table>
+  </div>
+
+  <div class="post">
+    <h3 class="sub-h">Corrección espacio por espacio</h3>
+    <div class="corr" id="corr3"></div>
+
+    <h3 class="sub-h">Análisis del código</h3>
+    <section class="card analysis">
+      <ol class="steps">
+        <li>
+          <h4>Usar dos tipos de pistas: comentarios y contexto</h4>
+          <p>Cada espacio se resuelve con una de estas dos pistas. Los <b>comentarios</b> describen la intención (“no se puede instanciar”, “visible en la clase y sus hijas”, “solo dentro de esta clase”). El <b>contexto sintáctico</b> indica qué palabra puede ir en ese lugar: delante de un nombre seguido de <code>{</code> va una declaración de tipo; antes de una condición entre paréntesis va una estructura de control; antes de una expresión en un método con tipo de retorno va <code>return</code>.</p>
+        </li>
+        <li>
+          <h4>Descartar las 5 palabras sobrantes</h4>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Palabra</th><th>Por qué no entra en ningún espacio</th></tr>
+            <tr><td><code>clone</code></td><td>Crea una copia de un objeto que ya existe (<code>$b = clone $a;</code>). En la línea 49 todavía no hay objeto: hay que crearlo desde la clase con <code>new</code>.</td></tr>
+            <tr><td><code>__destruct</code></td><td>Se ejecuta cuando el objeto se libera y no recibe parámetros. El método de la línea 12 recibe <code>$nombre</code> e inicializa el objeto: es el constructor.</td></tr>
+            <tr><td><code>echo</code></td><td>Muestra un valor en pantalla pero no lo devuelve. <code>subtotal()</code> declara <code>: float</code>, así que necesita <code>return</code>. El único <code>echo</code> del script ya está escrito en la línea 52.</td></tr>
+            <tr><td><code>else</code></td><td>No admite condición. En la línea 34 aparece <code>($sub &gt;= 20000)</code>, así que hace falta <code>elseif</code>.</td></tr>
+            <tr><td><code>public</code></td><td>Sería sintácticamente válido en los espacios 3 y 7, pero contradice los comentarios: “visible en la clase y sus hijas” es <code>protected</code> y “solo dentro de esta clase” es <code>private</code>.</td></tr>
+          </table></div>
+        </li>
+        <li>
+          <h4>Del diagrama de flujo al código</h4>
+          <p>El método <code>descuento()</code> es la traducción directa de las dos decisiones de la Parte 2. Las mismas tres ramas aparecen como <code>if</code> / <code>elseif</code> / caso por defecto:</p>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Parte 2 (diagrama)</th><th>Parte 3 (código)</th></tr>
+            <tr><td>Casillero 2 · Leer precio, cantidad</td><td><code>agregarCompra(15000)</code> y <code>agregarCompra(10000)</code></td></tr>
+            <tr><td>Casillero 3 · total ← precio * cantidad</td><td><code>subtotal()</code> → <code>array_sum($this-&gt;compras)</code></td></tr>
+            <tr><td>Casillero 4 · ¿total ≥ 50000?</td><td><code>if ($sub &gt;= 50000)</code></td></tr>
+            <tr><td>Casillero 5 · desc ← total * 0.15</td><td><code>return $sub * 0.15;</code></td></tr>
+            <tr><td>Casillero 6 · ¿total ≥ 20000?</td><td><code>elseif ($sub &gt;= 20000)</code></td></tr>
+            <tr><td>Casillero 7 · desc ← total * 0.05</td><td><code>return $sub * 0.05;</code></td></tr>
+            <tr><td>Casillero 8 · desc ← 0</td><td><code>return 0.0;</code></td></tr>
+            <tr><td>Casillero 9 · Mostrar total − desc</td><td><code>total()</code> + <code>echo $cliente-&gt;resumen();</code></td></tr>
+          </table></div>
+          <p>El orden de las condiciones es el mismo por la misma razón: primero el umbral más alto.</p>
+        </li>
+        <li>
+          <h4>Prueba de escritorio del script</h4>
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Línea</th><th>Instrucción</th><th>Efecto</th></tr>
+            <tr><td class="n">49</td><td><code>new ClienteMinorista("Juan")</code></td><td>Se crea el objeto y se ejecuta el <code>__construct</code> heredado de <code>Cliente</code>: <code>$this-&gt;nombre = "Juan"</code>.</td></tr>
+            <tr><td class="n">50</td><td><code>agregarCompra(15000)</code></td><td>15000 &gt; 0 → <code>$compras = [15000]</code>. Con <code>strict_types=1</code> se acepta el <code>int</code> en un parámetro <code>float</code> (única conversión permitida en modo estricto).</td></tr>
+            <tr><td class="n">51</td><td><code>agregarCompra(10000)</code></td><td><code>$compras = [15000, 10000]</code>.</td></tr>
+            <tr><td class="n">52</td><td><code>resumen()</code> → <code>total()</code></td><td><code>subtotal()</code> = 25000. <code>descuento()</code>: ¿25000 ≥ 50000? No. ¿25000 ≥ 20000? Sí → 25000 × 0.05 = 1250.</td></tr>
+            <tr class="hl"><td class="n">52</td><td><code>echo</code></td><td><code>total()</code> = 25000 − 1250 = 23750 → se imprime <b>Juan: $23750</b>.</td></tr>
+          </table></div>
+        </li>
+        <li>
+          <h4>Conexión con la teoría de la Parte 1</h4>
+          <p>El código integra casi todos los conceptos evaluados: interfaz como contrato (preg. 8), clase abstracta no instanciable (preg. 7), <code>private</code> y <code>protected</code> (preg. 3 y 4), herencia para reutilizar el constructor (preg. 5), <code>__construct</code> al usar <code>new</code> (preg. 13), <code>$this</code> como objeto actual (preg. 19), <code>agregarCompra()</code> como procedimiento <code>: void</code> y <code>subtotal()</code> como función (preg. 16), y <code>$sub</code> como variable local (preg. 17).</p>
+          <div class="callout good"><b>Polimorfismo en acción</b>Si mañana se agrega una clase <code>ClienteMayorista implements Facturable</code> con otra regla de descuento, cualquier código que llame a <code>total()</code> sobre un <code>Facturable</code> funcionará con ambas clases sin cambios (preg. 6).</div>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <!-- FINALIZAR -->
+  <section class="card finish-card no-print">
+    <div class="pre">
+      <h3>¿Terminaste el examen?</h3>
+      <p id="finishSummary">Revisá que hayas respondido todo. Al finalizar se corrige automáticamente y ya no vas a poder modificar tus respuestas.</p>
+      <button class="btn btn-primary btn-lg" id="finishBottom" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Finalizar y ver resultado</button>
+    </div>
+    <div class="post">
+      <h3>Examen corregido</h3>
+      <p>Podés revisar cada respuesta con su justificación o volver a intentarlo desde cero.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-ghost" href="#results">Ver resultado</a>
+        <button class="btn btn-primary" type="button" data-reset>Volver a intentar</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="sign"><div>Firma del alumno/a</div><div>Firma del docente</div></div>
+  <p class="foot">Programación II · Primer Parcial 2026 · Fila A</p>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-h"><h3 id="mTitle"></h3>
+      <button class="icon-btn" id="mClose" type="button" aria-label="Cerrar" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="modal-b" id="mBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LET=["A","B","C","D"];
+const ICON_INFO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+
+/* ================= DATOS · PARTE 1 ================= */
+const Q=[
+{t:"¿Cuál es el propósito principal de la encapsulación en la Programación Orientada a Objetos?",
+ o:["Ocultar el estado interno de un objeto y permitir su acceso solo a través de métodos controlados.","Permitir que una clase reutilice los atributos y métodos de otra clase.","Lograr que un mismo método se comporte de forma distinta según el objeto que lo ejecute.","Reunir todas las clases de un sistema dentro de un único archivo."],a:0,
+ w:"La encapsulación protege el estado interno del objeto: los atributos se declaran <code>private</code> o <code>protected</code> y solo se modifican a través de métodos públicos (getters y setters) que pueden validar los datos. Así el objeto nunca queda en un estado inválido.",
+ n:[null,"describe la herencia.","describe el polimorfismo.","es una cuestión de organización de archivos, no un principio de la POO."]},
+{t:"En la POO, ¿qué es una clase?",
+ o:["Un objeto concreto que ocupa memoria mientras el programa se ejecuta.","Una función global que devuelve valores de distintos tipos.","Un molde o plantilla que define los atributos y métodos que tendrán sus objetos.","Una variable especial capaz de almacenar varios valores a la vez."],a:2,
+ w:"Una clase es la definición (el “molde”): declara qué atributos y métodos tendrán sus objetos. Recién al usar <code>new</code> se crea un objeto concreto en memoria, llamado <b>instancia</b>.",
+ n:["describe a un objeto (instancia), no a la clase.","una función no define atributos ni crea objetos.",null,"describe un arreglo."]},
+{t:"En PHP, un atributo declarado como <code>private</code> puede ser accedido:",
+ o:["Desde cualquier parte del script, sin restricciones.","Solo desde las clases hijas, pero no desde la clase que lo declara.","Desde la clase que lo declara y desde todas sus clases hijas.","Únicamente desde dentro de la misma clase que lo declara."],a:3,
+ w:"<code>private</code> es el nivel más restrictivo: el miembro solo es accesible desde los métodos de la misma clase que lo declara. Ni las clases hijas ni el código externo pueden leerlo o modificarlo directamente.",
+ n:["corresponde a <code>public</code>.","no existe un modificador así: la clase que declara siempre tiene acceso.","corresponde a <code>protected</code>.",null]},
+{t:"En PHP, un atributo declarado como <code>protected</code> puede ser accedido:",
+ o:["Desde cualquier parte del script, igual que uno <code>public</code>.","Desde la clase que lo declara y desde las clases que heredan de ella.","Solo desde fuera de la clase, a través del objeto.","Únicamente desde funciones globales definidas en el mismo archivo."],a:1,
+ w:"<code>protected</code> permite el acceso desde la clase que lo declara y desde todas sus descendientes (<code>extends</code>), pero no desde fuera: <code>$obj-&gt;atributo</code> en el script principal produce un <i>Error</i>. Es el caso de <code>$nombre</code> en la Parte 3.",
+ n:["corresponde a <code>public</code>.",null,"es al revés: desde fuera del objeto justamente no se puede acceder.","los modificadores de acceso no se relacionan con funciones globales."]},
+{t:"¿Cuál es la principal ventaja que aporta la herencia?",
+ o:["Proteger el código fuente para que no pueda ser leído.","Ejecutar varios métodos en paralelo de manera automática.","Reutilizar código, creando nuevas clases a partir de otras ya existentes.","Cambiar el tipo de una variable durante la ejecución."],a:2,
+ w:"La herencia permite definir una clase hija que reutiliza los atributos y métodos de una clase padre y agrega o especializa comportamiento. Modela la relación “es un”: un <code>ClienteMinorista</code> <i>es un</i> <code>Cliente</code> y reutiliza su constructor.",
+ n:["no es una función de la herencia.","eso sería concurrencia o paralelismo.",null,"eso es el tipado dinámico del lenguaje."]},
+{t:"¿Qué se entiende por polimorfismo?",
+ o:["La capacidad de que objetos de distintas clases respondan de manera diferente a un mismo método.","La posibilidad de crear muchos objetos a partir de una misma clase.","La obligación de declarar todos los atributos como privados.","El mecanismo que libera la memoria de los objetos que ya no se usan."],a:0,
+ w:"“Polimorfismo” significa “muchas formas”: distintas clases responden al mismo mensaje (mismo método) con implementaciones diferentes. Varias clases que implementen <code>Facturable</code> pueden calcular <code>total()</code> cada una a su manera, y el código que las usa no necesita saber cuál es.",
+ n:[null,"describe la instanciación.","se relaciona con la encapsulación y, además, no es obligatorio.","describe al recolector de basura."]},
+{t:"¿Qué característica define a una clase abstracta en PHP?",
+ o:["Solo puede contener atributos constantes.","Se instancia directamente con el operador <code>new</code>, como cualquier otra clase.","Reemplaza por completo el uso de interfaces.","No puede instanciarse y se utiliza como base para que otras clases hereden de ella."],a:3,
+ w:"Una clase <code>abstract</code> representa un concepto general. Intentar <code>new Cliente(\"Ana\")</code> produce <i>Error: Cannot instantiate abstract class</i>. Sirve como base: puede tener atributos, métodos con código y métodos abstractos que las hijas deberán implementar.",
+ n:["puede tener cualquier tipo de atributo.","es exactamente lo que no se puede hacer.","no las reemplaza: se complementan (se hereda de una sola clase, pero se pueden implementar varias interfaces).",null]},
+{t:"¿Qué define una interfaz (<code>interface</code>) en PHP?",
+ o:["Los atributos privados que deben tener todas las clases.","Un contrato: los métodos públicos que toda clase que la implemente está obligada a definir.","La forma en que el objeto se guarda en el disco.","El constructor que se ejecuta por defecto en todas las clases."],a:1,
+ w:"Una interfaz es un contrato: enumera métodos públicos sin código. Toda clase que la adopte con <code>implements</code> debe definirlos con la misma firma; si no, PHP lanza un error fatal. En la Parte 3, <code>Facturable</code> obliga a definir <code>total(): float</code>.",
+ n:["las interfaces no declaran atributos (solo constantes).",null,"eso es la serialización o persistencia.","una interfaz no define constructores por defecto."]},
+{t:"Si <code>$a</code> contiene un objeto y se ejecuta <code>$b = $a;</code>, ¿qué ocurre?",
+ o:["Se crea una copia nueva e independiente del objeto en <code>$b</code>.","El objeto original se destruye y pasa a estar solo en <code>$b</code>.","Ambas variables quedan apuntando al mismo objeto: un cambio hecho desde <code>$b</code> se ve desde <code>$a</code>.","PHP genera un error, porque los objetos no se pueden asignar."],a:2,
+ w:"En PHP las variables no contienen el objeto, sino un identificador que lo referencia. <code>$b = $a</code> copia ese identificador: ambas apuntan al mismo objeto, y <code>$b-&gt;x = 5</code> también se ve en <code>$a-&gt;x</code>. Para una copia independiente se usa <code>clone</code>.",
+ n:["eso ocurre con <code>$b = clone $a;</code>.","el objeto sigue existiendo, ahora con dos referencias.",null,"asignar objetos es una operación válida."]},
+{t:"¿Cuál es la función del recolector de basura (Garbage Collector)?",
+ o:["Liberar automáticamente la memoria de los objetos que ya no tienen referencias.","Eliminar las variables que no fueron inicializadas.","Detectar errores de sintaxis antes de ejecutar el programa.","Borrar los archivos temporales del servidor web."],a:0,
+ w:"El Garbage Collector libera la memoria de los objetos a los que ya no apunta ninguna variable. PHP cuenta referencias: cuando llegan a 0 el objeto se destruye (y se ejecuta <code>__destruct</code>); además detecta referencias circulares.",
+ n:[null,"una variable no inicializada simplemente no existe todavía.","eso lo hace el analizador (parser) del intérprete.","no tiene relación con archivos del servidor."]},
+{t:"Si un script con tipos declarados NO incluye <code>declare(strict_types=1);</code>, ¿qué hace PHP al recibir, por ejemplo, el texto <code>\"5\"</code> en un parámetro de tipo <code>int</code>?",
+ o:["Detiene el script inmediatamente con un error fatal.","Intenta convertir el valor automáticamente al tipo declarado (coerción).","Ignora el parámetro y le asigna el valor <code>null</code>.","Convierte el parámetro en un arreglo."],a:1,
+ w:"Sin <code>strict_types</code>, PHP trabaja en modo coercitivo: si el valor puede convertirse, lo convierte (<code>\"5\"</code> → <code>5</code>). Con <code>strict_types=1</code> el mismo llamado lanzaría un <i>TypeError</i>. Única excepción del modo estricto: se acepta un <code>int</code> donde se espera <code>float</code>.",
+ n:["eso ocurre en modo estricto (<i>TypeError</i>), no en el modo por defecto.",null,"PHP no descarta argumentos.","no existe esa conversión."]},
+{t:"¿Para qué se utilizan principalmente los métodos <i>setters</i> en una clase encapsulada?",
+ o:["Para mostrar en pantalla el valor de todos los atributos.","Para destruir el objeto cuando ya no se necesita.","Para reemplazar al constructor de la clase.","Para asignar valores a los atributos privados, validándolos previamente."],a:3,
+ w:"Los setters son la puerta de entrada controlada a los atributos privados: reciben el nuevo valor, lo validan (por ejemplo, que un importe no sea negativo) y recién entonces lo asignan. Es lo que hace <code>agregarCompra()</code> con <code>$compras</code>.",
+ n:["mostrar valores es tarea de getters o de <code>__toString()</code>.","eso corresponde a <code>__destruct()</code>.","el constructor inicializa; los setters modifican después.",null]},
+{t:"¿En qué momento se ejecuta automáticamente el método <code>__construct()</code>?",
+ o:["Al crear un nuevo objeto con el operador <code>new</code>.","Cuando el objeto deja de ser utilizado.","Cada vez que se llama a cualquier método del objeto.","Cuando el objeto se convierte en texto con <code>echo</code>."],a:0,
+ w:"<code>__construct()</code> es un método mágico que PHP invoca al crear el objeto con <code>new</code>, para inicializar sus atributos. En la Parte 3, <code>new ClienteMinorista(\"Juan\")</code> ejecuta el constructor heredado de <code>Cliente</code>.",
+ n:[null,"describe a <code>__destruct()</code>.","no existe un método que se ejecute antes de cada llamada.","describe a <code>__toString()</code>."]},
+{t:"¿Cuáles son las tres partes que forman la estructura básica de un algoritmo?",
+ o:["Clases, objetos y métodos.","Variables, constantes y funciones.","Entrada, proceso y salida.","Inicio, bucle y error."],a:2,
+ w:"Todo algoritmo recibe datos (entrada), los transforma (proceso) y entrega un resultado (salida). En la Parte 2: leer precio y cantidad, calcular total y descuento, mostrar el importe.",
+ n:["son conceptos de la POO.","son elementos que un algoritmo puede usar, no sus partes.",null,"no corresponde a ninguna definición."]},
+{t:"Según su definición, todo algoritmo debe ser:",
+ o:["Ambiguo, flexible e infinito.","Preciso, definido y finito.","Recursivo, extenso y complejo.","Dependiente de una base de datos."],a:1,
+ w:"<b>Preciso</b>: indica el orden exacto de cada paso. <b>Definido</b>: con los mismos datos produce siempre el mismo resultado. <b>Finito</b>: termina después de una cantidad finita de pasos.",
+ n:["es justamente lo opuesto.",null,"la recursividad es una técnica opcional, no un requisito.","un algoritmo es independiente de la tecnología."]},
+{t:"¿Cuál es la diferencia fundamental entre una función y un procedimiento?",
+ o:["El procedimiento siempre recibe parámetros y la función nunca.","La función solo puede usarse dentro de una clase.","No existe ninguna diferencia entre ambos.","La función devuelve un valor como resultado; el procedimiento no."],a:3,
+ w:"Una función devuelve un valor que puede usarse en una expresión (<code>$sub = $this-&gt;subtotal();</code>). Un procedimiento realiza acciones sin devolver resultado; en PHP se declara con <code>: void</code>, como <code>agregarCompra()</code>.",
+ n:["ambos pueden recibir o no parámetros.","las funciones existen también fuera de las clases.","la diferencia está en el valor de retorno.",null]},
+{t:"¿Qué caracteriza a una variable local?",
+ o:["Solo existe y es visible dentro del bloque o función donde fue declarada.","Puede utilizarse desde cualquier parte del programa.","Conserva su valor entre todas las ejecuciones del programa.","Es compartida automáticamente por todas las clases."],a:0,
+ w:"Una variable local se crea al entrar en la función donde se declara y deja de existir al salir; fuera de ese ámbito no es visible. Ejemplo: <code>$sub</code> solo existe dentro de <code>descuento()</code>.",
+ n:[null,"describe una variable global.","describe una variable estática o persistente.","no ocurre con ningún tipo de variable."]},
+{t:"En una función recursiva, ¿cuál es la función del caso base?",
+ o:["Aumentar el tamaño de la pila en cada llamada.","Establecer la condición que detiene las llamadas recursivas.","Reemplazar al constructor de la clase.","Asignar valores iniciales a las variables globales."],a:1,
+ w:"El caso base es la situación que se resuelve sin volver a llamar a la función. Sin él, la recursión no termina y se produce un desbordamiento de pila (stack overflow). Ejemplo: en factorial, si <code>n == 0</code> se devuelve 1.",
+ n:["es un efecto de cada llamada, no el objetivo del caso base.",null,"no tiene relación con constructores.","no tiene relación con variables globales."]},
+{t:"Dentro de un método, ¿qué representa la variable <code>$this</code>?",
+ o:["La clase padre de la clase actual.","Una variable global disponible en todo el script.","El último objeto creado en el programa.","El objeto actual, es decir, el que está ejecutando el método."],a:3,
+ w:"<code>$this</code> referencia al objeto que está ejecutando el método. Por eso <code>$this-&gt;compras</code> accede a las compras de ese cliente en particular y no de otro.",
+ n:["para la clase padre se usa <code>parent::</code>.","<code>$this</code> solo existe dentro de métodos de instancia.","no tiene relación con el orden de creación.",null]},
+{t:"Una clase que hereda (<code>extends</code>) de una clase abstracta, ¿qué debe hacer con los métodos abstractos que recibe?",
+ o:["Nada: los métodos abstractos ya traen su código desde la clase padre.","Declararlos obligatoriamente como <code>private</code>.","Implementarlos todos, salvo que la clase hija también se declare abstracta.","Eliminarlos con la palabra clave <code>unset</code>."],a:2,
+ w:"Un método abstracto solo declara la firma, sin código. La hija concreta debe implementarlos todos; si no, PHP lanza un error fatal, salvo que la hija también sea <code>abstract</code> y delegue la obligación a sus propias hijas.",
+ n:["los métodos abstractos no tienen cuerpo.","un método abstracto no puede ser privado: la hija debe poder implementarlo.",null,"<code>unset</code> elimina variables, no métodos."]}
+];
+
+/* ================= DATOS · PARTE 2 ================= */
+const BANK={
+ A:{t:"desc ← 0",s:"proc"}, B:{t:"¿cantidad ≥ 50000?",s:"dec"}, C:{t:"Inicio",s:"term"},
+ D:{t:"Mostrar total − desc",s:"io"}, E:{t:"total ← precio + cantidad",s:"proc"}, F:{t:"¿total ≥ 20000?",s:"dec"},
+ G:{t:"Leer precio, cantidad",s:"io"}, H:{t:"desc ← total * 0.15",s:"proc"}, I:{t:"Fin",s:"term"},
+ J:{t:"Leer precio, cantidad",s:"proc"}, K:{t:"total ← precio * cantidad",s:"proc"}, L:{t:"¿total ≥ 50000?",s:"dec"},
+ M:{t:"desc ← total * 0.05",s:"proc"}
+};
+const BL=Object.keys(BANK);
+const SHAPE_NAME={term:"Inicio / Fin",io:"Entrada / Salida",proc:"Proceso",dec:"Decisión"};
+const SOL2=["C","G","K","L","H","F","M","A","D","I"];
+const EXPL2=[
+ "Todo diagrama comienza con un símbolo <b>terminal</b> (óvalo). En el banco hay dos terminales, C (Inicio) e I (Fin); arriba va <b>C</b>, que marca el punto de entrada. Es el único casillero sin flecha de entrada.",
+ "Antes de calcular hay que obtener los datos: es una operación de <b>entrada</b>, que se representa con un <b>paralelogramo</b> → <b>G</b>. El bloque J tiene el mismo texto pero forma de rectángulo (proceso): es una trampa de forma.",
+ "Con los datos leídos se calcula el total. El enunciado dice <i>precio × cantidad</i> → <code>total ← precio * cantidad</code> (<b>K</b>). Es un cálculo interno: rectángulo de proceso. El bloque E suma en lugar de multiplicar: trampa de contenido.",
+ "Tiene dos salidas (Sí / No), así que es un <b>rombo de decisión</b>. B pregunta por la cantidad (la regla habla del total). Entre F y L, primero va <b>L (≥ 50000)</b>: las condiciones por rangos se evalúan de mayor a menor, porque un total de $60 000 también cumple ≥ 20000 y recibiría el descuento equivocado.",
+ "Es la rama <b>Sí</b> de “¿total ≥ 50000?”: el total está en el rango más alto y corresponde el 15 % → <code>desc ← total * 0.15</code> (<b>H</b>).",
+ "Es la rama <b>No</b> de la primera decisión: ya se sabe que total &lt; 50000. Falta preguntar por el segundo umbral → <b>F (¿total ≥ 20000?)</b>. Si responde Sí, el total está en el rango [20 000; 50 000).",
+ "Es la rama <b>Sí</b> de “¿total ≥ 20000?”: el total está entre $20 000 y $49 999 → descuento del 5 %: <code>desc ← total * 0.05</code> (<b>M</b>).",
+ "Es la rama <b>No</b> de las dos decisiones: total &lt; 20000, no hay descuento. Igual hay que asignar <code>desc ← 0</code> (<b>A</b>) para que <code>desc</code> tenga valor en todos los caminos; si no, el casillero 9 usaría una variable sin valor.",
+ "Los tres caminos se unen y se muestra el importe a pagar. Mostrar es una operación de <b>salida</b> → paralelogramo: <code>Mostrar total − desc</code> (<b>D</b>).",
+ "Todo diagrama termina en un símbolo <b>terminal</b>: <b>I (Fin)</b>. Es el único casillero sin flecha de salida."
+];
+const TRAP2={
+ B:"B es un bloque trampa (contenido): la regla del descuento depende del total, no de la cantidad.",
+ E:"E es un bloque trampa (contenido): el total se calcula multiplicando precio por cantidad, no sumando.",
+ J:"J es un bloque trampa (forma): leer datos es una entrada y va en un paralelogramo, no en un rectángulo de proceso."
+};
+const NODES=[{x:115,y:40},{x:115,y:120},{x:115,y:200},{x:115,y:295},{x:115,y:400},{x:345,y:295},{x:345,y:400},{x:575,y:400},{x:115,y:540},{x:115,y:625}];
+const EDGES=[
+ {id:"e1",d:"M115 63 V97",a:1},
+ {id:"e2",d:"M115 143 V177",a:1},
+ {id:"e3",d:"M115 223 V263",a:1},
+ {id:"e45",d:"M115 327 V377",a:1,l:[124,354,"Sí","start"]},
+ {id:"e46",d:"M210 295 H250",a:1,l:[230,285,"No","middle"]},
+ {id:"e67",d:"M345 327 V377",a:1,l:[354,354,"Sí","start"]},
+ {id:"e68",d:"M440 295 H575 V377",a:1,l:[505,285,"No","middle"]},
+ {id:"e5m",d:"M115 423 V470",a:0},
+ {id:"e7m",d:"M345 423 V470 H115",a:0},
+ {id:"e8m",d:"M575 423 V470 H115",a:0},
+ {id:"em9",d:"M115 470 V517",a:1},
+ {id:"e910",d:"M115 563 V602",a:1}
+];
+
+/* ================= DATOS · PARTE 3 ================= */
+const WORDS=["abstract","clone","__construct","__destruct","echo","else","elseif","extends","implements","interface","new","private","protected","public","return"];
+const SOL3=["interface","abstract","protected","__construct","extends","implements","private","return","elseif","new"];
+const CODE=[
+ "<?php",
+ "declare(strict_types=1);",
+ "",
+ "@@1@@ Facturable {",
+ "    public function total(): float;",
+ "}",
+ "",
+ "// Clase base: no se puede instanciar",
+ "@@2@@ class Cliente {",
+ "    @@3@@ string $nombre;   // visible en la clase y sus hijas",
+ "",
+ "    public function @@4@@(string $nombre) {",
+ "        $this->nombre = $nombre;",
+ "    }",
+ "}",
+ "",
+ "class ClienteMinorista @@5@@ Cliente @@6@@ Facturable {",
+ "    @@7@@ array $compras = [];   // solo dentro de esta clase",
+ "",
+ "    public function agregarCompra(float $importe): void {",
+ "        if ($importe > 0) {",
+ "            $this->compras[] = $importe;",
+ "        }",
+ "    }",
+ "",
+ "    public function subtotal(): float {",
+ "        @@8@@ array_sum($this->compras);",
+ "    }",
+ "",
+ "    public function descuento(): float {",
+ "        $sub = $this->subtotal();",
+ "        if ($sub >= 50000) {",
+ "            return $sub * 0.15;",
+ "        } @@9@@ ($sub >= 20000) {",
+ "            return $sub * 0.05;",
+ "        }",
+ "        return 0.0;",
+ "    }",
+ "",
+ "    public function total(): float {",
+ "        return $this->subtotal() - $this->descuento();",
+ "    }",
+ "",
+ "    public function resumen(): string {",
+ "        return $this->nombre . \": $\" . $this->total();",
+ "    }",
+ "}",
+ "",
+ "$cliente = @@10@@ ClienteMinorista(\"Juan\");",
+ "$cliente->agregarCompra(15000);",
+ "$cliente->agregarCompra(10000);",
+ "echo $cliente->resumen();   // Muestra: Juan: $23750"
+];
+const EXPL3=[
+ "<b>Pista:</b> el bloque <code>Facturable</code> solo contiene la firma <code>public function total(): float;</code>, sin cuerpo, y en la línea 17 se usa con <code>implements</code>. Un tipo que solo declara métodos públicos que otras clases deben implementar es una <b>interfaz</b> → <code>interface</code>.",
+ "<b>Pista:</b> el comentario de la línea 8 dice “no se puede instanciar”. La palabra que impide crear objetos de una clase y la convierte en clase base es <code>abstract</code>.",
+ "<b>Pista:</b> “visible en la clase y sus hijas” → <code>protected</code>. Con <code>private</code>, el método <code>resumen()</code> de la clase hija no podría leer <code>$this-&gt;nombre</code>; con <code>public</code> sería visible desde cualquier parte del script, más de lo pedido.",
+ "<b>Pista:</b> el método recibe <code>$nombre</code> y lo asigna a <code>$this-&gt;nombre</code>: está inicializando el objeto. Es <code>__construct</code>, que PHP ejecuta automáticamente con <code>new ClienteMinorista(\"Juan\")</code> (la clase hija lo hereda). <code>__destruct</code> no recibe parámetros y se ejecuta al liberar el objeto.",
+ "<b>Pista:</b> <code>Cliente</code> es una clase (abstracta). Para heredar de una clase se usa <code>extends</code>. Además, en PHP <code>extends</code> va siempre antes que <code>implements</code>, y una clase puede extender a una sola clase.",
+ "<b>Pista:</b> <code>Facturable</code> es una interfaz, y las interfaces se adoptan con <code>implements</code>. <code>ClienteMinorista</code> cumple el contrato porque define <code>public function total(): float</code> en la línea 40.",
+ "<b>Pista:</b> “solo dentro de esta clase” → <code>private</code>. Las compras solo se modifican mediante <code>agregarCompra()</code>, que valida que el importe sea positivo: es encapsulación en estado puro.",
+ "<b>Pista:</b> el método declara <code>: float</code>, así que tiene que devolver un valor: falta <code>return</code>. Sin él, PHP lanzaría <i>TypeError: Return value must be of type float, none returned</i>. <code>echo</code> mostraría el número pero no lo devolvería.",
+ "<b>Pista:</b> después de la llave <code>}</code> viene una nueva condición entre paréntesis, <code>($sub &gt;= 20000)</code>. La palabra que encadena una segunda condición es <code>elseif</code>. <code>else</code> no admite condición: <code>else ($sub &gt;= 20000) {</code> produce un error de sintaxis.",
+ "<b>Pista:</b> se está creando un objeto a partir de una clase y pasando un argumento al constructor: operador <code>new</code>. Se puede instanciar <code>ClienteMinorista</code> porque es concreta (no abstracta). <code>clone</code> copia un objeto que ya existe; no crea uno desde una clase."
+];
+const EXTRA3={
+ clone:"<code>clone</code> copia un objeto existente; no sirve para declarar ni para crear desde una clase.",
+ __destruct:"<code>__destruct</code> se ejecuta al liberar el objeto y no recibe parámetros.",
+ echo:"<code>echo</code> muestra un valor, pero no lo devuelve ni declara nada.",
+ else:"<code>else</code> no admite una condición entre paréntesis.",
+ public:"<code>public</code> haría visible el miembro desde cualquier parte del script, en contra de lo que indican los comentarios."
+};
+
+/* ================= ESTADO ================= */
+const st={a1:Array(20).fill(null),a2:Array(10).fill(null),a3:Array(10).fill(null),done:false};
+
+/* ================= UTIL ================= */
+function toast(msg){const t=$("#toast");t.innerHTML=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),3200);}
+function money(n){return "$"+Number(n).toLocaleString("es-AR",{maximumFractionDigits:2});}
+function num(n){return Number(n).toLocaleString("es-AR",{maximumFractionDigits:2});}
+
+/* ================= TEMA ================= */
+(function(){
+ const btn=$("#themeBtn"),root=document.documentElement,mq=window.matchMedia("(prefers-color-scheme: dark)");
+ const cur=()=>root.getAttribute("data-theme")||(mq.matches?"dark":"light");
+ const paint=()=>{const m=cur();btn.dataset.mode=m;btn.setAttribute("aria-label",m==="dark"?"Cambiar a modo claro":"Cambiar a modo oscuro");btn.title=btn.getAttribute("aria-label");};
+ btn.addEventListener("click",()=>{root.setAttribute("data-theme",cur()==="dark"?"light":"dark");paint();});
+ if(mq.addEventListener)mq.addEventListener("change",paint);
+ paint();
+})();
+
+/* ================= PARTE 1 ================= */
+function renderP1(){
+ $("#p1list").innerHTML=Q.map((q,i)=>{
+  const opts=q.o.map((t,k)=>`<label class="opt" data-k="${k}"><input type="radio" name="q${i}" value="${k}"><span class="lt">${LET[k]}</span><span class="ot">${t}</span></label>`).join("");
+  const nots=q.n.map((x,k)=>x?`<li><b>${LET[k]}:</b> ${x}</li>`:"").join("");
+  return `<article class="q" id="q${i+1}" data-i="${i}">
+   <div class="q-h"><span class="q-n">${i+1}.</span><h3 class="q-t">${q.t}</h3></div>
+   <div class="opts" role="radiogroup" aria-label="Pregunta ${i+1}">${opts}</div>
+   <div class="q-foot post"><span class="q-st"></span>
+    <div class="why-wrap"><button type="button" class="why-btn" aria-expanded="false">${ICON_INFO}¿Por qué?</button>
+     <div class="tip" role="tooltip"><div class="tip-h">Respuesta correcta: ${LET[q.a]}</div><p>${q.w}</p><ul>${nots}</ul></div>
+    </div></div></article>`;
+ }).join("");
+}
+$("#p1list").addEventListener("change",e=>{
+ const r=e.target; if(r.type!=="radio"||st.done)return;
+ const card=r.closest(".q"),i=+card.dataset.i; st.a1[i]=+r.value;
+ $$(".opt",card).forEach(o=>o.classList.toggle("sel",+o.dataset.k===st.a1[i]));
+ updGrid();updProgress();
+});
+function markP1(){
+ Q.forEach((q,i)=>{
+  const card=$("#q"+(i+1)),a=st.a1[i];
+  card.classList.remove("q-ok","q-bad","q-empty");
+  $$("input",card).forEach(x=>x.disabled=st.done);
+  $$(".opt",card).forEach(o=>{const k=+o.dataset.k;o.classList.toggle("right",st.done&&k===q.a);o.classList.toggle("wrong",st.done&&k===a&&a!==q.a);});
+  if(!st.done)return;
+  const s=$(".q-st",card);
+  if(a===null){card.classList.add("q-empty");s.className="q-st st-empty";s.textContent="Sin responder · 0 pts";}
+  else if(a===q.a){card.classList.add("q-ok");s.className="q-st st-ok";s.textContent="✓ Correcta · +3 pts";}
+  else{card.classList.add("q-bad");s.className="q-st st-bad";s.textContent="✗ Elegiste "+LET[a]+" · 0 pts";}
+ });
+}
+function renderGrid(){
+ let h="";
+ for(let r=0;r<2;r++){
+  h+="<tr><th>Preg.</th>";for(let c=0;c<10;c++)h+=`<th style="width:auto">${r*10+c+1}</th>`;h+="</tr><tr><th>Resp.</th>";
+  for(let c=0;c<10;c++){const i=r*10+c;h+=`<td><button type="button" class="gc" data-i="${i}" aria-label="Ir a la pregunta ${i+1}"></button></td>`;}
+  h+="</tr>";
+ }
+ $("#agrid").innerHTML=h;
+}
+function updGrid(){
+ $$(".gc").forEach(b=>{const i=+b.dataset.i,a=st.a1[i];b.textContent=a===null?"":LET[a];b.className="gc";
+  if(st.done){b.classList.add(a===null?"empty":a===Q[i].a?"ok":"bad");if(a===null)b.textContent="—";}
+  else if(a!==null)b.classList.add("has");});
+}
+$("#agrid").addEventListener("click",e=>{const b=e.target.closest(".gc");if(!b)return;const el=$("#q"+(+b.dataset.i+1));if(el.offsetParent===null)return;el.scrollIntoView({block:"center"});});
+$("#onlyWrong").addEventListener("change",e=>document.body.classList.toggle("only-wrong",e.target.checked));
+
+/* tooltips */
+function closeTips(except){$$(".why-wrap.open").forEach(w=>{if(w!==except){w.classList.remove("open");$(".why-btn",w).setAttribute("aria-expanded","false");}});}
+document.addEventListener("click",e=>{
+ const b=e.target.closest(".why-btn");
+ if(b){const w=b.parentElement,open=!w.classList.contains("open");closeTips(w);w.classList.toggle("open",open);b.setAttribute("aria-expanded",String(open));return;}
+ if(!e.target.closest(".tip"))closeTips();
+});
+
+/* ================= PARTE 2 ================= */
+function shapeSVG(s,cx,cy){
+ const w=190,h=s==="dec"?64:46,x0=cx-w/2,x1=cx+w/2,y0=cy-h/2,y1=cy+h/2;
+ if(s==="term")return `<rect class="shp sh-term" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="${h/2}"/>`;
+ if(s==="proc")return `<rect class="shp sh-proc" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="3"/>`;
+ if(s==="io")return `<polygon class="shp sh-io" points="${x0+14},${y0} ${x1},${y0} ${x1-14},${y1} ${x0},${y1}"/>`;
+ return `<polygon class="shp sh-dec" points="${cx},${y0} ${x1},${cy} ${cx},${y1} ${x0},${cy}"/>`;
+}
+function miniShape(s){
+ if(s==="term")return `<rect class="sh-term" x="1" y="1" width="198" height="58" rx="29"/>`;
+ if(s==="proc")return `<rect class="sh-proc" x="1" y="1" width="198" height="58" rx="4"/>`;
+ if(s==="io")return `<polygon class="sh-io" points="18,1 199,1 182,59 1,59"/>`;
+ return `<polygon class="sh-dec" points="100,1 199,30 100,59 1,30"/>`;
+}
+function blockHTML(L){const b=BANK[L];return `<div class="blk ${b.s}"><svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">${miniShape(b.s)}</svg><span>${esc(b.t)}</span></div>`;}
+function legendIcon(s){return `<svg viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true" style="overflow:visible">${miniShape(s).replace("/>",' style="stroke-width:1.5" vector-effect="non-scaling-stroke"/>')}</svg>`;}
+
+function flowSVG(map,o){
+ const id=o.id;
+ let s=`<svg class="flow-svg" viewBox="0 0 680 670" role="img" aria-label="${o.label}">
+  <defs><marker id="${id}-arr" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="${id}-arr-on" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>`;
+ EDGES.forEach(e=>{
+  s+=`<path class="edge" id="${id}-${e.id}" d="${e.d}" ${e.a?`marker-end="url(#${id}-arr)" data-arrow="1"`:""}/>`;
+  if(e.l)s+=`<text class="elbl" x="${e.l[0]}" y="${e.l[1]}" text-anchor="${e.l[3]}">${e.l[2]}</text>`;
+ });
+ s+=`<circle class="mdot" cx="115" cy="470" r="4"/>`;
+ NODES.forEach((n,i)=>{
+  const L=map[i];let body,hh;
+  if(L){const b=BANK[L];hh=b.s==="dec"?32:23;body=shapeSVG(b.s,n.x,n.y)+`<text class="ntx" x="${n.x}" y="${n.y}">${esc(b.t)}</text>`;}
+  else{hh=25;body=`<rect class="shp sh-empty" x="${n.x-95}" y="${n.y-25}" width="190" height="50" rx="8"/>`+(o.click&&!st.done?`<text class="ntx ph" x="${n.x}" y="${n.y}">Tocá para elegir</text>`:(st.done?`<text class="ntx ph" x="${n.x}" y="${n.y}">Sin responder</text>`:""));}
+  let cls="node"+(o.click?" click":"");let mark="";
+  if(o.marks){const ok=L===SOL2[i];cls+=ok?" ok":" bad";
+   if(!ok)mark=`<g class="fix"><rect x="${n.x+8}" y="${n.y-hh-9}" width="88" height="18" rx="9"/><text x="${n.x+52}" y="${n.y-hh}">Correcta: ${SOL2[i]}</text></g>`;}
+  const tag=L?`<text class="ltag" x="${n.x-95}" y="${n.y+hh+13}">${L}</text>`:"";
+  const aria=`Casillero ${i+1}: ${L?"bloque "+L+", "+BANK[L].t:"vacío"}`;
+  s+=`<g class="${cls}" id="${id}-n${i}" data-i="${i}" ${o.click?`tabindex="0" role="button" aria-label="${esc(aria)}"`:""}>${body}<circle class="bdg" cx="${n.x-95}" cy="${n.y-hh}" r="11"/><text class="bdg-t" x="${n.x-95}" y="${n.y-hh}">${i+1}</text>${tag}${mark}</g>`;
+ });
+ return s+"</svg>";
+}
+function renderFlow(){$("#flowStudent").innerHTML=flowSVG(st.a2,{id:"stu",click:true,marks:st.done,label:"Diagrama de flujo para completar"});}
+function onFlowActivate(e){
+ const g=e.target.closest(".node.click");if(!g)return;
+ if(e.type==="keydown"){if(e.key!=="Enter"&&e.key!==" ")return;e.preventDefault();}
+ const i=+g.dataset.i; st.done?explainSlot(i):openPicker(i);
+}
+["click","keydown"].forEach(t=>$("#flowStudent").addEventListener(t,onFlowActivate));
+["click","keydown"].forEach(t=>$("#flowSol").addEventListener(t,e=>{const g=e.target.closest(".node.click");if(!g)return;if(e.type==="keydown"){if(e.key!=="Enter"&&e.key!==" ")return;e.preventDefault();}explainSlot(+g.dataset.i);}));
+
+function renderT2(){
+ let h="<tr><th>Casillero</th>";for(let i=0;i<10;i++)h+=`<th>${i+1}</th>`;h+="</tr><tr><th>Letra</th>";
+ for(let i=0;i<10;i++){
+  const v=st.a2[i];
+  if(!st.done){h+=`<td><select data-s="${i}" aria-label="Casillero ${i+1}"><option value="">—</option>${BL.map(L=>`<option value="${L}" ${v===L?"selected":""}>${L}</option>`).join("")}</select></td>`;}
+  else{const ok=v===SOL2[i];h+=`<td class="${ok?"ok":"bad"}"><span class="w">${v||"—"}</span>${ok?"":`<small>→ ${SOL2[i]}</small>`}</td>`;}
+ }
+ $("#t2").innerHTML=h+"</tr>";
+}
+$("#t2").addEventListener("change",e=>{const s=e.target.closest("select");if(s)assign2(+s.dataset.s,s.value||null);});
+function renderBank2(){
+ $("#bank2").innerHTML=BL.map(L=>{const u=st.a2.indexOf(L);return `<div class="bk ${u>-1?"used":""}"><span class="bk-l">${L}</span>${blockHTML(L)}${u>-1&&!st.done?`<span class="used-in">Casillero ${u+1}</span>`:""}</div>`;}).join("");
+}
+function assign2(i,L){
+ if(st.done)return;
+ if(L){const j=st.a2.indexOf(L);if(j>-1&&j!==i){st.a2[j]=null;toast(`El bloque ${L} pasó del casillero ${j+1} al ${i+1}. Cada bloque se usa una sola vez.`);}}
+ st.a2[i]=L;refreshP2();updProgress();
+}
+function refreshP2(){renderFlow();renderT2();renderBank2();}
+function openPicker(i){
+ const cur=st.a2[i];
+ const items=BL.map(L=>{const u=st.a2.indexOf(L);return `<button type="button" class="pk ${cur===L?"cur":""}" data-l="${L}" aria-label="Bloque ${L}: ${esc(BANK[L].t)}"><span class="bk-l">${L}</span>${blockHTML(L)}${u>-1&&u!==i?`<span class="pk-u">En casillero ${u+1}</span>`:""}</button>`;}).join("");
+ openModal(`Casillero ${i+1}`,`<p class="lead">Elegí el bloque del banco que corresponde a este casillero. Si el bloque ya está en otro casillero, se mueve a este.</p><div class="pk-grid">${items}</div>${cur?`<div class="modal-actions"><button type="button" class="btn btn-ghost" data-clear>Quitar el bloque ${cur}</button></div>`:""}`,
+ e=>{const b=e.target.closest("[data-l]");if(b){assign2(i,b.dataset.l);closeModal();return;}if(e.target.closest("[data-clear]")){assign2(i,null);closeModal();}});
+}
+function explainSlot(i){
+ const L=SOL2[i],u=st.a2[i],ok=u===L;
+ const yours=st.done?`<div><div class="ex-k">Tu respuesta</div>${u?`<div class="ex-b ${ok?"ok":"bad"}"><span class="bk-l">${u}</span>${blockHTML(u)}</div>`:`<div class="ex-none">Sin responder</div>`}</div>`:"";
+ const trap=st.done&&u&&!ok&&TRAP2[u]?`<div class="ci-trap" style="margin-top:10px">${TRAP2[u]}</div>`:"";
+ openModal(`Casillero ${i+1}${st.done?(ok?" · ✓ Correcto":" · ✗ Incorrecto"):""}`,`<div class="ex-row"><div><div class="ex-k">Bloque correcto · ${SHAPE_NAME[BANK[L].s]}</div><div class="ex-b ok"><span class="bk-l">${L}</span>${blockHTML(L)}</div></div>${yours}</div><div class="ex-why">${EXPL2[i]}</div>${trap}`,null);
+}
+function renderCorr2(){
+ $("#corr2").innerHTML=SOL2.map((L,i)=>{
+  const u=st.a2[i],ok=u===L,c=u===null?"empty":ok?"ok":"bad";
+  return `<div class="ci ${c==="ok"?"":c}"><div class="ci-h"><b>Casillero ${i+1}</b><span class="pill ${c}">${c==="ok"?"✓ +2 pts":c==="bad"?"✗ 0 pts":"Sin responder"}</span></div>
+   <div class="ci-r">Tu respuesta: ${u?`<b>${u}</b> · <code>${esc(BANK[u].t)}</code>`:"—"}</div>
+   ${ok?"":`<div class="ci-r">Correcta: <b>${L}</b> · <code>${esc(BANK[L].t)}</code></div>`}
+   <div class="ci-why">${EXPL2[i]}</div>${!ok&&u&&TRAP2[u]?`<div class="ci-trap">${TRAP2[u]}</div>`:""}</div>`;
+ }).join("");
+}
+function renderStatic2(){
+ $("#legend").innerHTML=["term","io","proc","dec"].map(s=>`<span>${legendIcon(s)}${SHAPE_NAME[s]}</span>`).join("");
+ const trap=["B","E","J"];
+ $("#groups").innerHTML=["term","io","proc","dec"].map(s=>`<div class="grp"><h5>${legendIcon(s)}${SHAPE_NAME[s]}</h5>${BL.filter(L=>BANK[L].s===s).map(L=>`<div class="mini ${trap.includes(L)?"trap":""}"><b>${L}</b>${esc(BANK[L].t)}</div>`).join("")}</div>`).join("")+
+ `<p style="grid-column:1/-1;margin:2px 0 0;font-size:13.5px;color:var(--muted)">Los bloques tachados son los 3 sobrantes, explicados en el paso siguiente. Ya se ve que solo hay 2 terminales para 2 extremos y 2 bloques de E/S válidos para la lectura y la salida.</p>`;
+}
+
+/* simulador */
+let simId=0;
+const PRESETS=[["Rango alto",1000,60],["Rango medio",2500,10],["Sin descuento",500,20],["Límite 50 000",1000,50],["Límite 20 000",1000,20]];
+function renderSim(){
+ $("#flowSol").innerHTML=flowSVG(SOL2,{id:"sol",click:true,marks:false,label:"Diagrama de flujo resuelto"});
+ $("#presets").innerHTML=PRESETS.map((p,k)=>`<button type="button" data-p="${k}">${p[0]}: ${num(p[1])} × ${p[2]}</button>`).join("");
+}
+$("#presets").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;const p=PRESETS[+b.dataset.p];$("#simP").value=p[1];$("#simC").value=p[2];runSim();});
+$("#simRun").addEventListener("click",runSim);
+function clearSim(){
+ $$("#flowSol .sim-on, #flowSol .sim-cur").forEach(el=>el.classList.remove("sim-on","sim-cur"));
+ $$("#flowSol .edge[data-arrow]").forEach(el=>el.setAttribute("marker-end","url(#sol-arr)"));
+ $("#simLog").innerHTML="";$("#simRes").classList.remove("show");
+}
+function runSim(){
+ const p=parseFloat($("#simP").value),c=parseFloat($("#simC").value);
+ if(!(p>=0)||!(c>=0)){toast("Ingresá un precio y una cantidad válidos (números mayores o iguales a 0).");return;}
+ const my=++simId;clearSim();$("#simEmpty").style.display="none";
+ const total=p*c,steps=[];let desc,pct;
+ steps.push({n:0,e:[],m:"<b>Inicio</b> del algoritmo."});
+ steps.push({n:1,e:["e1"],m:`<b>Entrada:</b> se leen precio = ${money(p)} y cantidad = ${num(c)}.`});
+ steps.push({n:2,e:["e2"],m:`<b>Proceso:</b> total ← ${num(p)} × ${num(c)} = <b>${money(total)}</b>.`});
+ steps.push({n:3,e:["e3"],m:`<b>Decisión 1:</b> ¿${money(total)} ≥ $50.000? → <b>${total>=50000?"Sí":"No"}</b>.`});
+ if(total>=50000){desc=total*0.15;pct=15;steps.push({n:4,e:["e45"],m:`Rama Sí: desc ← ${money(total)} × 0,15 = <b>${money(desc)}</b>.`});steps.push({n:8,e:["e5m","em9"],m:`<b>Salida:</b> se muestra ${money(total)} − ${money(desc)} = <b>${money(total-desc)}</b>.`});}
+ else{
+  steps.push({n:5,e:["e46"],m:`Rama No → <b>Decisión 2:</b> ¿${money(total)} ≥ $20.000? → <b>${total>=20000?"Sí":"No"}</b>.`});
+  if(total>=20000){desc=total*0.05;pct=5;steps.push({n:6,e:["e67"],m:`Rama Sí: desc ← ${money(total)} × 0,05 = <b>${money(desc)}</b>.`});steps.push({n:8,e:["e7m","em9"],m:`<b>Salida:</b> se muestra ${money(total)} − ${money(desc)} = <b>${money(total-desc)}</b>.`});}
+  else{desc=0;pct=0;steps.push({n:7,e:["e68"],m:"Rama No: no hay descuento, desc ← <b>0</b>."});steps.push({n:8,e:["e8m","em9"],m:`<b>Salida:</b> se muestra ${money(total)} − $0 = <b>${money(total)}</b>.`});}
+ }
+ steps.push({n:9,e:["e910"],m:"<b>Fin</b> del algoritmo."});
+ const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ let k=0;
+ (function next(){
+  if(my!==simId)return;
+  const s=steps[k];
+  $$("#flowSol .sim-cur").forEach(el=>el.classList.remove("sim-cur"));
+  s.e.forEach(id=>{const el=$("#sol-"+id);if(el){el.classList.add("sim-on");if(el.dataset.arrow)el.setAttribute("marker-end","url(#sol-arr-on)");}});
+  const nd=$("#sol-n"+s.n);nd.classList.add("sim-on","sim-cur");
+  const li=document.createElement("li");li.innerHTML=s.m;$("#simLog").appendChild(li);li.scrollIntoView({block:"nearest"});
+  k++;
+  if(k<steps.length)setTimeout(next,reduce?0:650);
+  else{const r=$("#simRes");r.innerHTML=`Importe a pagar: ${money(total-desc)} <span style="font-weight:600">(descuento del ${pct} %: ${money(desc)})</span>`;r.classList.add("show");}
+ })();
+}
+
+/* ================= PARTE 3 ================= */
+const KW="public|private|protected|function|class|return|if|elseif|else|array|string|float|void|declare|echo|interface|abstract|extends|implements|new";
+const TOK=new RegExp('(//.*$)|("(?:[^"\\\\]|\\\\.)*")|(\\$[A-Za-z_]\\w*)|(<\\?php)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b(?:'+KW+')\\b)|(\\b[A-Za-z_]\\w*(?=\\())',"g");
+function hl(raw){
+ let out="",last=0,m;TOK.lastIndex=0;
+ while((m=TOK.exec(raw))){
+  out+=esc(raw.slice(last,m.index));
+  const cls=m[1]?"c":m[2]?"s":m[3]?"v":m[4]?"k":m[5]?"nu":m[6]?"k":"f";
+  out+=`<span class="${cls}">${esc(m[0])}</span>`;last=TOK.lastIndex;
+ }
+ return out+esc(raw.slice(last));
+}
+function blankHTML(b){
+ const v=st.a3[b];
+ if(!st.done){
+  return `<span class="blank"><span class="bn">${b+1}</span><select data-b="${b}" class="${v?"":"empty"}" aria-label="Espacio ${b+1}"><option value="">${"\u00a0".repeat(4)}______</option>${WORDS.map(w=>`<option value="${w}" ${v===w?"selected":""}>${w}</option>`).join("")}</select></span>`;
+ }
+ const ok=v===SOL3[b];
+ return `<button type="button" class="blank-done ${ok?"ok":"bad"}" data-x="${b}" aria-label="Espacio ${b+1}: ver justificación"><span class="bn">${b+1}</span>${ok?esc(v):`<span class="wrongw">${v?esc(v):"vacío"}</span><span class="fixw">${SOL3[b]}</span>`}</button>`;
+}
+function renderCode(){
+ $("#code").innerHTML=CODE.map((line,i)=>{
+  const parts=line.split(/@@(\d+)@@/);let src="";
+  parts.forEach((p,k)=>{src+=k%2?blankHTML(+p-1):hl(p);});
+  return `<div class="ln"><span class="no">${i+1}</span><span class="src">${src||" "}</span></div>`;
+ }).join("");
+}
+$("#code").addEventListener("change",e=>{const s=e.target.closest("select[data-b]");if(s)assign3(+s.dataset.b,s.value||null);});
+$("#code").addEventListener("click",e=>{const b=e.target.closest("[data-x]");if(b)explainBlank(+b.dataset.x);});
+function assign3(b,w){
+ if(st.done)return;
+ if(w){const j=st.a3.indexOf(w);if(j>-1&&j!==b){st.a3[j]=null;toast(`“${w}” pasó del espacio ${j+1} al ${b+1}. Cada palabra se usa una sola vez.`);}}
+ st.a3[b]=w;refreshP3();updProgress();
+}
+function renderChips(){
+ $("#chips").innerHTML=WORDS.map(w=>{const u=st.a3.indexOf(w);return `<span class="chip ${u>-1?"used":""}">${w}${u>-1?`<em>${u+1}</em>`:""}</span>`;}).join("");
+}
+function renderT3(){
+ let h="";
+ for(let r=0;r<2;r++){
+  h+="<tr><th>Espacio</th>";for(let c=0;c<5;c++)h+=`<th>${r*5+c+1}</th>`;h+="</tr><tr><th>Palabra</th>";
+  for(let c=0;c<5;c++){const i=r*5+c,v=st.a3[i];
+   if(!st.done)h+=`<td class="w">${v||"&nbsp;"}</td>`;
+   else{const ok=v===SOL3[i];h+=`<td class="${ok?"ok":"bad"}"><span class="w">${v||"—"}</span>${ok?"":`<small>→ ${SOL3[i]}</small>`}</td>`;}
+  }
+  h+="</tr>";
+ }
+ $("#t3").innerHTML=h;
+}
+function refreshP3(){
+ const ae=document.activeElement,fb=ae&&ae.dataset?ae.dataset.b:null;
+ renderCode();renderChips();renderT3();
+ if(fb!=null){const s=$(`#code select[data-b="${fb}"]`);if(s)s.focus();}
+}
+function explainBlank(b){
+ const u=st.a3[b],L=SOL3[b],ok=u===L;
+ openModal(`Espacio ${b+1}${ok?" · ✓ Correcto":" · ✗ Incorrecto"}`,
+  `<div class="ex-row"><div><div class="ex-k">Palabra correcta</div><div class="ex-b ok"><code>${L}</code></div></div><div><div class="ex-k">Tu respuesta</div>${u?`<div class="ex-b ${ok?"ok":"bad"}"><code>${u}</code></div>`:`<div class="ex-none">Sin responder</div>`}</div></div><div class="ex-why">${EXPL3[b]}</div>${!ok&&u&&EXTRA3[u]?`<div class="ci-trap" style="margin-top:10px">${EXTRA3[u]}</div>`:""}`,null);
+}
+function renderCorr3(){
+ $("#corr3").innerHTML=SOL3.map((L,i)=>{
+  const u=st.a3[i],ok=u===L,c=u===null?"empty":ok?"ok":"bad";
+  return `<div class="ci ${c==="ok"?"":c}"><div class="ci-h"><b>Espacio ${i+1}</b><span class="pill ${c}">${c==="ok"?"✓ +2 pts":c==="bad"?"✗ 0 pts":"Sin responder"}</span></div>
+   <div class="ci-r">Tu respuesta: ${u?`<code>${u}</code>`:"—"}${ok?"":` · Correcta: <code>${L}</code>`}</div>
+   <div class="ci-why">${EXPL3[i]}</div>${!ok&&u&&EXTRA3[u]?`<div class="ci-trap">${EXTRA3[u]}</div>`:""}</div>`;
+ }).join("");
+}
+
+/* ================= MODAL ================= */
+let modalHandler=null,lastFocus=null;
+function openModal(title,html,handler){
+ lastFocus=document.activeElement;
+ $("#mTitle").innerHTML=title;$("#mBody").innerHTML=html;modalHandler=handler;
+ const m=$("#modal");m.classList.add("open");m.setAttribute("aria-hidden","false");document.body.classList.add("noscroll");
+ setTimeout(()=>{const f=$(".pk.cur",m)||$(".pk",m)||$("#mClose");f.focus();},30);
+}
+function closeModal(){
+ const m=$("#modal");if(!m.classList.contains("open"))return;
+ m.classList.remove("open");m.setAttribute("aria-hidden","true");document.body.classList.remove("noscroll");modalHandler=null;
+ if(lastFocus&&document.contains(lastFocus))lastFocus.focus({preventScroll:true});
+}
+$("#modal").addEventListener("click",e=>{if(e.target.closest("[data-close]")){closeModal();return;}if(modalHandler)modalHandler(e);});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){closeModal();closeTips();}
+ if(e.key==="Tab"&&$("#modal").classList.contains("open")){
+  const f=$$("#modal button, #modal [href], #modal input, #modal select").filter(x=>!x.disabled&&x.offsetParent!==null);
+  if(!f.length)return;const a=f[0],z=f[f.length-1];
+  if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}
+  else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}
+ }
+});
+
+/* ================= PROGRESO / FINAL ================= */
+function counts(){const c1=st.a1.filter(v=>v!==null).length,c2=st.a2.filter(Boolean).length,c3=st.a3.filter(Boolean).length;return {c1,c2,c3,t:c1+c2+c3};}
+function updProgress(){
+ const c=counts();$("#progTxt").textContent=c.t+"/40";$("#progBar").style.width=(c.t/40*100)+"%";
+ const miss=40-c.t;
+ $("#finishSummary").innerHTML=miss?`Te ${miss===1?"falta":"faltan"} <b>${miss}</b> ${miss===1?"respuesta":"respuestas"} (Parte 1: ${20-c.c1} · Parte 2: ${10-c.c2} · Parte 3: ${10-c.c3}). Al finalizar se corrige automáticamente y ya no vas a poder modificarlas.`:"Respondiste las 40 consignas. Al finalizar se corrige automáticamente y ya no vas a poder modificar tus respuestas.";
+}
+function score(){
+ const k1=st.a1.filter((v,i)=>v===Q[i].a).length,k2=st.a2.filter((v,i)=>v===SOL2[i]).length,k3=st.a3.filter((v,i)=>v===SOL3[i]).length;
+ return {k1,k2,k3,p1:k1*3,p2:k2*2,p3:k3*2,t:k1*3+k2*2+k3*2};
+}
+function askFinish(){
+ if(st.done){$("#results").scrollIntoView();return;}
+ const c=counts(),miss=40-c.t;
+ openModal("Finalizar el examen",`<p class="lead" style="color:var(--text)">${miss?`Todavía ${miss===1?"queda":"quedan"} <b>${miss}</b> ${miss===1?"consigna":"consignas"} sin responder:`:"Respondiste todas las consignas."}</p>
+  ${miss?`<div class="tbl-wrap"><table class="tbl" style="min-width:0"><tr><th>Parte</th><th>Sin responder</th></tr><tr><td>1 · Múltiple choice</td><td class="n">${20-c.c1}</td></tr><tr><td>2 · Diagrama de flujo</td><td class="n">${10-c.c2}</td></tr><tr><td>3 · Código PHP</td><td class="n">${10-c.c3}</td></tr></table></div>`:""}
+  <p style="font-size:14px;color:var(--muted)">Una vez finalizado, el examen se corrige y no se pueden cambiar las respuestas.</p>
+  <div class="modal-actions"><button type="button" class="btn btn-ghost" data-close>Seguir respondiendo</button><button type="button" class="btn btn-primary" data-go>Finalizar y ver resultado</button></div>`,
+  e=>{if(e.target.closest("[data-go]")){closeModal();finish();}});
+}
+function finish(){
+ st.done=true;document.body.classList.add("finished");
+ markP1();updGrid();refreshP2();refreshP3();renderCorr2();renderCorr3();renderSim();
+ const s=score(),pass=s.t>=60,name=$("#fName").value.trim();
+ $("#ob1").textContent=s.p1;$("#ob2").textContent=s.p2;$("#ob3").textContent=s.p3;$("#obT").textContent=s.t;$("#fNota").textContent=s.t+" / 100";
+ const R=$("#results");R.className="card results post "+(pass?"pass":"fail");
+ const part=(lbl,k,n,p,max)=>`<div class="rp"><span>${lbl} <small style="color:var(--muted)">(${k}/${n})</small></span><div class="rp-bar"><i style="width:0" data-w="${p/max*100}"></i></div><b>${p}/${max}</b></div>`;
+ R.innerHTML=`<div class="res-top"><div class="ring" style="--p:${s.t};--c:${pass?"var(--green)":"var(--red)"}"><div class="ring-in"><b>${s.t}</b><small>de 100 pts</small></div></div>
+  <div class="res-main"><p class="res-status">${pass?"Aprobado":"No aprobado"}</p><p class="res-who">${name?esc(name)+" · ":""}Fila A · ${pass?"Superaste":"No alcanzaste"} el mínimo de 60 puntos.</p>
+  <div class="res-parts">${part("Parte 1 · Múltiple choice",s.k1,20,s.p1,60)}${part("Parte 2 · Diagrama",s.k2,10,s.p2,20)}${part("Parte 3 · Código PHP",s.k3,10,s.p3,20)}</div></div></div>
+  <div class="res-actions no-print"><a class="btn btn-primary" href="#parte1">Revisar respuestas</a><button type="button" class="btn btn-ghost" onclick="window.print()">Imprimir</button><button type="button" class="btn btn-ghost" data-reset>Volver a intentar</button></div>
+  <p class="note">En cada pregunta tocá <b>¿Por qué?</b> para ver la justificación. En las Partes 2 y 3 tocá un casillero o espacio, o leé el análisis paso a paso debajo de cada ejercicio.</p>`;
+ $("#finishTop span").textContent="Resultado";
+ R.scrollIntoView();
+ requestAnimationFrame(()=>setTimeout(()=>$$(".rp-bar i",R).forEach(i=>i.style.width=i.dataset.w+"%"),80));
+}
+function reset(){
+ simId++;st.a1.fill(null);st.a2.fill(null);st.a3.fill(null);st.done=false;
+ document.body.classList.remove("finished","only-wrong");$("#onlyWrong").checked=false;
+ ["#ob1","#ob2","#ob3","#obT"].forEach(s=>$(s).textContent="");$("#fNota").textContent="—";$("#finishTop span").textContent="Finalizar";
+ renderP1();updGrid();refreshP2();refreshP3();updProgress();clearSimSafe();
+ window.scrollTo({top:0});
+}
+function clearSimSafe(){if($("#flowSol svg"))clearSim();$("#simEmpty").style.display="";}
+document.addEventListener("click",e=>{
+ if(e.target.closest("[data-reset]")){
+  openModal("Volver a intentar","<p class=\"lead\" style=\"color:var(--text)\">Se borrarán todas tus respuestas y el resultado. ¿Querés empezar de nuevo?</p><div class=\"modal-actions\"><button type=\"button\" class=\"btn btn-ghost\" data-close>Cancelar</button><button type=\"button\" class=\"btn btn-danger\" data-yes>Borrar y empezar</button></div>",
+  ev=>{if(ev.target.closest("[data-yes]")){closeModal();reset();}});
+ }
+});
+$("#finishTop").addEventListener("click",askFinish);
+$("#finishBottom").addEventListener("click",askFinish);
+
+/* ================= INIT ================= */
+$("#fDate").value=new Date().toLocaleDateString("es-AR");
+renderP1();renderGrid();updGrid();renderStatic2();refreshP2();refreshP3();updProgress();
+})();
+</script>
+</body>
+</html>
