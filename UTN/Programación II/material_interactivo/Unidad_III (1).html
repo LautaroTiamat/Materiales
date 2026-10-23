@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II · Unidad III: TAD y estructuras lineales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;--code-gutter:#A2A6C0;--code-hl:#E9ECF8;
+  --t-kw:#6A3DB8;--t-var:#B3332A;--t-str:#7F5300;--t-num:#9A4F00;--t-fn:#0A6A94;--t-cls:#136B4C;--t-com:#7D819C;--t-this:#C0306A;
+  --term-bg:#1C1D2B;--term-text:#E7E7F1;--term-muted:#8C8FB0;
+  --shadow:0 1px 0 rgba(30,32,60,.04),0 18px 40px -24px rgba(30,32,60,.45);
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+    --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+    --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+    --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+    --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+    --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+  --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+  --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100%;overflow:hidden}
+
+/* ---------- Top bar ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-bottom:1px solid var(--line);background:var(--surface)}
+.iconbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);transition:background .2s,border-color .2s}
+.iconbtn:hover{background:var(--surface-2);border-color:var(--line-strong)}
+.iconbtn svg{width:20px;height:20px}
+.brand{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:0 1 auto}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.elephant{width:38px;height:24px;flex:none}
+.modname{margin-left:auto;margin-right:auto;font-weight:600;color:var(--muted);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.right{display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}
+.modname+.right{margin-left:0}
+.score{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;background:var(--accent-soft);color:var(--text);font-weight:600;font-size:.88rem;border:0}
+.score svg{width:16px;height:16px;color:var(--accent)}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.theme-ico .moon{display:none}
+:root[data-theme="dark"] .theme-ico .sun{display:none}
+:root[data-theme="dark"] .theme-ico .moon{display:block}
+
+/* ---------- Stage / frame ---------- */
+.stage{position:relative;overflow:hidden;padding:clamp(8px,2vw,22px);min-height:0}
+.frame{position:relative;height:100%;max-width:1240px;margin:0 auto;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tabbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:42px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
+.tab{display:inline-flex;align-items:center;gap:8px;height:100%;padding:0 12px;font-family:var(--mono);font-size:.8rem;color:var(--text);background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);position:relative;top:1px}
+.tab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.crumb{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slide-wrap{position:relative;flex:1;min-height:0}
+.slide{position:absolute;inset:0;overflow:auto;padding:clamp(18px,3.6vw,46px) clamp(16px,4vw,56px) clamp(24px,3.6vw,46px);scrollbar-gutter:stable}
+.slide.enter{animation:slideIn .42s cubic-bezier(.2,.8,.2,1) both}
+.slide.leave{animation:slideOut .22s ease both;pointer-events:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(calc(var(--dir,1)*36px))}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(calc(var(--dir,1)*-24px))}}
+.rv{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*70ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.stitle{font-size:clamp(1.55rem,3.1vw,2.5rem);line-height:1.12;letter-spacing:-.02em;font-weight:700;margin:0 0 .5em;max-width:28ch}
+.stitle .brace,.cbrace{font-family:var(--mono);font-weight:400;color:var(--accent);opacity:.7}
+.stitle .brace{margin-left:.35em}
+.cbrace{font-size:clamp(1.4rem,2.6vw,2rem);margin-top:22px;line-height:1}
+.lead{font-size:clamp(1.02rem,1.5vw,1.22rem);max-width:68ch;margin:0 0 1.1em;color:var(--text)}
+.lead b,.pts b,.card b{font-weight:650}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.85em;padding:0 .45em;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+.pts{list-style:none;padding:0;margin:0 0 1em;display:grid;gap:10px;max-width:72ch}
+.pts li{position:relative;padding-left:22px}
+.pts li::before{content:"";position:absolute;left:2px;top:.62em;width:9px;height:9px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.pts li b{color:var(--text)}
+.ptitle{font-size:.95rem;font-weight:700;margin:1.2em 0 .6em;color:var(--muted)}
+.analogy{display:flex;gap:14px;align-items:flex-start;max-width:72ch;margin:1.2em 0 0;padding:16px 18px;border-radius:12px;background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent)}
+.analogy svg{flex:none;width:24px;height:24px;color:var(--amber);margin-top:2px}
+.analogy p{margin:0}
+.analogy strong{display:block;font-size:.85rem;color:var(--amber);margin-bottom:2px}
+.note{max-width:76ch;margin:1.2em 0 0;padding:14px 18px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 10px 10px 0}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;margin:0 0 1em}
+.group{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.group h3{margin:0 0 6px;font-size:1.1rem}
+.group p{margin:0}
+.group .pts{margin:8px 0 0}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,220px)),1fr));gap:14px;margin:0 0 .5em}
+.card{position:relative;padding:18px 18px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:left}
+.card h3{margin:0 0 6px;font-size:1.08rem;letter-spacing:-.01em}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.card .ex{margin-top:12px;font-family:var(--mono);font-size:.78rem;padding:8px 10px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;white-space:pre}
+.cards.flow{grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}
+.cards.flow .card::after{content:"";position:absolute;right:-26px;top:50%;width:18px;height:18px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);transform:translateY(-50%) rotate(45deg)}
+.cards.flow .card:last-child::after{display:none}
+.cards.flow .card h3{color:var(--accent)}
+@media (max-width:720px){.cards.flow{grid-template-columns:1fr;gap:30px}.cards.flow .card::after{right:50%;top:auto;bottom:-24px;transform:translateX(50%) rotate(135deg)}}
+.flip{perspective:900px;padding:0;border:0;background:none;min-height:190px}
+.flip-in{position:relative;height:100%;min-height:190px;transition:transform .6s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.face h3{margin:0 0 6px;font-size:1.15rem}
+.face p{margin:0;color:var(--muted)}
+.face.back p{color:var(--text)}
+.face small{margin-top:auto;color:var(--accent);font-weight:600;font-size:.8rem}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;counter-reset:st}
+.steps>li{counter-increment:st;position:relative;padding:54px 16px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.steps>li::before{content:counter(st);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.9rem}
+.steps h3{margin:0 0 4px;font-size:1.02rem}
+.steps p{margin:0;color:var(--muted);font-size:.95rem}
+.steps ul{margin:8px 0 0;padding-left:18px;font-size:.92rem}
+
+/* tables */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 1em}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--surface-2);font-weight:700}
+tbody th{font-weight:700;color:var(--accent);white-space:nowrap;background:var(--surface-2);width:1%}
+tbody tr:last-child>*{border-bottom:0}
+td code{background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+
+/* cover */
+.cover{min-height:100%;display:grid;align-content:center;gap:10px;max-width:900px}
+.cover .unit{font-family:var(--mono);color:var(--accent);font-size:.95rem}
+.cover h1{font-size:clamp(2.4rem,7vw,5.2rem);line-height:.98;letter-spacing:-.035em;margin:0;font-weight:700}
+.cover h1 .brace{font-family:var(--mono);font-weight:400;color:var(--accent);font-size:.6em;vertical-align:.15em;margin-left:.15em}
+.cover .sub{font-size:clamp(1.05rem,1.8vw,1.35rem);color:var(--muted);max-width:52ch;margin:6px 0 10px}
+.topics{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:8px 0 0;list-style:none}
+.topics button{border:1px solid var(--line);background:var(--surface-2);padding:8px 14px;border-radius:999px;font-size:.92rem;transition:border-color .2s,background .2s}
+.topics button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.cover .start{justify-self:start;margin-top:18px}
+
+/* buttons / controls */
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;transition:transform .15s,filter .2s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn svg{width:16px;height:16px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ctrls{display:grid;gap:12px;margin:0 0 14px}
+.ctrl{display:grid;gap:5px;font-size:.88rem;color:var(--muted);font-weight:500}
+.ctrl input[type=text],.ctrl input[type=number],.ctrl select{height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.9rem;width:100%}
+.ctrl input:focus,.ctrl select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctrl output{font-family:var(--mono);color:var(--text);font-weight:600}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font-family:var(--mono);font-size:.82rem;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;color:var(--text)}
+.switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;transition:background .2s;cursor:pointer;margin:0;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(18px)}
+
+/* code */
+.code-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.code-layout{grid-template-columns:minmax(0,1fr)}}
+.code{position:relative;margin:0;font-family:var(--mono);font-size:clamp(.74rem,1.02vw,.86rem);line-height:1.65;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;overflow:auto;padding:14px 0;counter-reset:l;tab-size:4}
+.code.flash{animation:flash .6s ease}
+@keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}to{box-shadow:0 0 0 0 transparent}}
+.ln{display:block;padding:0 18px 0 0;white-space:pre;min-height:1.65em}
+.ln::before{counter-increment:l;content:counter(l);display:inline-block;width:2.4em;margin-right:1.1em;text-align:right;color:var(--code-gutter);user-select:none}
+.ln.hl{background:var(--code-hl)}
+.ln.click{cursor:pointer;transition:background .15s}
+.ln.click:hover{background:var(--code-hl)}
+.ln.bad{background:var(--coral-soft)}
+.ln.good{background:var(--mint-soft)}
+.t-kw{color:var(--t-kw);font-weight:600}.t-var{color:var(--t-var)}.t-str{color:var(--t-str)}.t-num{color:var(--t-num)}.t-fn{color:var(--t-fn)}.t-cls{color:var(--t-cls)}.t-com{color:var(--t-com);font-style:italic}.t-this{color:var(--t-this);font-weight:600}.t-tag{color:var(--t-kw)}
+.side{display:grid;gap:14px}
+.term{background:var(--term-bg);color:var(--term-text);border-radius:12px;overflow:hidden;font-family:var(--mono);font-size:.84rem;border:1px solid #2c2e44}
+.term-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #2c2e44;color:var(--term-muted);font-size:.78rem}
+.term-h .p{color:#A3ACE6}
+.term-out{margin:0;padding:14px;min-height:96px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term-out .e{color:#FF8E82}.term-out .w{color:#F2C15F}.term-out .ok{color:#7FDDB2}.term-out .dim{color:var(--term-muted)}
+.caret{display:inline-block;width:8px;height:1.05em;background:#A3ACE6;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.extra{margin-top:4px}
+
+/* quiz */
+.quiz{max-width:780px}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+.qdots{display:flex;gap:6px}
+.qdots i{width:26px;height:6px;border-radius:3px;background:var(--line)}
+.qdots i.cur{background:var(--accent)}
+.qdots i.ok{background:var(--mint)}
+.qdots i.ko{background:var(--coral)}
+.qtext{font-size:clamp(1.1rem,1.8vw,1.35rem);font-weight:600;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);transition:border-color .2s,background .2s,transform .15s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt .k{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-family:var(--mono);font-weight:600;font-size:.85rem}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--mint);background:var(--mint-soft)}
+.opt.right .k{background:var(--mint);color:#fff;border-color:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.opt.wrong .k{background:var(--coral);color:#fff;border-color:var(--coral)}
+.opt.dim{opacity:.55}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.why{margin:14px 0 0;padding:14px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);animation:rise .35s both}
+.why b{display:block;margin-bottom:2px}
+.why.ok b{color:var(--mint)}.why.ko b{color:var(--coral)}
+.qnav{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.result{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+@media (max-width:560px){.result{grid-template-columns:1fr;justify-items:start}}
+.ring{width:132px;height:132px}
+.ring circle{fill:none;stroke-width:10}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring text{font-family:var(--sans);font-weight:700;fill:var(--text)}
+.result h3{margin:0 0 4px;font-size:1.4rem}
+
+/* footer */
+.foot{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-top:1px solid var(--line);background:var(--surface)}
+.foot .pos{font-size:.88rem;color:var(--muted);margin:0 auto;text-align:center;white-space:nowrap}
+.foot .pos b{color:var(--text)}
+.navbtn{height:42px}
+@media (max-width:560px){.top{gap:8px}#fsBtn{display:none!important}.elephant{width:32px}.frow{grid-template-columns:minmax(0,1fr) 48px;gap:6px 12px}.frow>span{grid-column:1/-1}.refs{grid-template-columns:1fr;gap:6px}.navbtn span{display:none}.navbtn{padding:0 14px}.modname{display:none}.brand span{display:none}.score{padding:0 10px}}
+
+/* drawer */
+.backdrop{position:fixed;inset:0;background:rgba(10,10,25,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.backdrop.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,92vw);background:var(--surface);border-right:1px solid var(--line);z-index:21;transform:translateX(-102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead h2{margin:0;font-size:1.05rem}
+.dlist{overflow:auto;padding:8px 8px 24px}
+.dmod{margin:4px 0}
+.dmod>button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:10px;border:0;background:transparent}
+.dmod>button:hover{background:var(--surface-2)}
+.dmod .num{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);font-family:var(--mono);font-weight:600;font-size:.82rem}
+.dmod .mt{flex:1;min-width:0}
+.dmod .mt b{display:block;font-size:.95rem}
+.dmod .mt span{font-size:.78rem;color:var(--muted)}
+.dmod .chev{width:16px;height:16px;transition:transform .2s;color:var(--muted)}
+.dmod.open .chev{transform:rotate(90deg)}
+.dslides{list-style:none;margin:0 0 6px 50px;padding:0;display:none}
+.dmod.open .dslides{display:block}
+.dslides button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:7px;font-size:.88rem;color:var(--muted)}
+.dslides button:hover{background:var(--surface-2);color:var(--text)}
+.dslides button.cur{background:var(--accent-soft);color:var(--text);font-weight:600}
+.dslides .qb{margin-left:auto;font-family:var(--mono);font-size:.74rem;padding:1px 6px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line)}
+.dslides .qb.done{background:var(--mint-soft);border-color:var(--mint);color:var(--text)}
+
+/* demos */
+.demo{display:grid;gap:16px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface-2)}
+.panel h4{margin:0 0 10px;font-size:.9rem;color:var(--muted);font-weight:600}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);text-align:left;transition:transform .15s,border-color .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.order{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:o;min-height:44px}
+.order li button{width:100%;counter-increment:o;justify-content:flex-start}
+.order li button::before{content:counter(o);display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.8rem;flex:none}
+.order li.bad button{border-color:var(--coral);background:var(--coral-soft)}
+.order li.good button{border-color:var(--mint);background:var(--mint-soft)}
+.msg{padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);animation:rise .3s both}
+.msg.ok{background:var(--mint-soft);border-color:var(--mint)}
+.msg.ko{background:var(--coral-soft);border-color:var(--coral)}
+.cells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{position:relative;width:46px;height:52px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;font-family:var(--mono);font-weight:600;transition:all .25s}
+.cell small{position:absolute;bottom:-17px;font-size:.66rem;color:var(--muted);font-weight:400}
+.cell.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-4px)}
+.cell.seen{opacity:.45}
+.cell.out{opacity:.22}
+.cell.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-4px) scale(1.06)}
+.status{font-family:var(--mono);font-size:.85rem;min-height:1.6em;color:var(--text)}
+.bars{display:flex;align-items:flex-end;gap:clamp(4px,1vw,10px);height:200px;padding:10px 4px 0}
+.bar{flex:1;border-radius:7px 7px 0 0;background:var(--accent);opacity:.85;display:flex;align-items:flex-start;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--accent-ink);padding-top:4px;transition:height .25s ease,background .2s}
+.bar.cmp{background:var(--amber)}
+.bar.swp{background:var(--coral)}
+.bar.done{background:var(--mint)}
+.counters{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.counters b{color:var(--text);font-family:var(--mono)}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:260px;justify-content:flex-start}
+.frame-c{padding:9px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);font-family:var(--mono);font-size:.82rem;animation:rise .3s both;display:flex;justify-content:space-between;gap:10px}
+.frame-c.top{border-color:var(--amber);background:var(--amber-soft)}
+.frame-c.ret{border-color:var(--mint);background:var(--mint-soft)}
+.inspect{font-family:var(--mono);font-size:.86rem;display:grid;gap:8px}
+.attr{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.attr span:first-child{color:var(--t-var)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter.h i{background:var(--amber)}
+.pop{animation:pop .45s}
+@keyframes pop{40%{transform:scale(1.08)}}
+.log{font-family:var(--mono);font-size:.82rem;background:var(--term-bg);color:var(--term-text);border-radius:10px;padding:12px;height:180px;overflow:auto}
+.log div{animation:rise .25s both}
+.log .c{color:#A3ACE6}
+.objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.obj{border:1px solid var(--line-strong);border-radius:12px;padding:12px;background:var(--surface);font-family:var(--mono);font-size:.78rem;animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}}
+.obj b{color:var(--t-var)}
+.obj svg{width:100%;height:56px;margin:4px 0}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-strong)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
+.refs{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;align-items:center}
+.vbox{font-family:var(--mono);padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--surface);white-space:nowrap}
+.objbox{padding:12px 14px;border-radius:12px;border:2px solid;font-family:var(--mono);font-size:.85rem}
+.o1{border-color:var(--accent);background:var(--accent-soft)}
+.o2{border-color:var(--amber);background:var(--amber-soft)}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.two>*,.panel,.side,.demo>*{min-width:0}
+.slide{overflow-x:hidden}
+.matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcell{padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:.85rem;transition:all .25s}
+.mcell b{display:block;font-size:1.1rem}
+.mcell.yes{border-color:var(--mint);background:var(--mint-soft)}
+.mcell.no{border-color:var(--coral);background:var(--coral-soft)}
+.mcell.sel{outline:2px solid var(--accent);outline-offset:2px}
+.bigo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:8px}
+.lg{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);border-left-width:4px}
+.lg b{font-family:var(--mono)}
+.lg span{font-size:.8rem;color:var(--muted)}
+.lg em{font-style:normal;font-family:var(--mono);font-size:.85rem;color:var(--text)}
+.bigo-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(200px,1fr);gap:14px;align-items:start}.bigo-grid .bigo-legend{grid-template-columns:1fr}@media (max-width:820px){.bigo-grid{grid-template-columns:1fr}.bigo-grid .bigo-legend{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+.chart{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.chart path{fill:none;stroke-width:3;stroke-linecap:round;transition:d .4s}
+.chart .ax{stroke:var(--line-strong);stroke-width:1}
+.chart text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+.cmpbars{display:grid;gap:10px}
+.cmpbars .row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;font-size:.85rem}
+.cmpbars .track{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.cmpbars .track i{display:block;height:100%;border-radius:7px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.final{display:grid;gap:12px;max-width:780px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) 140px 60px;gap:12px;align-items:center}
+.frow .meter{height:12px;width:100%}
+
+/* ---------- Unidad III ---------- */
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.btn.sm{height:36px;padding:0 12px;font-size:.85rem}
+.bigcard{display:grid;justify-items:center;gap:4px;text-align:center;font-size:clamp(1.3rem,2.6vw,1.8rem);font-weight:700;letter-spacing:-.01em;margin:8px 0 4px}
+.chip.good{border-color:var(--mint);background:var(--mint-soft)}
+.chip.bad{border-color:var(--coral);background:var(--coral-soft)}
+.cell.w{width:auto;min-width:56px;padding:0 12px;font-size:.88rem}
+button.cell{cursor:pointer;color:var(--text)}
+.cell.ok{border-color:var(--mint)}
+.cell.prev{border-color:var(--amber);background:var(--amber-soft)}
+.cell.next{border-color:var(--mint);background:var(--mint-soft)}
+.cell.empty{border-style:dashed;color:var(--muted);font-weight:400}
+.cell.err{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.log .e{color:#FF8E82}.log .dim{color:var(--term-muted)}
+.stk{display:flex;flex-direction:column-reverse;gap:6px;min-height:290px;padding:10px;border:2px solid var(--line-strong);border-top:0;border-radius:0 0 14px 14px;background:var(--surface)}
+.it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface-2);font-family:var(--mono);font-size:.88rem;transition:opacity .25s,transform .25s}
+.it small{color:var(--amber);font-size:.72rem;font-weight:600}
+.it.tope{border-color:var(--amber);background:var(--amber-soft)}
+.it.fresh{animation:drop .35s cubic-bezier(.2,.8,.2,1) both}
+.it.out{opacity:0;transform:translateY(-22px)}
+@keyframes drop{from{opacity:0;transform:translateY(-22px)}}
+.que{display:flex;gap:8px;align-items:stretch;min-height:66px;padding:10px;border-top:2px solid var(--line-strong);border-bottom:2px solid var(--line-strong);background:var(--surface);overflow-x:auto}
+.it.qi{flex:none;flex-direction:column;justify-content:center;gap:2px;min-width:72px}
+.it.qi.fresh{animation:slideL .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slideL{from{opacity:0;transform:translateX(26px)}}
+.qlabels{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:var(--muted);margin:0 2px 6px}
+.ll{display:flex;flex-wrap:wrap;align-items:center;gap:8px 5px;font-family:var(--mono);font-size:.86rem;min-height:44px}
+.node{display:inline-flex;border:1.5px solid var(--line-strong);border-radius:9px;overflow:hidden;background:var(--surface);transition:transform .25s,border-color .25s,background .25s}
+.node .v{padding:8px 10px;font-weight:600;min-width:36px;text-align:center}
+.node .p{padding:8px 9px;border-left:1.5px solid var(--line-strong);color:var(--accent);background:var(--surface-2)}
+.node.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-3px)}
+.node.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-3px)}
+.node.new{animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both;border-color:var(--accent);background:var(--accent-soft)}
+.ar{color:var(--accent);font-weight:700}
+.nul{color:var(--muted);font-style:italic}
+.ptr{font-size:.76rem;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="iconbtn" id="menuBtn" aria-label="Abrir índice" aria-controls="drawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <svg class="elephant" viewBox="0 0 76 48" aria-hidden="true"><ellipse cx="38" cy="24" rx="37" ry="23" fill="var(--accent)"/><text x="38" y="31" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="21" fill="var(--accent-ink)">php</text></svg>
+    <div class="brand"><b>Programación II</b><span>UTN Facultad Regional Resistencia</span></div>
+    <div class="modname" id="modName"></div>
+    <div class="right">
+      <button class="score" id="scoreBtn" title="Respuestas correctas en los cuestionarios"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg><span id="scoreTxt">0</span></button>
+      <button class="iconbtn theme-ico" id="themeBtn" aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="iconbtn" id="fsBtn" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <main class="stage" id="stage">
+    <div class="frame">
+      <div class="tabbar"><span class="tab" id="tabName">inicio.php</span><span class="crumb" id="crumb"></span></div>
+      <div class="slide-wrap" id="wrap" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="foot">
+    <button class="btn ghost navbtn" id="prev" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button>
+    <div class="pos" id="pos"></div>
+    <button class="btn navbtn" id="next" aria-label="Diapositiva siguiente"><span>Siguiente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  </footer>
+</div>
+<div class="backdrop" id="backdrop"></div>
+<nav class="drawer" id="drawer" aria-label="Índice de temas">
+  <div class="dhead"><h2>Índice del resumen</h2><button class="iconbtn" id="closeDrawer" aria-label="Cerrar índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlist" id="dlist"></div>
+</nav>
+<script>
+/* ============ Utilidades para los ejemplos ============ */
+const P = String.raw;
+const clean = (s, d='') => { const r = String(s ?? '').replace(/["'\\$`{}<>]/g, '').trim().slice(0, 40); return r || d; };
+const ident = (s, d) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(String(s).trim()) ? String(s).trim() : d;
+const pn = x => { if (!isFinite(x)) return x > 0 ? 'INF' : 'NAN'; return Number.isInteger(x) ? String(x) : String(parseFloat(x.toPrecision(14))); };
+const nums = s => String(s).split(',').map(t => t.trim()).filter(t => t !== '' && !isNaN(Number(t))).map(Number);
+const ints = s => nums(s).filter(Number.isInteger);
+const r2 = x => Math.round(x * 100) / 100;
+const FE = (cls, msg) => `Fatal error: Uncaught ${cls}: ${msg}`;
+
+/* ============ Contenido ============ */
+const lst = s => String(s).split(',').map(x => clean(x)).filter(Boolean).slice(0, 8);
+const MODULES = [
+/* ---------------------------------------------------------------- 1 */
+{ title:'Estructuras de datos y TAD', unit:'Unidad III', part:'Parte I', slides:[
+ {type:'cover', title:'Estructuras de datos', file:'estructuras.php', sub:'Cómo guardamos y ordenamos la información dentro de un programa.', topics:['¿Qué es una estructura de datos?','Lineales y no lineales','De tamaño fijo o variable','Tipos de datos','¿Qué es un TAD?']},
+ {type:'concept', title:'¿Qué es una estructura de datos?', file:'estructura.php',
+  lead:'Es una <b>forma de guardar y ordenar datos</b> dentro de un programa, para después encontrarlos y usarlos fácil.',
+  points:[['Guarda','muchos datos juntos.'],['Los ordena','de una manera determinada.'],['Según cómo los ordene,','algunas tareas son rápidas y otras lentas.']],
+  analogy:'Pensá en tu ropero. Si las medias están en un cajón y las remeras en un estante, encontrás todo rápido. Si tirás todo en una montaña, la ropa es la misma, pero buscar una media te lleva mucho más. <b>Los datos son la ropa; la estructura es cómo la acomodás.</b>'},
+ {type:'code', title:'Mismos datos, distinto orden', file:'agenda.php',
+  lead:'Guardamos los mismos tres contactos de dos maneras. Elegí a quién buscar y tocá «Ejecutar». En la <b>lista</b> hay que mirar uno por uno. En la <b>agenda por nombre</b> vamos directo.',
+  controls:[{k:'q',label:'¿A quién buscamos?',type:'seg',options:['Ana','Lucas','Zoe'],value:'Zoe'}],
+  code:v=>P`<?php
+// Forma 1: una lista. Hay que mirar uno por uno.
+$lista = [["Ana", "362-411"], ["Lucas", "362-522"], ["Zoe", "362-633"]];
+
+$pasos = 0;
+foreach ($lista as [$nombre, $tel]) {
+    $pasos++;
+    if ($nombre === "${v.q}") break;
+}
+echo "Lista: $tel ($pasos pasos)\n";
+
+// Forma 2: una agenda por nombre. Vamos directo.
+$agenda = ["Ana" => "362-411", "Lucas" => "362-522", "Zoe" => "362-633"];
+echo "Agenda: " . $agenda["${v.q}"] . " (1 paso)";`,
+  run:v=>{ const i=['Ana','Lucas','Zoe'].indexOf(v.q), t=['362-411','362-522','362-633'][i]; return `Lista: ${t} (${i+1} pasos)\nAgenda: ${t} (1 paso)`; }},
+ {type:'demo', demo:'clasificar', title:'Lineales y no lineales', file:'clasificar.php',
+  lead:'<b>Lineal:</b> los datos van uno detrás del otro, como una fila. <b>No lineal:</b> un dato se puede conectar con varios, como las ramas de un árbol. Clasificá cada ejemplo.'},
+ {type:'concept', title:'De tamaño fijo o variable', file:'tamanio.php',
+  lead:'También podemos separar las estructuras según si <b>pueden crecer o no</b> mientras el programa funciona.',
+  groups:[{h:'Estáticas (tamaño fijo)',p:'Se crean con una cantidad de lugares y <b>no pueden crecer</b>. Si se llenan, no entra nada más.'},
+          {h:'Dinámicas (tamaño variable)',p:'<b>Crecen y se achican</b> cuando agregamos o sacamos datos.'}],
+  analogy:'Una estructura estática es como una <b>caja de huevos</b>: tiene 12 lugares, ni uno más. Una dinámica es como una <b>bolsa de compras</b>: entra todo lo que vayas metiendo.',
+  note:'<b>Dato para PHP:</b> el <code>array</code> común de PHP <b>crece solo</b>, así que es dinámico. Si queremos uno de tamaño fijo, PHP tiene <code>SplFixedArray</code>.'},
+ {type:'demo', demo:'fijo', title:'Probalo: fijo o variable', file:'fijo_vs_dinamico.php',
+  lead:'Agregá datos a las dos estructuras. La de la izquierda tiene solo 4 lugares. La de la derecha no tiene límite. ¿Qué pasa con el quinto dato?'},
+ {type:'table', title:'Resumen', file:'resumen.php',
+  lead:'Las dos formas de separar se combinan.',
+  head:['','Tamaño fijo','Tamaño variable'],
+  rows:[['Lineal','Un arreglo con lugares fijos.','Una lista que crece, el array de PHP.'],
+        ['No lineal','Un árbol con un máximo de datos.','Un árbol o una red que crece.']]},
+ {type:'table', title:'¿Cuándo usar cada una?', file:'cuando_usar.php', lead:'Una guía rápida con ejemplos de todos los días.',
+  head:['Estructura','Sirve para…','Ejemplo'],
+  rows:[['Arreglo','Una cantidad de datos que ya conocés.','Las temperaturas de la semana.'],
+        ['Lista','Agregar y sacar datos en cualquier lugar.','Una playlist que vas cambiando.'],
+        ['Pila','El último que entra, sale primero.','El botón «Deshacer».'],
+        ['Cola','El primero que entra, sale primero.','La fila de un banco.'],
+        ['Árbol','Cosas que tienen niveles.','Carpetas dentro de carpetas.'],
+        ['Grafo','Cosas conectadas entre sí.','Rutas entre ciudades.']]},
+ {type:'quiz', title:'Cuestionario: estructuras de datos', file:'quiz_estructuras.php', questions:[
+  {q:'¿Qué es una estructura de datos?',o:['Un tipo de computadora','Una forma de guardar y ordenar datos','Un lenguaje de programación','Un error del programa'],a:1,why:'Sirve para guardar datos ordenados y encontrarlos fácil.'},
+  {q:'¿Cuál de estas es no lineal?',o:['Una fila','Una pila de platos','Un árbol','Una playlist'],a:2,why:'En un árbol, una rama se divide en varias.'},
+  {q:'Una caja de huevos con 12 lugares es como una estructura...',o:['De tamaño fijo','De tamaño variable','No lineal','Vacía'],a:0,why:'No le entran más de 12: su tamaño es fijo.'},
+  {q:'¿Qué conviene para el botón «Deshacer»?',o:['Cola','Pila','Árbol','Grafo'],a:1,why:'Se deshace primero lo último que hiciste.'}]},
+ {type:'concept', title:'Tipos de datos', file:'tipos.php',
+  lead:'Los <b>tipos de datos</b> dicen qué clase de valor guarda una variable. Son los ladrillos con los que armamos todo lo demás.',
+  points:[['int:','números enteros. Ejemplo: <code>42</code>.'],['float:','números con coma. Ejemplo: <code>3.14</code>.'],['string:','texto. Ejemplo: <code>"Hola"</code>.'],['bool:','verdadero o falso: <code>true</code> o <code>false</code>.'],['array:','varios valores juntos. Ejemplo: <code>[7, 8, 10]</code>.']],
+  note:'En PHP, una sola letra como <code>"a"</code> también es un <code>string</code> (un texto cortito).'},
+ {type:'code', title:'Probá los tipos de PHP', file:'tipos.php',
+  lead:'<code>gettype()</code> nos dice de qué tipo es un valor. Elegí uno y tocá «Ejecutar».',
+  controls:[{k:'x',label:'Valor de $x',type:'seg',options:['42','3.14','"Hola"','true','[1, 2, 3]'],value:'42'}],
+  code:v=>P`<?php
+$x = ${v.x};
+
+echo gettype($x);   // ¿de qué tipo es?`,
+  run:v=>({'42':'integer','3.14':'double','"Hola"':'string','true':'boolean','[1, 2, 3]':'array'})[v.x],
+  after:()=>`<div class="note">PHP usa nombres en inglés: <b>integer</b> es entero, <b>double</b> es número con coma, <b>boolean</b> es verdadero o falso.</div>`},
+ {type:'concept', title:'¿Qué es un TAD?', file:'tad.php',
+  lead:'TAD significa <b>Tipo Abstracto de Datos</b>. Es una descripción de <b>qué se puede hacer</b> con unos datos, <b>sin explicar cómo está hecho por dentro</b>.',
+  groups:[{h:'El «qué»',p:'Lo que se puede hacer. Por ejemplo: «en una pila podés poner un dato arriba y sacar el de arriba».'},
+          {h:'El «cómo»',p:'El código que lo hace funcionar por dentro. Quien usa el TAD no necesita verlo.'}],
+  analogy:'Un <b>control remoto</b>: sabés que el botón «Volumen +» sube el volumen. No necesitás saber qué cables hay adentro. Los botones son el «qué»; los cables, el «cómo».'},
+ {type:'cards', flow:true, title:'Cómo se relacionan', file:'relacion.php', lead:'Tres ideas que van juntas. Leelas de izquierda a derecha.',
+  cards:[{t:'Tipos de datos',d:'Los ladrillos: números, textos, verdadero o falso.'},{t:'Estructura de datos',d:'Cómo acomodamos muchos ladrillos juntos. Es el «cómo».'},{t:'TAD',d:'Lo que se puede hacer con esos datos. Es el «qué».'}]},
+ {type:'steps', title:'Cómo armar un TAD', file:'pasos_tad.php', lead:'Cuatro pasos. Enseguida los usamos con una cuenta de banco.',
+  steps:[{t:'Pensar qué hace',d:'Qué datos guarda, qué se puede hacer y qué reglas hay que cumplir.',sub:['Guarda: el saldo','Se puede: depositar y sacar plata','Regla: el saldo nunca queda negativo']},
+   {t:'Esconder los datos',d:'Los datos quedan <b>privados</b> (<code>private</code>): nadie los toca desde afuera.'},
+   {t:'Programar las acciones',d:'Cada acción revisa que se cumplan las reglas.'},
+   {t:'Usarlo',d:'El resto del programa solo usa las acciones, nunca toca los datos directamente.'}]},
+ {type:'code', title:'Ejemplo: una cuenta de banco', file:'CuentaBancaria.php',
+  lead:'La regla es: <b>el saldo nunca puede quedar negativo</b>. Probá sacar más plata de la que hay, o cambiar el saldo a mano.',
+  controls:[{k:'acc',label:'¿Qué hacemos?',type:'seg',options:['sacar plata','cambiar el saldo a mano'],value:'sacar plata'},{k:'m',label:'Plata a sacar',type:'range',min:0,max:2000,value:300}],
+  code:v=>P`<?php
+class CuentaBancaria {
+    private float $saldo = 0;    // privado: no se toca desde afuera
+
+    public function depositar(float $monto): void {
+        $this->saldo += $monto;
+    }
+
+    public function sacar(float $monto): void {
+        if ($monto > $this->saldo) {
+            throw new Exception("No alcanza la plata");
+        }
+        $this->saldo -= $monto;
+    }
+
+    public function verSaldo(): float {
+        return $this->saldo;
+    }
+}
+
+$cuenta = new CuentaBancaria();
+$cuenta->depositar(1000);
+${v.acc==='sacar plata'?`$cuenta->sacar(${v.m});`:'$cuenta->saldo = -500;     // intento hacer trampa'}
+echo "Saldo: " . $cuenta->verSaldo();`,
+  run:v=>v.acc!=='sacar plata'?FE('Error','Cannot access private property CuentaBancaria::$saldo'):(+v.m>1000?FE('Exception','No alcanza la plata'):'Saldo: '+(1000-v.m)),
+  after:v=>`<div class="note">${v.acc==='sacar plata'?'Si pedís más de 1000, la cuenta <b>se niega</b> y muestra un error. Así la regla siempre se cumple.':'Como <code>$saldo</code> es <code>private</code>, PHP no deja cambiarlo desde afuera. La única forma es usar <code>depositar()</code> o <code>sacar()</code>.'}</div>`},
+ {type:'cards', title:'¿Por qué usar TADs?', file:'ventajas.php',
+  cards:[{t:'Es más fácil',d:'Usás algo sin pensar cómo está hecho por dentro, como el control remoto.'},{t:'Se puede reusar',d:'Lo programás una vez y lo usás en muchos programas.'},{t:'Se puede mejorar',d:'Podés cambiar cómo funciona por dentro sin romper el resto del programa.'}]},
+ {type:'quiz', title:'Cuestionario: tipos y TAD', file:'quiz_tad.php', questions:[
+  {q:'¿De qué tipo es "Hola" en PHP?',o:['int','string','bool','float'],a:1,why:'Todo texto entre comillas es un string.'},
+  {q:'Un TAD explica...',o:['Qué se puede hacer con los datos','Qué cables tiene la computadora','Cómo se instala PHP','El color de la pantalla'],a:0,why:'El TAD es el «qué», no el «cómo».'},
+  {q:'¿Por qué el saldo es private?',o:['Para que se vea más lindo','Para que nadie lo cambie desde afuera','Porque es un número','Para que sea más rápido'],a:1,why:'Así nadie rompe la regla del saldo.'},
+  {q:'Si cambiás cómo funciona un TAD por dentro, pero sus botones siguen igual...',o:['El resto del programa sigue funcionando','Hay que reescribir todo','Se borran los datos','PHP da error'],a:0,why:'Quien lo usa solo ve los botones, que no cambiaron.'}]}
+]},
+/* ---------------------------------------------------------------- 2 */
+{ title:'Pilas, colas y listas', unit:'Unidad III', part:'Parte II', slides:[
+ {type:'cover', title:'Pilas, colas y listas', file:'tads_lineales.php', sub:'Tres TADs muy usados: cómo funcionan y cómo se programan en PHP.', topics:['Las dos partes de un TAD','La pila','La cola','La lista']},
+ {type:'concept', title:'Las dos partes de un TAD', file:'partes_tad.php',
+  lead:'Todo TAD tiene dos partes.',
+  groups:[{h:'Interfaz: lo que se ve',p:'La lista de <b>acciones</b> que se pueden usar, qué recibe cada una y qué devuelve. También dice qué tiene que pasar antes de usarla, por ejemplo: «no se puede sacar algo si está vacío».'},
+          {h:'Implementación: lo que no se ve',p:'El <b>código</b> que hace funcionar cada acción. Puede cambiar sin que el usuario lo note.'}],
+  analogy:'Un <b>enchufe</b>: la interfaz son los agujeros. Cualquier aparato con la ficha correcta funciona, sin importar de dónde venga la electricidad.'},
+ {type:'concept', title:'La pila', file:'pila.php',
+  lead:'En una pila, <b>el último que entra es el primero que sale</b>. Siempre trabajamos con el dato de arriba, que se llama <b>tope</b>. En inglés se dice LIFO.',
+  ptitle:'Lo que se puede hacer',
+  points:[['apilar:','poner un dato arriba.'],['desapilar:','sacar el dato de arriba.'],['verTope:','mirar el de arriba sin sacarlo.'],['esVacia:','preguntar si está vacía.']],
+  analogy:'Una <b>pila de platos</b>: el último plato que pusiste queda arriba, y es el primero que vas a agarrar.',
+  note:'<b>¿Dónde se usa?</b> En el botón «Deshacer» (Ctrl+Z) y en el botón «Atrás» del navegador.'},
+ {type:'demo', demo:'pila', title:'Probá la pila', file:'pila_demo.php',
+  lead:'Apilá y desapilá datos. A la derecha podés ver cómo se guarda <b>por dentro</b> de dos maneras distintas. Fijate que las acciones que usás son las mismas.'},
+ {type:'code', title:'La pila en PHP', file:'Pila.php',
+  lead:'Una pila hecha con un <code>array</code>. Cambiá los valores y elegí qué hacer después. Probá desapilar más veces de las que apilaste.',
+  controls:[{k:'vals',label:'Valores a apilar',type:'text',value:'10, 20, 30'},{k:'acc',label:'Después',type:'seg',options:['desapilar 1 vez','desapilar 4 veces'],value:'desapilar 1 vez'}],
+  code:v=>P`<?php
+class Pila {
+    private array $datos = [];
+
+    public function apilar($dato): void {
+        $this->datos[] = $dato;           // lo pone al final (arriba)
+    }
+
+    public function desapilar() {
+        if (count($this->datos) === 0) {
+            throw new Exception("La pila está vacía");
+        }
+        return array_pop($this->datos);   // saca el último (el de arriba)
+    }
+}
+
+$pila = new Pila();
+foreach ([${nums(v.vals).join(', ')}] as $v) {
+    $pila->apilar($v);
+}
+${v.acc==='desapilar 1 vez'?'echo $pila->desapilar();':'for ($i = 0; $i < 4; $i++) {\n    echo $pila->desapilar() . "\\n";\n}'}`,
+  run:v=>{ const st=nums(v.vals), out=[], n=v.acc==='desapilar 1 vez'?1:4;
+    for(let i=0;i<n;i++){ if(!st.length){ out.push(FE('Exception','La pila está vacía')); break; } out.push(pn(st.pop())); }
+    return out.join('\n'); }},
+ {type:'demo', demo:'parentesis', title:'Ejercicio: paréntesis', file:'balanceado.php',
+  lead:'Una pila sirve para revisar que cada paréntesis que se abre <b>se cierre bien</b>. Cada vez que se abre uno, se apila. Cada vez que se cierra uno, se desapila y se compara. Elegí una expresión y miralo paso a paso.'},
+ {type:'quiz', title:'Cuestionario: pilas', file:'quiz_pilas.php', questions:[
+  {q:'Apilamos A, después B, después C. ¿Cuál sale primero?',o:['A','B','C'],a:2,why:'El último que entró (C) es el primero que sale.'},
+  {q:'¿Qué hace verTope?',o:['Saca el de arriba','Mira el de arriba sin sacarlo','Borra todo','Cuenta los datos'],a:1,why:'Solo mira; la pila queda igual.'},
+  {q:'¿Qué pasa si desapilás una pila vacía?',o:['Devuelve 0','Da un error','Agrega un dato','No pasa nada'],a:1,why:'No hay nada para sacar, así que avisa con un error.'},
+  {q:'¿Qué se parece más a una pila?',o:['La fila del súper','Una pila de platos','Un árbol','Un mapa'],a:1,why:'Se usa siempre el plato de arriba.'}]},
+ {type:'concept', title:'La cola', file:'cola.php',
+  lead:'En una cola, <b>el primero que entra es el primero que sale</b>. Los datos entran por atrás y salen por adelante. En inglés se dice FIFO.',
+  ptitle:'Lo que se puede hacer',
+  points:[['encolar:','agregar un dato al final.'],['desencolar:','sacar el dato de adelante.'],['verFrente:','mirar el de adelante sin sacarlo.']],
+  analogy:'La <b>fila del colectivo</b>: el que llegó primero sube primero.',
+  note:'<b>¿Dónde se usa?</b> En la impresora (imprime en el orden en que mandaste) y en los turnos de atención.'},
+ {type:'demo', demo:'cola', title:'Probá la cola', file:'ventanilla.php',
+  lead:'Simulá la ventanilla de alumnos. Hacé llegar gente, atendela y mirá en qué orden sale.'},
+ {type:'code', title:'La cola en PHP', file:'cola.php',
+  lead:'PHP ya trae una cola lista para usar: <code>SplQueue</code>. Con <code>enqueue()</code> alguien entra a la fila y con <code>dequeue()</code> sale el primero.',
+  controls:[{k:'names',label:'Llegan a la fila',type:'text',value:'Ana, Bruno, Carla, Diego'},{k:'k',label:'Personas a atender',type:'range',min:1,max:6,value:2}],
+  code:v=>P`<?php
+$cola = new SplQueue();
+
+foreach ([${lst(v.names).map(n=>`"${n}"`).join(', ')}] as $alumno) {
+    $cola->enqueue($alumno);       // entra a la fila
+}
+
+for ($i = 1; $i <= ${v.k}; $i++) {
+    echo "Atiendo a " . $cola->dequeue() . "\n";   // sale el primero
+}
+echo "Quedan esperando: " . count($cola);`,
+  run:v=>{ const q=lst(v.names), out=[];
+    for(let i=1;i<=+v.k;i++){ if(!q.length){ out.push(FE('RuntimeException',"Can't shift from an empty datastructure")); return out.join('\n'); } out.push('Atiendo a '+q.shift()); }
+    out.push('Quedan esperando: '+q.length); return out.join('\n'); }},
+ {type:'quiz', title:'¿Pila o cola?', file:'quiz_pila_cola.php', questions:[
+  {q:'Encolamos A, B y C. ¿Quién sale primero?',o:['A','B','C'],a:0,why:'El primero que entró (A) es el primero que sale.'},
+  {q:'Las hojas que mandás a la impresora van en una...',o:['Pila','Cola'],a:1,why:'Se imprimen en el orden en que llegaron.'},
+  {q:'El botón «Atrás» del navegador usa una...',o:['Pila','Cola'],a:0,why:'Volvés primero a la última página que viste.'},
+  {q:'Los turnos de un consultorio usan una...',o:['Pila','Cola'],a:1,why:'Se atiende primero al que llegó primero.'}]},
+ {type:'concept', title:'La lista', file:'lista.php',
+  lead:'Una lista guarda datos en orden, y deja <b>agregar o sacar datos en cualquier lugar</b>: al principio, al final o en el medio.',
+  groups:[{h:'¿Cómo está hecha?',p:'Una forma común es la <b>lista enlazada</b>. Cada dato está en una cajita llamada <b>nodo</b>. Cada nodo guarda su dato y una <b>flecha al nodo siguiente</b>. El último no apunta a nada (<code>null</code>).'},
+          {h:'Lo que se puede hacer',pts:[['insertar:','agregar un dato en un lugar.'],['eliminar:','sacar un dato.'],['buscar:','ver si un dato está.']]}],
+  analogy:'Una <b>búsqueda del tesoro</b>: cada pista te dice dónde está la próxima. Para llegar a la quinta, tenés que pasar por las cuatro primeras.'},
+ {type:'demo', demo:'lista', title:'Probá la lista', file:'lista_demo.php',
+  lead:'Agregá, buscá y sacá datos. Fijate en los <b>pasos</b>: para llegar a un lugar hay que empezar desde el principio e ir de a uno.'},
+ {type:'cards', flipcards:true, title:'Otros TADs', file:'otros_tads.php', lead:'Hay otros TADs muy usados. Tocá cada tarjeta para ver un ejemplo.',
+  cards:[{t:'Conjunto',d:'Datos sin repetir.',back:'Los inscriptos a una materia: nadie puede estar dos veces.'},
+         {t:'Diccionario',d:'Cada dato tiene una «clave» para encontrarlo rápido.',back:'Número de legajo → nombre del alumno.'},
+         {t:'Árbol',d:'Datos organizados por niveles.',back:'Las carpetas de tu computadora.'},
+         {t:'Grafo',d:'Datos conectados entre sí.',back:'Un mapa de ciudades y rutas.'}]},
+ {type:'concept', title:'Los TADs en PHP', file:'tad_php.php',
+  lead:'En PHP, un TAD se programa con una <b>clase</b>. Es lo que vimos en la Unidad II.',
+  points:[['Los datos','se guardan en atributos <code>private</code>, para que nadie los toque desde afuera.'],['Las acciones','son métodos <code>public</code>, como <code>apilar()</code> o <code>desapilar()</code>.'],['Quien usa la clase','solo llama a los métodos y no necesita saber cómo están hechos.']]},
+ {type:'quiz', title:'Cuestionario: listas', file:'quiz_listas.php', questions:[
+  {q:'¿Qué guarda cada nodo de una lista enlazada?',o:['Solo el dato','El dato y una flecha al siguiente','Toda la lista','Nada'],a:1,why:'Dato más flecha: eso es un nodo.'},
+  {q:'¿A qué apunta el último nodo?',o:['Al primero','A null (a nada)','Al del medio'],a:1,why:'null quiere decir que ahí termina la lista.'},
+  {q:'Para llegar al quinto nodo hay que...',o:['Ir directo','Pasar por los anteriores, de a uno','Ordenar la lista'],a:1,why:'Se siguen las flechas desde el principio.'},
+  {q:'Legajo → nombre del alumno es un...',o:['Conjunto','Diccionario','Grafo'],a:1,why:'Cada nombre se busca por su clave (el legajo).'}]}
+]},
+/* ---------------------------------------------------------------- 3 */
+{ title:'Estructuras lineales y algoritmos', unit:'Unidad III', part:'Parte III', slides:[
+ {type:'cover', title:'Estructuras lineales', file:'lineales.php', sub:'Qué tienen en común y cómo trabajan junto con los algoritmos.', topics:['¿Qué es una estructura lineal?','Arreglo o lista','Algoritmos y estructuras']},
+ {type:'concept', title:'¿Qué es una estructura lineal?', file:'lineal.php',
+  lead:'Es una estructura donde los datos van <b>uno detrás del otro</b>. Cada dato tiene uno <b>antes</b> y uno <b>después</b>. Solo el primero no tiene nadie antes, y el último no tiene nadie después.',
+  ptitle:'Ejemplos que ya vimos',
+  points:[['Arreglos,','listas,'],['pilas','y colas.']],
+  analogy:'Una <b>fila de personas esperando el colectivo</b>: cada una tiene a alguien adelante y alguien atrás.'},
+ {type:'demo', demo:'vecinos', title:'El de antes y el de después', file:'vecinos.php', lead:'Tocá a cualquier persona de la fila para ver quién está antes y quién está después.'},
+ {type:'cards', title:'¿Por qué son útiles?', file:'ventajas_lineales.php',
+  cards:[{t:'Son simples',d:'El orden es igual que en la vida real: uno detrás del otro.'},{t:'Se recorren fácil',d:'Con un <code>foreach</code> vas del primero al último.'},{t:'Algunas cosas son muy rápidas',d:'Poner o sacar en una pila o en una cola lleva un solo paso.'}],
+  note:'<b>Lo malo:</b> para buscar un dato, muchas veces hay que mirar uno por uno.'},
+ {type:'demo', demo:'versus', title:'Arreglo o lista', file:'versus.php',
+  lead:'Los dos guardan los mismos datos, pero cada uno es más rápido para cosas distintas. Probá <b>agregar al principio</b> y <b>leer el lugar 4</b>, y compará los pasos.'},
+ {type:'table', title:'¿Cuál es más rápido?', file:'rapido.php', lead:'Resumen de la demo anterior.',
+  head:['Tarea','Arreglo','Lista enlazada'],
+  rows:[['Leer el dato del lugar 4','Rápido: va directo.','Lento: pasa por todos los anteriores.'],
+        ['Agregar al principio','Lento: corre todos los datos.','Rápido: solo cambia una flecha.'],
+        ['Buscar un dato','Mira uno por uno.','Mira uno por uno.']]},
+ {type:'quiz', title:'Cuestionario: estructuras lineales', file:'quiz_lineales.php', questions:[
+  {q:'En una fila, ¿quién no tiene a nadie antes?',o:['El último','El primero','El del medio'],a:1,why:'El primero está adelante de todo.'},
+  {q:'¿Qué es más rápido para leer el dato del lugar 4?',o:['El arreglo','La lista enlazada'],a:0,why:'El arreglo va directo al lugar.'},
+  {q:'¿Qué es más rápido para agregar al principio?',o:['El arreglo','La lista enlazada'],a:1,why:'La lista solo cambia una flecha; el arreglo tiene que correr todo.'}]},
+ {type:'concept', title:'Algoritmos y estructuras', file:'algoritmos.php',
+  lead:'Un <b>algoritmo</b> es una receta: los pasos para hacer algo con los datos. Una <b>estructura</b> es el recipiente donde están guardados esos datos. Siempre van juntos.',
+  analogy:'En la cocina, la receta dice «batir los huevos» (algoritmo) y el bowl es donde los batís (estructura).'},
+ {type:'demo', demo:'insercion', title:'Ejemplo: ordenar nombres', file:'insercion.php',
+  lead:'La lista de nombres es la <b>estructura</b>. La forma de ordenarla es el <b>algoritmo</b>. Funciona como cuando ordenás cartas en la mano: agarrás una y la ponés en su lugar.'},
+ {type:'code', title:'Una pila para dar vuelta palabras', file:'invertir.php',
+  lead:'Si apilamos las letras de una palabra y después las desapilamos, salen al revés. Así podemos saber si una palabra se lee igual al derecho y al revés. Probá con <i>neuquen</i> o con tu nombre.',
+  controls:[{k:'w',label:'Palabra',type:'text',value:'neuquen'}],
+  code:v=>P`<?php
+$palabra = "${clean(v.w,'neuquen')}";
+$pila = new SplStack();
+
+foreach (mb_str_split($palabra) as $letra) {
+    $pila->push($letra);           // apilo cada letra
+}
+
+$alReves = "";
+while (!$pila->isEmpty()) {
+    $alReves .= $pila->pop();      // desapilo: salen al revés
+}
+
+echo "$palabra al revés es $alReves\n";
+echo $palabra === $alReves ? "¡Se lee igual!" : "No se lee igual";`,
+  run:v=>{ const w=clean(v.w,'neuquen'), r=[...w].reverse().join(''); return `${w} al revés es ${r}\n${w===r?'¡Se lee igual!':'No se lee igual'}`; }},
+ {type:'quiz', title:'Desafío: elegí la estructura', file:'quiz_elegir.php', questions:[
+  {q:'Una app de delivery entrega los pedidos en el orden en que se hicieron.',o:['Pila','Cola','Árbol'],a:1,why:'Primero en pedir, primero en recibir.'},
+  {q:'Un editor guarda tus cambios para poder deshacerlos.',o:['Cola','Pila','Grafo'],a:1,why:'Se deshace primero el último cambio.'},
+  {q:'Una playlist donde movés canciones de lugar todo el tiempo.',o:['Lista','Pila','Cola'],a:0,why:'La lista deja agregar y sacar en cualquier lugar.'},
+  {q:'Las temperaturas de los 7 días de la semana.',o:['Arreglo','Cola','Grafo'],a:0,why:'Son siempre 7 y se buscan por día.'}]},
+ {type:'end', title:'Resumen final', file:'fin.php'}
+]}
+];
+
+</script>
+<script>
+/* ============ Motor de la presentación ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = ms => new Promise(r => setTimeout(r, RM.matches ? Math.min(ms, 30) : ms));
+const store = { get(k, d) { try { const v = localStorage.getItem('p2u3:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem('p2u3:' + k, JSON.stringify(v)); } catch {} } };
+
+const SLIDES = [];
+MODULES.forEach((m, mi) => m.slides.forEach((s, si) => { s.mi = mi; s.si = si; s.idx = SLIDES.length; if (s.type === 'quiz') s.qid = `m${mi}-${si}`; SLIDES.push(s); }));
+const QUIZZES = SLIDES.filter(s => s.type === 'quiz');
+const TOTALQ = QUIZZES.reduce((a, s) => a + s.questions.length, 0);
+let scores = store.get('scores', {});
+let cur = -1, NAV = 0;
+
+/* ---------- Resaltado de sintaxis PHP ---------- */
+const KW = new Set('abstract and array as break callable case catch class clone const continue declare default do echo else elseif empty extends final finally fn for foreach function global if implements include instanceof insteadof interface isset list match namespace new or print private protected public readonly require return static switch throw trait try unset use var while yield true false null void int float string bool mixed iterable object self parent never'.split(' '));
+function hl(code) {
+  const re = /(<\?php)|(\/\/[^\n]*|#(?!\[)[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index)); const t = m[0];
+    if (m[1]) out += `<span class="t-tag">${esc(t)}</span>`;
+    else if (m[2]) out += `<span class="t-com">${esc(t)}</span>`;
+    else if (m[3]) out += `<span class="t-str">${esc(t).replace(/\$[A-Za-z_]\w*/g, v => `<span class="t-var">${v}</span>`)}</span>`;
+    else if (m[4]) out += `<span class="${t === '$this' ? 't-this' : 't-var'}">${t}</span>`;
+    else if (m[5]) out += `<span class="t-num">${t}</span>`;
+    else {
+      const before = code.slice(Math.max(0, m.index - 2), m.index), call = /^\s*\(/.test(code.slice(re.lastIndex));
+      if (before === '->' || before === '?>') out += call ? `<span class="t-fn">${t}</span>` : esc(t);
+      else if (KW.has(t.toLowerCase()) && !(call && !['function','fn','array','isset','unset','empty','match','list','echo','print','declare','if','foreach','for','while','switch','catch'].includes(t))) out += `<span class="t-kw">${t}</span>`;
+      else if (call) out += `<span class="t-fn">${t}</span>`;
+      else if (/^[A-Z]/.test(t)) out += `<span class="t-cls">${t}</span>`;
+      else out += esc(t);
+    }
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+const codeLines = code => hl(code).split('\n').map((l, i) => `<span class="ln" data-l="${i}">${l || ' '}</span>`).join('');
+
+/* ---------- Íconos ---------- */
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>',
+};
+
+/* ---------- Bloques reutilizables ---------- */
+const title = s => `<h2 class="stitle rv">${s.title}<span class="brace">{</span></h2>`;
+const close = d => `<div class="cbrace rv" style="--d:${d}">}</div>`;
+const lead = (s, d = 1) => s.lead ? `<p class="lead rv" style="--d:${d}">${s.lead}</p>` : '';
+const ptsHTML = pts => `<ul class="pts">${pts.map(([b, t]) => `<li><b>${b}</b> ${t}</li>`).join('')}</ul>`;
+const groupsHTML = (g, d) => `<div class="groups rv" style="--d:${d}">${g.map(x => `<div class="group"><h3>${x.h}</h3>${x.p ? `<p>${x.p}</p>` : ''}${x.pts ? ptsHTML(x.pts) : ''}</div>`).join('')}</div>`;
+const analogyHTML = (a, d) => `<aside class="analogy rv" style="--d:${d}">${ICON.bulb}<p><strong>Pensalo así</strong>${a}</p></aside>`;
+const noteHTML = (n, d) => `<div class="note rv" style="--d:${d}">${n}</div>`;
+function extras(s, d) { let h = '';
+  if (s.groups) h += groupsHTML(s.groups, d++);
+  if (s.points) h += `<div class="rv" style="--d:${d++}">${s.ptitle ? `<div class="ptitle">${s.ptitle}</div>` : ''}${ptsHTML(s.points)}</div>`;
+  if (s.analogy) h += analogyHTML(s.analogy, d++);
+  if (s.note) h += noteHTML(s.note, d++);
+  return [h, d]; }
+
+/* ---------- Renderizadores ---------- */
+const R = {
+  cover(s) {
+    const m = MODULES[s.mi];
+    return `<div class="cover"><div class="unit rv">${m.unit}, ${m.part.replace('Parte','parte')}, módulo ${s.mi + 1} de ${MODULES.length}</div>
+      <h1 class="rv" style="--d:1">${s.title}<span class="brace">{ }</span></h1>
+      <p class="sub rv" style="--d:2">${s.sub}</p>
+      <ul class="topics rv" style="--d:3">${s.topics.map(t => `<li><button data-topic="${esc(t)}">${t}</button></li>`).join('')}</ul>
+      <button class="btn start rv" style="--d:4" data-go="next">Empezar ${ICON.chev.replace('class="chev"', 'width="16" height="16"')}</button></div>`;
+  },
+  concept(s) { const [x, d] = extras(s, 2); return title(s) + lead(s) + x + close(d); },
+  cards(s) {
+    const cards = s.cards.map((c, i) => s.flipcards
+      ? `<button class="flip rv" style="--d:${i + 2}" aria-pressed="false"><div class="flip-in"><div class="face"><h3>${c.t}</h3><p>${c.d}</p><small>Ver ejemplo</small></div><div class="face back"><h3>${c.t}</h3><p>${c.back}</p><small>Volver</small></div></div></button>`
+      : `<div class="card rv" style="--d:${i + 2}"><h3>${c.t}</h3>${c.d ? `<p>${c.d}</p>` : ''}${c.list ? `<ul>${c.list.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}${c.ex ? `<div class="ex">${hl(c.ex)}</div>` : ''}</div>`).join('');
+    const [x, d] = extras(s, s.cards.length + 2);
+    return title(s) + lead(s) + `<div class="cards ${s.flow ? 'flow' : ''}" style="--min:${s.min || '220px'}">${cards}</div>` + x + close(d);
+  },
+  steps(s) {
+    return title(s) + lead(s) + `<ol class="steps">${s.steps.map((st, i) => `<li class="rv" style="--d:${i + 2}"><h3>${st.t}</h3><p>${st.d}</p>${st.sub ? `<ul>${st.sub.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ol>` + close(s.steps.length + 2);
+  },
+  table(s) {
+    const t = `<div class="twrap rv" style="--d:2"><table><thead><tr>${s.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r => `<tr><th>${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const [x, d] = extras(s, 3); return title(s) + lead(s) + t + x + close(d);
+  },
+  code(s) {
+    return title(s) + lead(s) + `<div class="code-layout rv" style="--d:2"><pre class="code" tabindex="0" aria-label="Código PHP"></pre>
+      <div class="side">${s.controls ? `<div class="ctrls">${s.controls.map(ctrlHTML).join('')}</div>` : ''}
+      <div><button class="btn run">${ICON.play}Ejecutar</button></div>
+      <div class="term"><div class="term-h"><span class="p">$</span> php ${esc(s.file)}</div><pre class="term-out" aria-live="polite"><span class="dim">Tocá «Ejecutar» para ver la salida.</span></pre></div>
+      <div class="extra"></div></div></div>` + close(3);
+  },
+  demo(s) { return title(s) + lead(s) + `<div class="demo rv" style="--d:2"></div>` + close(3); },
+  quiz(s) { return title(s) + `<div class="quiz rv" style="--d:1"></div>`; },
+  end(s) { return title(s) + `<p class="lead rv" style="--d:1">Terminaste la Unidad III: estructuras de datos, TADs, pilas, colas y listas. Este es tu resultado en los cuestionarios.</p><div class="final rv" style="--d:2"></div>` + close(3); },
+};
+
+function ctrlHTML(c) {
+  const id = 'c_' + c.k;
+  if (c.type === 'toggle') return `<label class="ctrl switch"><input type="checkbox" data-k="${c.k}" ${c.value ? 'checked' : ''}><span>${c.label}</span></label>`;
+  if (c.type === 'seg') return `<div class="ctrl"><span>${c.label}</span><div class="seg" role="group">${c.options.map(o => `<button type="button" data-k="${c.k}" data-v="${esc(o)}" aria-pressed="${o === c.value}">${esc(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'range') return `<label class="ctrl" for="${id}"><span>${c.label}: <output>${c.value}</output></span><input id="${id}" type="range" data-k="${c.k}" min="${c.min}" max="${c.max}" value="${c.value}"></label>`;
+  return `<label class="ctrl" for="${id}"><span>${c.label}</span><input id="${id}" type="${c.type}" data-k="${c.k}" value="${esc(c.value)}" ${c.min != null ? `min="${c.min}" max="${c.max}"` : ''} spellcheck="false" autocomplete="off"></label>`;
+}
+
+/* ---------- Terminal con efecto de tipeo ---------- */
+function colorize(text) {
+  return text.split('\n').map(l => { const e = esc(l);
+    if (/^(PHP )?Fatal error/.test(l)) return `<span class="e">${e}</span>`;
+    if (/^(Warning|Deprecated|Notice)/.test(l)) return `<span class="w">${e}</span>`;
+    return e; }).join('\n');
+}
+async function typeOut(el, text) {
+  const tk = ++el._tk || (el._tk = 1);
+  el.innerHTML = '<span class="caret"></span>';
+  if (!RM.matches) { await sleep(180); let i = 0; const step = Math.max(1, Math.ceil(text.length / 70));
+    while (i < text.length) { if (el._tk !== tk) return; i += step; el.innerHTML = esc(text.slice(0, i)) + '<span class="caret"></span>'; await sleep(14); } }
+  if (el._tk === tk) el.innerHTML = colorize(text) + '\n<span class="dim">— fin de la ejecución —</span>';
+}
+
+/* ---------- Hidratación ---------- */
+const H = {
+  cover(el, s) {
+    $$('[data-topic]', el).forEach(b => b.onclick = () => {
+      const t = b.dataset.topic.toLowerCase().replace(/[¿?]/g, '');
+      const words = t.split(/[\s,]+/).filter(w => w.length > 3);
+      const target = SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.title === b.dataset.topic) || SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.type !== 'quiz' && words.some(w => x.title.toLowerCase().includes(w)));
+      go(target ? target.idx : s.idx + 1);
+    });
+  },
+  cards(el) { $$('.flip', el).forEach(f => f.onclick = () => { f.classList.toggle('on'); f.setAttribute('aria-pressed', f.classList.contains('on')); }); },
+  code(el, s) {
+    const v = {}; (s.controls || []).forEach(c => v[c.k] = c.value);
+    const pre = $('.code', el), out = $('.term-out', el), ex = $('.extra', el); let ran = false;
+    const paint = (flash) => { pre.innerHTML = codeLines(typeof s.code === 'function' ? s.code(v) : s.code);
+      if (flash) { pre.classList.remove('flash'); void pre.offsetWidth; pre.classList.add('flash'); }
+      if (s.after) ex.innerHTML = s.after(v); };
+    const run = () => { ran = true; typeOut(out, s.run(v)); };
+    paint(false);
+    $('.run', el).onclick = run;
+    let t;
+    const changed = () => { paint(true); clearTimeout(t); if (ran) t = setTimeout(run, 250); };
+    $$('input[data-k]', el).forEach(i => i.addEventListener('input', () => {
+      v[i.dataset.k] = i.type === 'checkbox' ? i.checked : (i.type === 'range' || i.type === 'number') ? (i.value === '' ? 0 : +i.value) : i.value;
+      const o = i.parentElement.querySelector('output'); if (o) o.textContent = i.value; changed(); }));
+    $$('.seg button', el).forEach(b => b.onclick = () => { $$(`.seg button[data-k="${b.dataset.k}"]`, el).forEach(x => x.setAttribute('aria-pressed', x === b)); v[b.dataset.k] = b.dataset.v; changed(); });
+  },
+  demo(el, s) { DEMOS[s.demo]($('.demo', el), s); },
+  quiz(el, s) { runQuiz($('.quiz', el), s); },
+  end(el) {
+    const box = $('.final', el); let tc = 0;
+    box.innerHTML = MODULES.map((m, mi) => { const qs = QUIZZES.filter(q => q.mi === mi); const t = qs.reduce((a, q) => a + q.questions.length, 0); const c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0); tc += c;
+      return `<div class="frow"><span><b>${m.title}</b><br><span class="muted" style="font-size:.85rem">${m.unit}, ${m.part.replace("Parte","parte")}</span></span><div class="meter"><i style="width:0" data-w="${t ? c / t * 100 : 0}"></i></div><b class="mono">${c}/${t}</b></div>`; }).join('')
+      + `<div class="note"><b>Total: ${tc} de ${TOTALQ} respuestas correctas.</b> ${tc === TOTALQ ? '¡Impecable! Dominás todos los temas.' : tc >= TOTALQ * .7 ? 'Muy buen trabajo. Repasá los módulos con barras más cortas.' : 'Volvé a los cuestionarios que te costaron: podés reintentarlos cuantas veces quieras.'}</div>
+      <div><button class="btn ghost" id="resetAll">${ICON.redo}Borrar mi progreso</button></div>`;
+    requestAnimationFrame(() => setTimeout(() => $$('.meter i', box).forEach(i => i.style.width = i.dataset.w + '%'), 80));
+    $('#resetAll', box).onclick = () => { scores = {}; store.set('scores', scores); updateScore(); buildDrawer(); H.end(el); };
+  },
+};
+
+/* ---------- Cuestionarios ---------- */
+function runQuiz(box, s) {
+  let qi = 0, ok = 0; const marks = [];
+  const show = () => {
+    const q = s.questions[qi];
+    box.innerHTML = `<div class="qhead"><div class="qdots">${s.questions.map((_, i) => `<i class="${marks[i] === true ? 'ok' : marks[i] === false ? 'ko' : i === qi ? 'cur' : ''}"></i>`).join('')}</div><span>Pregunta ${qi + 1} de ${s.questions.length}</span></div>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div class="qfb"></div>`;
+    $$('.opt', box).forEach(b => b.onclick = () => answer(+b.dataset.j));
+    $('.opt', box).focus({ preventScroll: true });
+  };
+  const answer = j => {
+    const q = s.questions[qi], right = j === q.a; marks[qi] = right; if (right) ok++;
+    $$('.opt', box).forEach((b, k) => { b.disabled = true; if (k === q.a) b.classList.add('right'); else if (k === j) b.classList.add('wrong'); else b.classList.add('dim'); });
+    $$('.qdots i', box)[qi].className = right ? 'ok' : 'ko';
+    const last = qi === s.questions.length - 1;
+    $('.qfb', box).innerHTML = `<div class="why ${right ? 'ok' : 'ko'}"><b>${right ? '¡Correcto!' : 'No es correcto.'}</b>${esc(q.why)}</div>
+      <div class="qnav"><button class="btn nextq">${last ? 'Ver resultado' : 'Siguiente pregunta'}</button></div>`;
+    const nb = $('.nextq', box); nb.focus({ preventScroll: true });
+    nb.onclick = () => { if (last) result(); else { qi++; show(); } };
+  };
+  const result = () => {
+    const t = s.questions.length, prev = scores[s.qid]?.c || 0;
+    scores[s.qid] = { c: Math.max(prev, ok), t }; store.set('scores', scores); updateScore(); buildDrawer();
+    const pct = ok / t, C = 2 * Math.PI * 54;
+    const msg = pct === 1 ? ['¡Puntaje perfecto!', 'Respondiste todo bien. Seguí con el próximo tema.'] : pct >= .6 ? ['¡Bien hecho!', 'Repasá las explicaciones de las que fallaste y seguí adelante.'] : ['A repasar un poco', 'Volvé a las diapositivas anteriores y reintentá el cuestionario.'];
+    box.innerHTML = `<div class="result"><svg class="ring" viewBox="0 0 132 132" role="img" aria-label="${ok} de ${t} correctas"><circle class="bgc" cx="66" cy="66" r="54"/><circle class="fgc" cx="66" cy="66" r="54" stroke-dasharray="${C}" stroke-dashoffset="${C}"/><text x="66" y="74" text-anchor="middle" font-size="26">${ok}/${t}</text></svg>
+      <div><h3>${msg[0]}</h3><p class="muted" style="margin:0 0 14px">${msg[1]}${prev > ok ? ` Tu mejor puntaje sigue siendo ${prev}/${t}.` : ''}</p>
+      <div class="qnav"><button class="btn ghost retry">${ICON.redo}Reintentar</button><button class="btn" data-go="next">Continuar</button></div></div></div>`;
+    requestAnimationFrame(() => setTimeout(() => { const c = $('.fgc', box); if (c) c.style.strokeDashoffset = C * (1 - pct); }, 60));
+    if (pct === 1) confetti(box);
+    $('.retry', box).onclick = () => { qi = 0; ok = 0; marks.length = 0; show(); };
+  };
+  show();
+}
+function confetti(box) {
+  if (RM.matches) return;
+  const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:30;width:100%;height:100%'; document.body.appendChild(cv);
+  const ctx = cv.getContext('2d'), W = cv.width = innerWidth, Hh = cv.height = innerHeight, cs = getComputedStyle(document.documentElement);
+  const cols = ['--accent', '--amber', '--mint', '--coral'].map(v => cs.getPropertyValue(v).trim());
+  const ps = Array.from({ length: 110 }, () => ({ x: W / 2 + (Math.random() - .5) * 200, y: Hh * .45, vx: (Math.random() - .5) * 12, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * 4 | 0], a: Math.random() * 6 }));
+  let f = 0; (function tick() { ctx.clearRect(0, 0, W, Hh); ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += .2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
+    if (++f < 110) requestAnimationFrame(tick); else cv.remove(); })();
+}
+
+/* ---------- Demos interactivas ---------- */
+const logLine = (log, text, cls = '') => { log.insertAdjacentHTML('beforeend', `<div class="${cls}">${esc(text)}</div>`); log.scrollTop = log.scrollHeight; };
+const DEMOS = {
+  clasificar(box) {
+    const IT = [['Arreglo', 0, 'los elementos están uno al lado del otro, en las posiciones 0, 1, 2…'], ['Árbol genealógico', 1, 'una persona puede tener varios hijos: se ramifica.'], ['Fila del colectivo', 0, 'cada persona tiene a alguien adelante y alguien atrás.'], ['Grafo', 1, 'cada nodo puede conectarse con muchos otros.'], ['Pila de platos', 0, 'un plato arriba del otro, en un orden único.'], ['Mapa de rutas entre ciudades', 1, 'desde una ciudad salen rutas hacia varias ciudades.'], ['Lista enlazada', 0, 'cada nodo apunta a un único siguiente.'], ['Carpetas y subcarpetas', 1, 'una carpeta puede contener varias carpetas: es un árbol.'], ['Playlist de canciones', 0, 'una canción después de la otra.'], ['Cola de impresión', 0, 'los documentos esperan en orden de llegada.']];
+    let i = 0, ok = 0; const done = [];
+    const draw = fb => {
+      const fin = i >= IT.length;
+      box.innerHTML = `<div class="panel">${fin
+        ? `<div class="bigcard"><span class="muted" style="font-size:.95rem;font-weight:500">Resultado</span>${ok} de ${IT.length} correctas</div><div class="qnav" style="justify-content:center"><button class="btn ghost again">${ICON.redo}Volver a jugar</button></div>`
+        : `<div class="muted" style="text-align:center;font-size:.85rem">Ejemplo ${i + 1} de ${IT.length}</div><div class="bigcard">${IT[i][0]}</div><div class="qnav" style="justify-content:center"><button class="btn" data-a="0">Lineal</button><button class="btn" data-a="1">No lineal</button></div>`}</div>
+        ${fb || ''}
+        <div class="two">${['Lineales', 'No lineales'].map((h, k) => `<div class="panel"><h4>Pusiste en ${h.toLowerCase()}</h4><div class="pool">${done.filter(d => d.pick === k).map(d => `<span class="chip ${d.good ? 'good' : 'bad'}">${d.name}</span>`).join('') || '<span class="muted">Todavía nada.</span>'}</div></div>`).join('')}</div>`;
+      $$('[data-a]', box).forEach(b => b.onclick = () => {
+        const pick = +b.dataset.a, it = IT[i], good = pick === it[1]; if (good) ok++; done.push({ name: it[0], pick, good }); i++;
+        draw(`<div class="msg ${good ? 'ok' : 'ko'}"><b>${good ? '¡Bien!' : 'No es correcto.'}</b> «${it[0]}» es ${it[1] ? 'no lineal' : 'lineal'}: ${it[2]}</div>`);
+        $('.bigcard + .qnav .btn', box)?.focus({ preventScroll: true });
+      });
+      const ag = $('.again', box); if (ag) ag.onclick = () => { i = 0; ok = 0; done.length = 0; draw(); };
+    };
+    draw();
+  },
+
+  fijo(box) {
+    const CAP = 4; let fx, dy, n, err;
+    box.innerHTML = `<div class="qnav" style="margin-top:0"><button class="btn add">${ICON.play}Agregar un elemento a las dos</button><button class="btn ghost rst">${ICON.redo}Reiniciar</button></div>
+      <div class="two"><div class="panel"><h4>Tamaño fijo: 4 lugares</h4><div class="cells fx"></div><div style="height:24px"></div><div class="log lf"></div></div>
+      <div class="panel"><h4>Tamaño variable: array de PHP</h4><div class="cells dy"></div><div style="height:24px"></div><div class="log ld"></div></div></div><div class="res"></div>`;
+    const lf = $('.lf', box), ld = $('.ld', box), add = $('.add', box);
+    const draw = () => {
+      $('.fx', box).innerHTML = Array.from({ length: CAP }, (_, k) => k < fx.length ? `<div class="cell">${fx[k]}<small>${k}</small></div>` : `<div class="cell empty">·<small>${k}</small></div>`).join('') + (err ? `<div class="cell err">${n * 10}<small>4</small></div>` : '');
+      $('.dy', box).innerHTML = dy.map((v, k) => `<div class="cell">${v}<small>${k}</small></div>`).join('') || '<span class="muted">Vacío.</span>';
+    };
+    const reset = () => { fx = []; dy = []; n = 0; err = false; add.disabled = false;
+      lf.innerHTML = '<div class="c">$fija = new SplFixedArray(4);</div>'; ld.innerHTML = '<div class="c">$dinamico = [];</div>'; $('.res', box).innerHTML = ''; draw(); };
+    add.onclick = () => { n++; const v = n * 10; err = false;
+      dy.push(v); logLine(ld, `$dinamico[] = ${v};`, 'c'); logLine(ld, `// ahora tiene ${dy.length} datos`, 'dim');
+      logLine(lf, `$fija[${fx.length}] = ${v};`, 'c');
+      if (fx.length < CAP) { fx.push(v); logLine(lf, `// quedan ${CAP - fx.length} lugares libres`, 'dim'); }
+      else { err = true; logLine(lf, 'Fatal error: No hay más lugar', 'e');
+        $('.res', box).innerHTML = `<div class="msg ko"><b>La de tamaño fijo se llenó.</b> Tenía solo 4 lugares, así que el quinto dato no entra y da error. El <code>array</code> de PHP, en cambio, siguió creciendo sin problema.</div>`; }
+      draw(); if (n >= 10) add.disabled = true; };
+    $('.rst', box).onclick = reset;
+    reset();
+  },
+
+  pila(box) {
+    let st = ['A', 'B'], impl = 'array', letter = 2;
+    const L = i => String.fromCharCode(65 + (i % 26));
+    box.innerHTML = `<div class="two"><div class="panel"><h4>La pila</h4>
+      <div class="ctrls" style="grid-template-columns:minmax(0,1fr) auto;align-items:end"><label class="ctrl"><span>Elemento a apilar</span><input type="text" class="val" maxlength="8" spellcheck="false" autocomplete="off"></label><button class="btn push mono">apilar()</button></div>
+      <div class="btnrow">${['desapilar', 'verTope', 'esVacia', 'tamanio'].map(o => `<button class="btn ghost mono sm" data-op="${o}">${o}()</button>`).join('')}</div>
+      <div style="height:14px"></div><div class="stk" aria-live="polite"></div></div>
+      <div class="side"><div class="log" aria-live="polite"></div>
+      <div class="panel"><h4>Por dentro</h4><div class="seg"><button data-impl="array" aria-pressed="true">con un array</button><button data-impl="nodos" aria-pressed="false">con nodos enlazados</button></div><div style="height:14px"></div><div class="inner"></div></div>
+      <div class="res"></div></div></div>`;
+    const log = $('.log', box), inp = $('.val', box), res = $('.res', box);
+    inp.value = L(letter);
+    const draw = (fresh = false) => {
+      $('.stk', box).innerHTML = st.map((v, k) => `<div class="it ${k === st.length - 1 ? 'tope' : ''} ${fresh && k === st.length - 1 ? 'fresh' : ''}"><span>${esc(v)}</span>${k === st.length - 1 ? '<small>tope</small>' : ''}</div>`).join('') || '<div class="muted" style="margin:auto;text-align:center">Pila vacía</div>';
+      $('.inner', box).innerHTML = impl === 'array'
+        ? `<div class="mono muted" style="font-size:.8rem;margin-bottom:8px">$this->elementos</div><div class="cells">${st.map((v, k) => `<div class="cell w ${k === st.length - 1 ? 'cur' : ''}">${esc(v)}<small>${k}</small></div>`).join('') || '<span class="muted mono">[]</span>'}</div><p class="muted" style="margin:26px 0 0;font-size:.88rem">Los datos se guardan en un array, uno al lado del otro. El de arriba de la pila es <b>el último del array</b>.</p>`
+        : `<div class="ll"><span class="ptr">tope</span><span class="ar">→</span>${[...st].reverse().map((v, k) => `<span class="node ${k === 0 ? 'cur' : ''}"><span class="v">${esc(v)}</span><span class="p">•</span></span><span class="ar">→</span>`).join('')}<span class="nul">null</span></div><p class="muted" style="margin:12px 0 0;font-size:.88rem">Cada dato está en una cajita (nodo) con una flecha al de abajo. El de arriba de la pila es <b>la primera cajita</b>.</p>`;
+    };
+    const empty = code => { logLine(log, code, 'c'); logLine(log, 'Fatal error: La pila está vacía', 'e');
+      res.innerHTML = '<div class="msg ko"><b>¡La pila está vacía!</b> No hay nada para sacar ni para mirar, por eso da error. Antes conviene preguntar con <code>esVacia()</code>.</div>'; };
+    const push = () => {
+      const v = clean(inp.value) || L(letter);
+      if (st.length >= 8) { res.innerHTML = '<div class="msg ko">En esta demo la pila llega hasta 8 elementos. Desapilá alguno primero.</div>'; return; }
+      st.push(v); logLine(log, `$pila->apilar("${v}");`, 'c'); res.innerHTML = ''; letter++; inp.value = L(letter); draw(true); inp.focus({ preventScroll: true });
+    };
+    $('.push', box).onclick = push;
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') push(); });
+    $$('[data-op]', box).forEach(b => b.onclick = () => { const op = b.dataset.op; res.innerHTML = '';
+      if (op === 'desapilar') { if (!st.length) return empty('echo $pila->desapilar();');
+        const it = $('.it.tope', box); it?.classList.add('out'); const v = st.pop(); logLine(log, 'echo $pila->desapilar();', 'c'); logLine(log, v); setTimeout(draw, RM.matches ? 0 : 260); return; }
+      if (op === 'verTope') { if (!st.length) return empty('echo $pila->verTope();'); logLine(log, 'echo $pila->verTope();', 'c'); logLine(log, st[st.length - 1]); }
+      if (op === 'esVacia') { logLine(log, 'var_dump($pila->esVacia());', 'c'); logLine(log, `bool(${st.length === 0})`); }
+      if (op === 'tamanio') { logLine(log, 'echo $pila->tamanio();', 'c'); logLine(log, String(st.length)); }
+    });
+    $$('[data-impl]', box).forEach(b => b.onclick = () => { if (impl === b.dataset.impl) return; impl = b.dataset.impl; $$('[data-impl]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); draw();
+      res.innerHTML = '<div class="msg ok"><b>Cambiaste cómo se guarda por dentro</b>, pero las acciones que usás (apilar, desapilar) son las mismas. Esa es la idea de un TAD.</div>'; });
+    ['$pila = new Pila();', '$pila->apilar("A");', '$pila->apilar("B");'].forEach(c => logLine(log, c, 'c'));
+    draw();
+  },
+
+  parentesis(box) {
+    const PRE = ['(a + b) * [c - d]', '{ [ ( ) ] }', '(a + b))', '( [ ) ]', '((x + 1)'];
+    const CODE = P`<?php
+function balanceado(string $texto): bool {
+    $pila = new SplStack();
+    $pares = [")" => "(", "]" => "[", "}" => "{"];
+    foreach (str_split($texto) as $c) {
+        if (in_array($c, ["(", "[", "{"])) {
+            $pila->push($c);                         // abre: apilo
+        } elseif (isset($pares[$c])) {
+            if ($pila->isEmpty()) return false;      // cierre sin apertura
+            if ($pila->pop() !== $pares[$c]) return false;   // no es su pareja
+        }
+    }
+    return $pila->isEmpty();                         // ¿quedó algo abierto?
+}`;
+    let tk = 0;
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:minmax(0,1fr) auto;align-items:end"><label class="ctrl"><span>Expresión</span><select class="ex">${PRE.map(p => `<option>${esc(p)}</option>`).join('')}</select></label><button class="btn go">${ICON.play}Verificar paso a paso</button></div>
+      <div class="two"><div class="panel"><h4>Caracteres</h4><div class="cells chars"></div><div style="height:28px"></div><h4>Pila (el de arriba es el de la derecha)</h4><div class="ll stkh"></div><div style="height:14px"></div><div class="status"></div></div><pre class="code">${codeLines(CODE)}</pre></div>`;
+    const lines = $$('.ln', box), st = $('.status', box);
+    const mark = n => lines.forEach((l, i) => l.classList.toggle('hl', i === n));
+    const chars = () => [...$('.ex', box).value].filter(c => c !== ' ');
+    const drawStack = s => { $('.stkh', box).innerHTML = s.length ? s.map((c, k) => `<span class="node ${k === s.length - 1 ? 'cur' : ''}"><span class="v">${esc(c)}</span></span>`).join('') : '<span class="muted">vacía</span>'; };
+    const reset = () => { tk++; $('.chars', box).innerHTML = chars().map(c => `<div class="cell">${esc(c)}</div>`).join(''); drawStack([]); mark(-1); st.textContent = 'Tocá «Verificar paso a paso».'; };
+    $('.ex', box).onchange = reset;
+    $('.go', box).onclick = async () => {
+      reset(); const my = tk, nav = NAV, alive = () => my === tk && nav === NAV;
+      const cs = chars(), cells = $$('.chars .cell', box), stack = [], pairs = { ')': '(', ']': '[', '}': '{' }; let res = null;
+      for (let i = 0; i < cs.length; i++) {
+        const c = cs[i]; cells[i].classList.add('cur'); let wait = 350;
+        if ('([{'.includes(c)) { stack.push(c); mark(6); st.textContent = `«${c}» abre: lo pongo en la pila.`; wait = 850; }
+        else if (pairs[c]) { wait = 850;
+          if (!stack.length) { mark(8); res = [false, `«${c}» cierra, pero la pila está vacía: sobra un cierre.`]; cells[i].className = 'cell err'; break; }
+          const t = stack.pop(); mark(9);
+          if (t !== pairs[c]) { res = [false, `«${c}» cierra, pero el de arriba de la pila es «${t}»: no son pareja.`]; cells[i].className = 'cell err'; drawStack(stack); break; }
+          st.textContent = `«${c}» cierra y el de arriba es «${t}»: son pareja, lo saco.`; }
+        else { mark(4); st.textContent = `«${c}» no es un paréntesis: lo salteo.`; }
+        drawStack(stack); await sleep(wait); if (!alive()) return;
+        cells[i].className = 'cell ' + ('()[]{}'.includes(c) ? 'ok' : 'seen');
+      }
+      if (!res) { mark(12); res = stack.length ? [false, `Terminé, pero quedaron ${stack.length} sin cerrar.`] : [true, 'Terminé y la pila quedó vacía: todo lo que se abrió, se cerró.']; }
+      st.innerHTML = `<b>${res[0] ? '¡Está bien!' : 'Está mal.'}</b> ${res[1]}`;
+    };
+    reset();
+  },
+
+  cola(box) {
+    const NAMES = ['Ana', 'Bruno', 'Carla', 'Diego', 'Eli', 'Fede', 'Gime', 'Hugo', 'Iara', 'Juan', 'Kevin', 'Lola'];
+    let q = ['Ana', 'Bruno'], k = 2, served = [];
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Ventanilla de alumnos</h4>
+      <div class="btnrow"><button class="btn sm in">Llega alguien</button><button class="btn sm out">Atender</button><button class="btn ghost mono sm" data-op="verFrente">verFrente()</button><button class="btn ghost mono sm" data-op="tamanio">tamanio()</button></div>
+      <div style="height:16px"></div><div class="qlabels"><span>Frente: sale por acá</span><span>Final: entra por acá</span></div><div class="que" aria-live="polite"></div>
+      <div style="height:14px"></div><h4>Atendidos, en orden</h4><div class="pool served"></div></div>
+      <div class="side"><div class="log"></div><div class="res"></div></div></div>`;
+    const log = $('.log', box), res = $('.res', box);
+    const draw = (fresh = -1) => {
+      $('.que', box).innerHTML = q.map((v, i) => `<div class="it qi ${i === 0 ? 'tope' : ''} ${i === fresh ? 'fresh' : ''}"><span>${v}</span>${i === 0 ? '<small>frente</small>' : i === q.length - 1 ? '<small>final</small>' : ''}</div>`).join('') || '<span class="muted" style="margin:auto">No hay nadie esperando.</span>';
+      $('.served', box).innerHTML = served.map((v, i) => `<span class="chip">${i + 1}. ${v}</span>`).join('') || '<span class="muted">Todavía nadie.</span>';
+    };
+    $('.in', box).onclick = () => { if (q.length >= 7) { res.innerHTML = '<div class="msg ko">La fila está muy larga para la demo. Atendé a alguien primero.</div>'; return; }
+      const n = NAMES[k++ % NAMES.length]; q.push(n); logLine(log, `$cola->encolar("${n}");`, 'c'); res.innerHTML = ''; draw(q.length - 1); };
+    $('.out', box).onclick = () => {
+      if (!q.length) { logLine(log, 'echo $cola->desencolar();', 'c'); logLine(log, 'Fatal error: La cola está vacía', 'e');
+        res.innerHTML = '<div class="msg ko"><b>¡La cola está vacía!</b> No hay nadie para atender.</div>'; return; }
+      const n = q.shift(); served.push(n); logLine(log, 'echo $cola->desencolar();', 'c'); logLine(log, n); draw();
+      res.innerHTML = served.length >= 3 ? `<div class="msg ok">Mirá la lista de atendidos: salieron <b>en el mismo orden en que llegaron</b>. Eso es FIFO.</div>` : '';
+    };
+    $$('[data-op]', box).forEach(b => b.onclick = () => { const op = b.dataset.op; logLine(log, `echo $cola->${op}();`, 'c');
+      if (op === 'tamanio') logLine(log, String(q.length));
+      else if (q.length) logLine(log, q[0]); else logLine(log, 'Fatal error: La cola está vacía', 'e'); });
+    ['$cola = new Cola();', '$cola->encolar("Ana");', '$cola->encolar("Bruno");'].forEach(c => logLine(log, c, 'c'));
+    draw();
+  },
+
+  lista(box) {
+    let L = [12, 7, 30], tk = 0;
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))"><label class="ctrl"><span>Valor</span><input type="number" class="val" value="5"></label><label class="ctrl"><span>Lugar (para insertarEn)</span><input type="number" class="pos" value="2" min="0" max="9"></label></div>
+      <div class="btnrow">${[['inicio', 'insertarAlInicio($v)'], ['final', 'insertarAlFinal($v)'], ['en', 'insertarEn($pos, $v)'], ['buscar', 'buscar($v)'], ['eliminar', 'eliminar($v)']].map(([k, t]) => `<button class="btn ghost mono sm" data-op="${k}">${t}</button>`).join('')}<button class="btn ghost sm rst">${ICON.redo}Reiniciar</button></div>
+      <div class="panel" style="margin-top:14px"><div class="ll view" aria-live="polite"></div><p class="muted ends" style="margin:12px 0 0;font-size:.88rem"></p></div>
+      <div class="counters"><span>Pasos de la última operación: <b class="steps">0</b></span></div><div class="status"></div>`;
+    const st = $('.status', box);
+    const draw = (cls = {}) => {
+      $('.view', box).innerHTML = `<span class="ptr">inicio</span><span class="ar">→</span>` + (L.map((v, i) => `<span class="node ${cls[i] || ''}"><span class="v">${v}</span><span class="p">${i === L.length - 1 ? '/' : '•'}</span></span><span class="ar">→</span>`).join('')) + '<span class="nul">null</span>';
+      $('.ends', box).innerHTML = L.length ? `Hay ${L.length} nodos. El primero es ${L[0]} y el último es ${L[L.length - 1]}.` : 'La lista está vacía.';
+    };
+    const steps = n => { $('.steps', box).textContent = n; };
+    const walk = async (upto, alive, stopAt) => { let s = 0;
+      for (let i = 0; i < upto; i++) { s++; steps(s); draw({ [i]: 'cur' }); st.textContent = `Paso ${s}: estoy en el nodo ${L[i]}…`; await sleep(480); if (!alive()) return null; if (stopAt && stopAt(i)) return { i, s }; }
+      return { i: -1, s }; };
+    $$('[data-op]', box).forEach(b => b.onclick = async () => {
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV, op = b.dataset.op;
+      const v = parseInt($('.val', box).value, 10);
+      if (isNaN(v)) { st.textContent = 'Escribí un número entero en «Valor».'; return; }
+      if (['inicio', 'final', 'en'].includes(op) && L.length >= 9) { st.textContent = 'En esta demo la lista llega hasta 9 nodos. Eliminá alguno o reiniciá.'; return; }
+      if (op === 'inicio') { L.unshift(v); steps(1); draw({ 0: 'new' }); st.innerHTML = '<b>1 paso:</b> el nodo nuevo apunta al que era el primero. Ningún otro nodo se movió.'; }
+      if (op === 'final') { L.push(v); steps(1); draw({ [L.length - 1]: 'new' }); st.innerHTML = '<b>1 paso:</b> la lista recuerda cuál es el último nodo, así que solo le agrega una flecha al nuevo.'; }
+      if (op === 'en') { const p = Math.max(0, Math.min(L.length, parseInt($('.pos', box).value, 10) || 0));
+        const r = await walk(p, alive); if (!r) return;
+        L.splice(p, 0, v); steps(r.s + 1); draw({ [p]: 'new' });
+        st.innerHTML = p === 0 ? '<b>1 paso:</b> insertar en la posición 0 es insertar al inicio.' : `<b>${r.s + 1} pasos:</b> pasé por ${r.s} nodo${r.s === 1 ? '' : 's'} para llegar al lugar ${p} y después agregué el nuevo.`; }
+      if (op === 'buscar' || op === 'eliminar') {
+        const r = await walk(L.length, alive, i => L[i] === v); if (!r) return;
+        if (r.i < 0) { draw(); st.innerHTML = `<b>No está.</b> Recorrí los ${r.s} nodos hasta llegar a <code>null</code>.`; return; }
+        draw({ [r.i]: 'found' });
+        if (op === 'buscar') { st.innerHTML = `<b>Encontrado</b> en el lugar ${r.i}, después de ${r.s} paso${r.s === 1 ? '' : 's'}.`; return; }
+        st.innerHTML = `Lo encontré en el lugar ${r.i}. Ahora cambio la flecha para que lo saltee…`;
+        await sleep(900); if (!alive()) return; L.splice(r.i, 1); steps(r.s + 1); draw();
+        st.innerHTML = `<b>Sacado en ${r.s + 1} pasos.</b> Ninguna flecha apunta a ese nodo, así que quedó fuera de la lista.`; }
+    });
+    $('.rst', box).onclick = () => { tk++; L = [12, 7, 30]; steps(0); draw(); st.textContent = 'Lista reiniciada.'; };
+    draw(); st.textContent = 'Elegí una operación.';
+  },
+
+  vecinos(box) {
+    const PP = ['Ana', 'Beto', 'Caro', 'Dani', 'Emi', 'Fran'];
+    box.innerHTML = `<div class="panel"><div class="qlabels" style="margin:0 0 8px"><span>Adelante (la primera)</span><span>Atrás (la última)</span></div><div class="cells row"></div><div style="height:28px"></div><div class="status">Tocá a una persona.</div></div>`;
+    const draw = sel => {
+      $('.row', box).innerHTML = PP.map((n, i) => `<button class="cell w ${i === sel ? 'cur' : i === sel - 1 ? 'prev' : i === sel + 1 ? 'next' : ''}" data-i="${i}" aria-pressed="${i === sel}">${n}<small>${i}</small></button>`).join('');
+      $$('[data-i]', box).forEach(b => b.onclick = () => draw(+b.dataset.i));
+      if (sel >= 0) $('.status', box).innerHTML = `<b>${PP[sel]}</b>. Antes (naranja): ${sel ? `<b>${PP[sel - 1]}</b>` : 'nadie, es la primera'}. Después (verde): ${sel < PP.length - 1 ? `<b>${PP[sel + 1]}</b>` : 'nadie, es la última'}.`;
+    };
+    draw(-1);
+  },
+
+  versus(box) {
+    const BASE = [8, 3, 6, 1, 9], NEW = [5, 2, 7, 4, 0]; let A, nx, tk = 0;
+    box.innerHTML = `<div class="btnrow"><button class="btn ins">Agregar al principio</button><button class="btn ghost rd">Leer el lugar 4</button><button class="btn ghost sm rst">${ICON.redo}Reiniciar</button></div>
+      <div class="two" style="margin-top:14px"><div class="panel"><h4>Arreglo</h4><div class="cells arr"></div><div style="height:26px"></div><div class="counters"><span>Pasos: <b class="sa">0</b></span></div></div>
+      <div class="panel"><h4>Lista enlazada</h4><div class="ll lst"></div><div style="height:12px"></div><div class="counters"><span>Pasos: <b class="sl">0</b></span></div></div></div><div class="status"></div>`;
+    const st = $('.status', box);
+    const drawA = (view, cls = {}) => { $('.arr', box).innerHTML = view.map((v, i) => `<div class="cell ${v == null ? 'empty' : ''} ${cls[i] || ''}">${v == null ? '·' : v}<small>${i}</small></div>`).join(''); };
+    const drawL = (cls = {}) => { $('.lst', box).innerHTML = '<span class="ptr">inicio</span><span class="ar">→</span>' + A.map((v, i) => `<span class="node ${cls[i] || ''}"><span class="v">${v}</span></span><span class="ar">→</span>`).join('') + '<span class="nul">null</span>'; };
+    const reset = () => { tk++; A = [...BASE]; nx = 0; drawA(A); drawL(); $('.sa', box).textContent = 0; $('.sl', box).textContent = 0; st.textContent = 'Elegí una operación.'; };
+    $('.ins', box).onclick = async () => {
+      if (A.length >= 10) { st.textContent = 'Ya hay 10 elementos. Reiniciá para seguir probando.'; return; }
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV, v = NEW[nx++ % NEW.length];
+      const view = [...A, null], n = A.length; let s = 0;
+      const nl = [v, ...A];
+      $('.lst', box).innerHTML = '<span class="ptr">inicio</span><span class="ar">→</span>' + nl.map((x, i) => `<span class="node ${i ? '' : 'new'}"><span class="v">${x}</span></span><span class="ar">→</span>`).join('') + '<span class="nul">null</span>';
+      $('.sl', box).textContent = 1; $('.sa', box).textContent = 0;
+      st.textContent = `Agregando ${v}: la lista ya terminó (1 paso). El arreglo tiene que correr cada dato un lugar a la derecha…`;
+      drawA(view);
+      for (let i = n - 1; i >= 0; i--) { view[i + 1] = view[i]; view[i] = null; s++; $('.sa', box).textContent = s; drawA(view, { [i + 1]: 'cur' }); await sleep(320); if (!alive()) return; }
+      view[0] = v; s++; $('.sa', box).textContent = s; drawA(view, { 0: 'found' }); A = nl;
+      st.innerHTML = `<b>Arreglo: ${s} pasos</b> (corrió ${n} datos y después puso el nuevo). <b>Lista: 1 paso.</b> Con más datos, la diferencia es todavía más grande.`;
+    };
+    $('.rd', box).onclick = async () => {
+      if (A.length < 5) return;
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV;
+      drawA(A, { 4: 'found' }); $('.sa', box).textContent = 1; st.textContent = 'El arreglo fue directo al lugar 4 (1 paso). La lista tiene que seguir las flechas desde el principio…';
+      for (let i = 0; i <= 4; i++) { $('.sl', box).textContent = i + 1; drawL({ [i]: i === 4 ? 'found' : 'cur' }); await sleep(450); if (!alive()) return; }
+      st.innerHTML = `<b>Arreglo: 1 paso. Lista: 5 pasos.</b> Los dos encontraron ${A[4]}, pero el arreglo fue directo y la lista tuvo que pasar por todos. Esta vez ganó el arreglo.`;
+    };
+    $('.rst', box).onclick = reset;
+    reset();
+  },
+
+  insercion(box) {
+    const NAMES = ['Martina', 'Carlos', 'Zoe', 'Ana', 'Lucas', 'Beatriz', 'Iván'];
+    const CODE = P`<?php
+function insercion(array $a): array {
+    for ($i = 1; $i < count($a); $i++) {
+        $actual = $a[$i];                  // tomo el siguiente nombre
+        $j = $i - 1;
+        while ($j >= 0 && strcmp($a[$j], $actual) > 0) {
+            $a[$j + 1] = $a[$j];           // corro el mayor a la derecha
+            $j--;
+        }
+        $a[$j + 1] = $actual;              // lo inserto en su lugar
+    }
+    return $a;
+}
+
+echo implode(", ", insercion($nombres));`;
+    let arr, tk = 0;
+    box.innerHTML = `<div class="two"><div class="panel"><div class="cells nm"></div><div style="height:28px"></div><div class="status"></div><div style="height:10px"></div>
+      <div class="counters"><span>Comparaciones: <b class="cc">0</b></span><span>Movimientos: <b class="cm">0</b></span></div>
+      <div class="qnav"><button class="btn go">${ICON.play}Ordenar</button><button class="btn ghost mix">${ICON.redo}Mezclar</button></div>
+      <div class="term" style="margin-top:14px"><div class="term-h"><span class="p">$</span> php insercion.php</div><pre class="term-out"></pre></div></div>
+      <pre class="code">${codeLines(CODE)}</pre></div>`;
+    const lines = $$('.ln', box), st = $('.status', box);
+    const mark = n => lines.forEach((l, i) => l.classList.toggle('hl', i === n));
+    const draw = (cls = {}, sorted = 0) => { $('.nm', box).innerHTML = arr.map((v, i) => `<div class="cell w ${cls[i] || (i < sorted ? 'ok' : '')}">${v}<small>${i}</small></div>`).join(''); };
+    const mix = () => { tk++; arr = [...NAMES].sort(() => Math.random() - .5); draw(); mark(-1); $('.cc', box).textContent = 0; $('.cm', box).textContent = 0;
+      $('.term-out', box).innerHTML = `<span class="dim">$nombres = [${arr.map(x => `"${x}"`).join(', ')}];</span>`; st.textContent = 'Los nombres con borde verde ya están ordenados.'; };
+    $('.mix', box).onclick = mix;
+    $('.go', box).onclick = async () => {
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; let c = 0, m = 0;
+      $('.cc', box).textContent = 0; $('.cm', box).textContent = 0;
+      for (let i = 1; i < arr.length; i++) {
+        const key = arr[i]; mark(3); draw({ [i]: 'cur' }, i); st.innerHTML = `Agarro <b>${key}</b> y busco su lugar entre los que ya están ordenados.`; await sleep(800); if (!alive()) return;
+        let j = i - 1;
+        while (j >= 0) {
+          c++; $('.cc', box).textContent = c; mark(5); draw({ [j]: 'prev', [j + 1]: 'cur' }, i + 1);
+          const bigger = arr[j] > key; st.innerHTML = `¿«${arr[j]}» va después de «${key}»? <b>${bigger ? 'Sí: lo corro a la derecha.' : 'No: encontré el lugar.'}</b>`;
+          await sleep(750); if (!alive()) return;
+          if (!bigger) break;
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]; m++; $('.cm', box).textContent = m; mark(6); draw({ [j]: 'cur' }, i + 1); await sleep(450); if (!alive()) return; j--;
+        }
+        mark(9); draw({}, i + 1); await sleep(400); if (!alive()) return;
+      }
+      draw({}, arr.length); mark(14); st.innerHTML = `<b>¡Listo!</b> Hice ${c} comparaciones y ${m} movimientos. Es la misma lista, ahora ordenada.`;
+      typeOut($('.term-out', box), arr.join(', '));
+    };
+    mix();
+  },
+};
+
+/* ---------- Navegación ---------- */
+const wrap = $('#wrap');
+function go(i, dir) {
+  i = Math.max(0, Math.min(SLIDES.length - 1, i)); if (i === cur) return;
+  dir = dir ?? (i > cur ? 1 : -1); NAV++;
+  const s = SLIDES[i], m = MODULES[s.mi];
+  const old = $('.slide:not(.leave)', wrap);
+  if (old) { old.style.setProperty('--dir', dir); old.classList.add('leave'); setTimeout(() => old.remove(), 230); }
+  const el = document.createElement('section'); el.className = 'slide enter'; el.style.setProperty('--dir', dir);
+  el.setAttribute('aria-label', s.title); el.innerHTML = R[s.type](s); wrap.appendChild(el);
+  H[s.type]?.(el, s);
+  $$('[data-go="next"]', el).forEach(b => b.onclick = () => go(cur + 1));
+  cur = i;
+  $('#tabName').textContent = s.file || 'slide.php';
+  $('#crumb').textContent = `${m.unit}, ${m.part.replace('Parte','parte')}`;
+  $('#modName').textContent = `${s.mi + 1}. ${m.title}`;
+  $('#pos').innerHTML = `<b>${i + 1}</b> de ${SLIDES.length}`;
+  $('#bar').style.width = ((i + 1) / SLIDES.length * 100) + '%';
+  $('#prev').disabled = i === 0; $('#next').disabled = i === SLIDES.length - 1;
+  store.set('pos', i);
+  try { history.replaceState(null, '', '#' + (i + 1)); } catch {}
+  markDrawer();
+}
+
+/* ---------- Índice lateral ---------- */
+function buildDrawer() {
+  const open = new Set($$('.dmod.open').map(d => +d.dataset.mi)); if (!open.size && cur >= 0) open.add(SLIDES[cur].mi);
+  $('#dlist').innerHTML = MODULES.map((m, mi) => {
+    const qs = QUIZZES.filter(q => q.mi === mi), t = qs.reduce((a, q) => a + q.questions.length, 0), c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0);
+    return `<div class="dmod ${open.has(mi) ? 'open' : ''}" data-mi="${mi}"><button aria-expanded="${open.has(mi)}"><span class="num">${mi + 1}</span><span class="mt"><b>${m.title}</b><span>${m.unit}, ${m.part.replace('Parte','parte')}: ${c}/${t} correctas</span></span>${ICON.chev}</button>
+      <ul class="dslides">${m.slides.map(s => `<li><button data-i="${s.idx}">${s.type === 'quiz' ? 'Cuestionario' : s.type === 'cover' ? 'Portada' : s.title}${s.type === 'quiz' ? `<span class="qb ${scores[s.qid] ? 'done' : ''}">${scores[s.qid] ? scores[s.qid].c + '/' + scores[s.qid].t : s.questions.length + ' preg.'}</span>` : ''}</button></li>`).join('')}</ul></div>`;
+  }).join('');
+  $$('.dmod>button').forEach(b => b.onclick = () => { const d = b.parentElement; d.classList.toggle('open'); b.setAttribute('aria-expanded', d.classList.contains('open')); });
+  $$('.dslides button').forEach(b => b.onclick = () => { go(+b.dataset.i); drawer(false); });
+  markDrawer();
+}
+function markDrawer() { $$('.dslides button').forEach(b => b.classList.toggle('cur', +b.dataset.i === cur)); }
+function drawer(on) { $('#drawer').classList.toggle('on', on); $('#backdrop').classList.toggle('on', on); $('#menuBtn').setAttribute('aria-expanded', on);
+  if (on) { const s = SLIDES[cur]; const d = $(`.dmod[data-mi="${s.mi}"]`); if (d && !d.classList.contains('open')) d.firstElementChild.click(); setTimeout(() => $('.dslides button.cur')?.scrollIntoView({ block: 'center' }), 50); } }
+function updateScore() { const c = Object.values(scores).reduce((a, x) => a + x.c, 0); $('#scoreTxt').textContent = `${c}/${TOTALQ}`; }
+
+/* ---------- Tema ---------- */
+const root = document.documentElement;
+function setTheme(t) { root.setAttribute('data-theme', t); store.set('theme', t); }
+setTheme(store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#themeBtn').onclick = () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+/* ---------- Eventos globales ---------- */
+$('#prev').onclick = () => go(cur - 1);
+$('#next').onclick = () => go(cur + 1);
+$('#menuBtn').onclick = () => drawer(true);
+$('#closeDrawer').onclick = $('#backdrop').onclick = () => drawer(false);
+$('#scoreBtn').onclick = () => go(SLIDES.length - 1);
+if (!document.fullscreenEnabled) $('#fsBtn').style.display = 'none';
+$('#fsBtn').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen(); } catch {} };
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea') || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape') return drawer(false);
+  if ($('#drawer').classList.contains('on')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0); else if (e.key === 'End') go(SLIDES.length - 1);
+  else if (SLIDES[cur].type === 'quiz' && /^[a-dA-D1-4]$/.test(e.key)) { const j = isNaN(e.key) ? 'abcd'.indexOf(e.key.toLowerCase()) : +e.key - 1; $$('.slide:not(.leave) .opt:not([disabled])')[j]?.click(); }
+});
+let tx = null, ty = 0;
+$('#stage').addEventListener('touchstart', e => { tx = e.target.closest('.code,.twrap,input,.bars,.cells,.log,.chart,.flip,.ll,.que,.stk') ? null : e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; }, { passive: true });
+
+/* ---------- Inicio ---------- */
+const fromHash = parseInt(location.hash.slice(1), 10);
+updateScore(); buildDrawer();
+go(!isNaN(fromHash) ? fromHash - 1 : store.get('pos', 0), 1);
+</script>
+</body>
+</html>
