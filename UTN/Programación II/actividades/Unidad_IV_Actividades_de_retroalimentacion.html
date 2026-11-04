@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II · Unidad IV · Actividades de retroalimentación: TAD Árbol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(16px,4vw,48px) clamp(14px,4vw,40px) 80px}
+header.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(22px,4vw,40px);margin-bottom:28px;position:relative;overflow:hidden}
+header.hero::after{content:"{ }";position:absolute;right:28px;top:10px;font-family:var(--mono);font-size:7rem;color:var(--accent);opacity:.08;line-height:1}
+.kicker{font-family:var(--mono);color:var(--accent);font-size:.9rem;margin:0 0 8px}
+h1{font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 10px;font-weight:700}
+.sub{color:var(--muted);margin:0;font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--accent-soft);font-size:.85rem;font-weight:600}
+.callout{display:flex;gap:14px;padding:18px 20px;border-radius:14px;border:1px solid var(--line);background:var(--surface);margin:0 0 16px}
+.callout .ico{font-size:1.4rem;flex:none;line-height:1.2}
+.callout h2{margin:0 0 4px;font-size:1.1rem}
+.callout p{margin:0;color:var(--muted)}
+.callout.warn{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 35%,transparent)}
+.callout.warn p{color:var(--text)}
+h2.sec{font-size:clamp(1.4rem,3vw,1.9rem);letter-spacing:-.02em;margin:44px 0 18px;display:flex;align-items:center;gap:12px}
+h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+article.act{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,30px);margin:0 0 22px;page-break-inside:avoid}
+.ahead{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px;margin-bottom:6px}
+.ahead h3{margin:0;font-size:1.3rem;letter-spacing:-.01em}
+.lvl{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.02em;text-transform:uppercase}
+.lvl.b{background:var(--mint-soft);color:var(--mint)}.lvl.i{background:var(--amber-soft);color:var(--amber)}.lvl.p{background:var(--coral-soft);color:var(--coral)}
+.ctx{margin:10px 0 0;color:var(--text)}
+.ctx b,.req b{font-weight:650}
+.ctx .lab{display:block;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.req{margin-top:18px}
+.req h4{margin:0 0 8px;font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+ol.q,ul.q{margin:0;padding-left:0;list-style:none;display:grid;gap:9px}
+ol.q{counter-reset:q}
+ol.q>li{counter-increment:q;position:relative;padding-left:36px}
+ol.q>li::before{content:counter(q,lower-alpha)")";position:absolute;left:0;top:0;width:28px;font-family:var(--mono);font-weight:700;color:var(--accent)}
+ul.q>li{position:relative;padding-left:22px}
+ul.q>li::before{content:"";position:absolute;left:2px;top:.65em;width:9px;height:9px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+ul.sub2{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr));gap:14px;margin:16px 0}
+.fig{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:12px 12px 8px;text-align:center}
+.fig .cap{font-family:var(--mono);font-size:.82rem;color:var(--muted);margin-top:4px}
+.fig .cap b{color:var(--text)}
+.fig.wide{grid-column:1/-1}
+svg.tree{width:100%;height:auto;display:block;margin:0 auto}
+.tree .ed{stroke:var(--line-strong);stroke-width:2}
+.tree .tn circle{fill:var(--surface);stroke:var(--accent);stroke-width:2.2}
+.tree .tn text{font-family:var(--mono);font-weight:700;font-size:16px;fill:var(--text)}
+.tree .tn.mark circle{fill:var(--amber-soft);stroke:var(--amber)}
+.tree .tn.root circle{fill:var(--accent-soft)}
+.tree .tn.ghost circle{fill:none;stroke:var(--line-strong);stroke-dasharray:4 4}
+.tree .tn.ghost text{fill:var(--muted);font-weight:400;font-size:13px}
+.seq{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle;margin:2px 0}
+.seq span{font-family:var(--mono);font-weight:600;padding:3px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line-strong)}
+code{font-family:var(--mono);font-size:.9em;background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.6;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow:auto;margin:12px 0 0}
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:14px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:var(--surface-2)}
+tbody tr:last-child>*{border-bottom:0}
+td.fill{color:var(--muted);font-family:var(--mono);font-size:.85rem}
+.note{margin:14px 0 0;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 10px 10px 0}
+details.sol{margin-top:18px;border:1px solid color-mix(in srgb,var(--mint) 40%,transparent);background:var(--mint-soft);border-radius:12px;padding:0}
+details.sol summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--mint);list-style:none;display:flex;align-items:center;gap:8px}
+details.sol summary::before{content:"▸";transition:transform .2s}
+details.sol[open] summary::before{transform:rotate(90deg)}
+details.sol .body{padding:0 16px 14px;border-top:1px solid color-mix(in srgb,var(--mint) 25%,transparent)}
+details.sol .body p{margin:10px 0 0}
+details.sol .body ol,details.sol .body ul{margin:8px 0 0;padding-left:22px}
+details.sol .body ol{list-style:lower-alpha}
+details.sol .body ol li::marker{font-family:var(--mono);font-weight:700;color:var(--mint)}
+details.sol .body li{margin:3px 0}
+.topbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px}
+.btn{font:inherit;font-weight:600;font-size:.9rem;padding:8px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);cursor:pointer}
+.btn:hover{background:var(--surface-2)}
+footer{color:var(--muted);font-size:.85rem;text-align:center;margin-top:40px}
+@media print{
+  body{background:#fff;color:#000}
+  .wrap{max-width:none;padding:0}
+  .topbar{display:none}
+  article.act,header.hero,.callout{border-color:#bbb;box-shadow:none}
+  details.sol{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <button class="btn" id="themeBtn">Modo claro / oscuro</button>
+    <button class="btn" id="solBtn">Mostrar todas las respuestas</button>
+    <button class="btn" onclick="print()">Imprimir / PDF</button>
+  </div>
+
+  <header class="hero">
+    <p class="kicker">Programación II · UTN Facultad Regional Resistencia · Unidad IV</p>
+    <h1>Actividades de retroalimentación<br>TAD Árbol (Parte I)</h1>
+    <p class="sub">Ejercicios para afianzar: partes de un árbol, tipos, propiedades (altura, profundidad y grado), inserción, búsqueda y recorridos. Incluye autocorrección al final de cada actividad.</p>
+    <div class="meta"><span class="pill">8 actividades</span><span class="pill">3 niveles</span><span class="pill">Papel + PHP</span><span class="pill">Optativo</span></div>
+  </header>
+
+  <div class="callout warn"><div class="ico">📌</div><div><h2>Información importante</h2><p>Las siguientes actividades son de carácter <b>optativo</b> y están concebidas exclusivamente como material de refuerzo para quienes deseen afianzar los conceptos trabajados en la Unidad IV. Cada actividad trae una sección <b>«Autocorrección»</b>: intentá resolverla completa antes de abrirla.</p></div></div>
+  <div class="callout"><div class="ico">📂</div><div><h2>Instrucciones de entrega</h2><p>En caso de realizar los ejercicios, comprimir la solución en un único archivo (<b>.zip</b> o <b>.rar</b>) que contenga: un documento (<b>.pdf</b> o <b>.txt</b>) con las respuestas de las actividades 1 a 6, y los <b>scripts PHP</b> de las actividades 7 y 8. Los árboles pueden dibujarse a mano, fotografiarse e incluirse en el documento.</p></div></div>
+  <div class="callout"><div class="ico">💡</div><div><h2>Convenciones usadas en este documento</h2><p>La <b>altura</b> del árbol se cuenta en <b>niveles</b> (la raíz es el nivel 0; un árbol con solo la raíz tiene altura 1). La <b>profundidad</b> de un nodo se cuenta en <b>aristas</b> desde la raíz (la raíz tiene profundidad 0). En los árboles binarios de búsqueda, los valores <b>menores van a la izquierda</b> y los <b>mayores a la derecha</b>. Un árbol es <b>balanceado</b> cuando, en todos sus nodos, las ramas izquierda y derecha difieren como máximo en un nivel.</p></div></div>
+
+  <h2 class="sec">Nivel básico</h2>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 1: Las partes de un árbol</h3><span class="lvl b">Básico</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Una empresa dibuja su organigrama como un árbol: cada nodo es un puesto y las líneas indican de quién depende cada uno. Antes de cargarlo en un sistema, necesitan nombrar correctamente cada parte de la estructura.</p>
+    <div class="figs"><div class="fig" data-tree="t1"><div class="cap">Figura 1</div></div></div>
+    <div class="req"><h4>Consignas</h4>
+      <ol class="q">
+        <li>¿Cuál es la <b>raíz</b> del árbol? ¿Por qué?</li>
+        <li>Enumerá todas las <b>hojas</b>.</li>
+        <li>¿Quiénes son los <b>hijos</b> de C? ¿Y el <b>padre</b> de H?</li>
+        <li>¿Qué nodos son <b>hermanos</b> de D? ¿Y de B?</li>
+        <li>Nombrá un nodo que sea <b>hijo y padre a la vez</b>, y explicá por qué cumple las dos cosas.</li>
+        <li>¿Cuántas <b>aristas</b> tiene el árbol? ¿Qué relación hay entre esa cantidad y la cantidad de nodos?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body"><ol>
+      <li>A: es el único nodo que no tiene padre.</li><li>D, H, F y G (no tienen hijos).</li><li>Hijos de C: F y G. Padre de H: E.</li><li>Hermano de D: E (ambos hijos de B). Hermano de B: C (ambos hijos de A).</li><li>B, C o E. Por ejemplo, E es hijo de B y padre de H.</li><li>7 aristas y 8 nodos. En todo árbol, la cantidad de aristas es la cantidad de nodos menos 1, porque cada nodo salvo la raíz tiene exactamente una arista que lo une a su padre.</li>
+    </ol></div></details>
+  </article>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 2: Tipos de árboles</h3><span class="lvl b">Básico</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Un equipo de desarrollo recibió cuatro estructuras dibujadas por distintos analistas y debe clasificarlas antes de decidir qué clase de PHP usar para cada una.</p>
+    <div class="figs">
+      <div class="fig" data-tree="t2a"><div class="cap">Figura 2.a</div></div>
+      <div class="fig" data-tree="t2b"><div class="cap">Figura 2.b</div></div>
+      <div class="fig" data-tree="t2c"><div class="cap">Figura 2.c</div></div>
+      <div class="fig" data-tree="t2d"><div class="cap">Figura 2.d</div></div>
+    </div>
+    <div class="req"><h4>Consignas</h4>
+      <ol class="q">
+        <li>Para cada figura, indicá si es un árbol <b>binario</b> o <b>N-ario</b> (y en ese caso, de qué N). Justificá nombrando el nodo que lo determina.</li>
+        <li>Para cada árbol binario, indicá si está <b>balanceado</b>. Si no lo está, nombrá el nodo donde se rompe la regla.</li>
+        <li>Las figuras 2.a y 2.d son árboles binarios <b>de búsqueda</b>. Verificá que cumplen la regla «menores a la izquierda, mayores a la derecha» en todos sus nodos.</li>
+        <li>¿Cuál de las cuatro estructuras elegirías para guardar las carpetas y subcarpetas de una computadora? ¿Por qué?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body"><ol>
+      <li>2.a: binario (ningún nodo supera los 2 hijos). 2.b: N-ario de grado 3, porque B tiene tres hijos (E, F y G). 2.c: binario. 2.d: binario.</li>
+      <li>2.a: balanceado (en 8, las ramas tienen 2 y 2 niveles; en 10, 1 y 0). 2.c: no balanceado; en el nodo 5 la rama izquierda tiene 3 niveles y la derecha 1. 2.d: balanceado, todas las hojas están en el mismo nivel.</li>
+      <li>2.a: 3 &lt; 8 &lt; 10; 1 &lt; 3 &lt; 6; 14 &gt; 10. 2.d: 10 &lt; 20 &lt; 30; 5 &lt; 10 &lt; 15; 25 &lt; 30 &lt; 35. Se cumple en todos.</li>
+      <li>La N-aria (2.b): una carpeta puede contener cualquier cantidad de subcarpetas, así que no sirve un límite de 2 hijos.</li>
+    </ol></div></details>
+  </article>
+
+  <h2 class="sec">Nivel intermedio</h2>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 3: Propiedades de un árbol</h3><span class="lvl i">Intermedio</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Para estimar cuánto tarda una búsqueda, el equipo necesita medir sus árboles: altura, profundidad de ciertos nodos y grado. Completá la tabla para las tres figuras.</p>
+    <div class="figs">
+      <div class="fig" data-tree="t3a"><div class="cap">Figura 3.a</div></div>
+      <div class="fig" data-tree="t3b"><div class="cap">Figura 3.b</div></div>
+      <div class="fig" data-tree="t3c"><div class="cap">Figura 3.c</div></div>
+    </div>
+    <div class="twrap"><table>
+      <thead><tr><th>Propiedad</th><th>Figura 3.a</th><th>Figura 3.b</th><th>Figura 3.c</th></tr></thead>
+      <tbody>
+        <tr><td>Cantidad de nodos</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+        <tr><td>Cantidad de hojas</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+        <tr><td>Altura del árbol (en niveles)</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+        <tr><td>Profundidad del nodo marcado</td><td class="fill">nodo G: …</td><td class="fill">nodo X: …</td><td class="fill">nodo 4: …</td></tr>
+        <tr><td>Grado del nodo raíz</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+        <tr><td>Grado del árbol</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+        <tr><td>¿Binario o N-ario?</td><td class="fill">…</td><td class="fill">…</td><td class="fill">…</td></tr>
+      </tbody>
+    </table></div>
+    <div class="req"><h4>Preguntas adicionales</h4>
+      <ol class="q">
+        <li>En la figura 3.a, ¿qué nodos tienen profundidad 2?</li>
+        <li>La figura 3.c tiene 4 nodos y altura 4. ¿Qué altura mínima podría tener un árbol binario con esos mismos 4 valores si estuviera bien distribuido? Dibujalo.</li>
+        <li>¿Por qué, para buscar, es mejor un árbol de poca altura que uno de mucha altura con la misma cantidad de nodos?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body">
+      <div class="twrap"><table><thead><tr><th>Propiedad</th><th>3.a</th><th>3.b</th><th>3.c</th></tr></thead><tbody>
+        <tr><td>Nodos</td><td>8</td><td>9</td><td>4</td></tr><tr><td>Hojas</td><td>4 (D, E, G, H)</td><td>4 (V, T, X, Y)</td><td>1 (el 4)</td></tr>
+        <tr><td>Altura</td><td>4</td><td>4</td><td>4</td></tr><tr><td>Profundidad</td><td>G: 3</td><td>X: 3</td><td>4: 3</td></tr>
+        <tr><td>Grado de la raíz</td><td>2</td><td>3</td><td>1</td></tr><tr><td>Grado del árbol</td><td>2</td><td>3</td><td>1</td></tr><tr><td>Tipo</td><td>Binario</td><td>N-ario (3)</td><td>Binario (degenerado, parece una lista)</td></tr>
+      </tbody></table></div>
+      <ol><li>D, E y F.</li><li>Altura 3: por ejemplo 2 como raíz, 1 a la izquierda, 3 a la derecha y 4 como hijo derecho de 3 (o cualquier distribución con 3 niveles).</li><li>Porque cada comparación baja un nivel: la cantidad de comparaciones en el peor caso es igual a la altura. Con 4 nodos en fila (altura 4) puede hacer 4 comparaciones; bien distribuidos (altura 3) hace como mucho 3. La diferencia crece muchísimo con más datos: 1000 nodos en fila son hasta 1000 comparaciones; balanceados, unas 10.</li></ol>
+    </div></details>
+  </article>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 4: Inserción en un árbol binario de búsqueda</h3><span class="lvl i">Intermedio</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Un sistema de turnos guarda los números de orden en un árbol binario de búsqueda. El orden en que llegan los turnos cambia la forma del árbol, y el equipo quiere entender cuánto.</p>
+    <div class="req"><h4>Consignas</h4>
+      <ol class="q">
+        <li>Partiendo de un árbol vacío, dibujá el árbol que queda al insertar, en este orden: <span class="seq"><span>50</span><span>30</span><span>70</span><span>20</span><span>40</span><span>60</span><span>80</span></span></li>
+        <li>Ahora dibujá el árbol que queda con los <b>mismos valores</b> pero en este orden: <span class="seq"><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span></span></li>
+        <li>Compará los dos árboles: cantidad de nodos, altura y si están balanceados. ¿Qué conclusión sacás sobre insertar datos que ya vienen ordenados?</li>
+        <li>Sobre el árbol del punto a), insertá <b>45</b> y después <b>65</b>. Indicá, para cada uno, la secuencia de comparaciones que hace hasta encontrar su lugar (por ejemplo: «45 &lt; 50, voy a la izquierda; 45 &gt; 30, …»).</li>
+        <li>¿Qué pasa si intentamos insertar el <b>40</b> otra vez? Explicá qué debería hacer el programa.</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body">
+      <div class="figs"><div class="fig" data-tree="s4a"><div class="cap">Respuesta a</div></div><div class="fig" data-tree="s4b"><div class="cap">Respuesta b</div></div></div>
+      <ol start="3"><li>Los dos tienen 7 nodos. El primero tiene altura 3 y está balanceado; el segundo tiene altura 7 y es una fila hacia la derecha. Conclusión: si los datos vienen ordenados, el árbol se degenera en una lista y pierde su ventaja para buscar.</li>
+      <li>45: 45 &lt; 50 (izquierda) → 45 &gt; 30 (derecha) → 45 &gt; 40 (derecha) → lugar vacío: hijo derecho de 40. 65: 65 &gt; 50 (derecha) → 65 &lt; 70 (izquierda) → 65 &gt; 60 (derecha) → lugar vacío: hijo derecho de 60.</li>
+      <li>Baja 40 &lt; 50 (izquierda), 40 &gt; 30 (derecha) y llega al nodo 40: son iguales. En este árbol no se repiten valores, así que no inserta nada (y el programa podría avisar que ya existe).</li></ol>
+    </div></details>
+  </article>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 5: Búsqueda en un árbol binario de búsqueda</h3><span class="lvl i">Intermedio</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Un depósito identifica sus estanterías con números y los guarda en el siguiente árbol. Un operario necesita saber, para cada pedido, cuántas comparaciones hace el sistema hasta encontrar (o no) la estantería.</p>
+    <div class="figs"><div class="fig" data-tree="t5"><div class="cap">Figura 5</div></div></div>
+    <div class="req"><h4>Consignas</h4>
+      <ol class="q">
+        <li>Escribí el camino que sigue la búsqueda del valor <b>35</b> (nodos visitados en orden) y la cantidad de comparaciones.</li>
+        <li>Lo mismo para el valor <b>50</b>.</li>
+        <li>Lo mismo para el valor <b>65</b>. ¿En qué momento el programa sabe que no está?</li>
+        <li>¿Qué valores del árbol se encuentran con <b>una sola</b> comparación? ¿Y cuáles necesitan la mayor cantidad?</li>
+        <li>¿Cuál es la cantidad máxima de comparaciones que puede hacer una búsqueda en este árbol, exista o no el valor? ¿Con qué propiedad del árbol se relaciona?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body"><ol>
+      <li>40 → 20 → 30 → 35. Cuatro comparaciones (35 &lt; 40, 35 &gt; 20, 35 &gt; 30, 35 = 35).</li>
+      <li>40 → 60 → 50. Tres comparaciones.</li>
+      <li>40 → 60 → 70; como 65 &lt; 70 debería ir al hijo izquierdo de 70, pero está vacío (null): ahí sabe que no está. Tres comparaciones.</li>
+      <li>Con una sola: solo el 40 (la raíz). Con la mayor cantidad (4): 25, 35 y 80, los nodos más profundos.</li>
+      <li>4, que coincide con la altura del árbol: en el peor caso se baja un nivel por comparación hasta llegar a una hoja.</li>
+    </ol></div></details>
+  </article>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 6: Recorridos</h3><span class="lvl i">Intermedio</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Un sistema necesita listar todos los nodos de un árbol en distintos órdenes: para mostrarlos ordenados, para copiar el árbol y para borrarlo de forma segura (hijos antes que padres).</p>
+    <div class="figs"><div class="fig" data-tree="t6a"><div class="cap">Figura 6.a</div></div><div class="fig" data-tree="t6b"><div class="cap">Figura 6.b</div></div></div>
+    <div class="req"><h4>Consignas</h4>
+      <ol class="q">
+        <li>Escribí los recorridos <b>preorden</b>, <b>inorden</b> y <b>postorden</b> de la figura 6.a.</li>
+        <li>La figura 6.a es un árbol binario de búsqueda si consideramos el orden alfabético. ¿Cuál de los tres recorridos devuelve las letras ordenadas? ¿Por qué pasa eso?</li>
+        <li>Estas tres listas corresponden a los tres recorridos de la figura 6.b, pero están desordenadas. Indicá cuál es cuál y explicá cómo lo reconociste sin recorrer el árbol:
+          <ul class="sub2"><li><span class="seq"><span>1</span><span>5</span><span>3</span><span>8</span><span>9</span><span>7</span></span></li><li><span class="seq"><span>7</span><span>3</span><span>1</span><span>5</span><span>9</span><span>8</span></span></li><li><span class="seq"><span>1</span><span>3</span><span>5</span><span>7</span><span>8</span><span>9</span></span></li></ul></li>
+        <li>¿Qué recorrido usarías para <b>borrar</b> un árbol nodo por nodo sin dejar hijos «huérfanos»? ¿Y para <b>copiarlo</b> insertando los valores en otro árbol vacío de modo que quede igual?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body"><ol>
+      <li>Preorden: F, B, A, D, C, E, G, I, H. Inorden: A, B, C, D, E, F, G, H, I. Postorden: A, C, E, D, B, H, I, G, F.</li>
+      <li>El inorden. Porque visita primero todo lo que está a la izquierda (lo menor), después la raíz y después lo de la derecha (lo mayor), y esa regla se repite en cada subárbol.</li>
+      <li>«7, 3, 1, 5, 9, 8» es preorden: empieza por la raíz (7). «1, 5, 3, 8, 9, 7» es postorden: termina con la raíz. «1, 3, 5, 7, 8, 9» es inorden: está ordenada y la raíz queda en el medio.</li>
+      <li>Para borrar: postorden (primero los hijos, al final el padre). Para copiar: preorden (la raíz se inserta primera y queda como raíz del nuevo árbol, y así en cada subárbol).</li>
+    </ol></div></details>
+  </article>
+
+  <h2 class="sec">Nivel progresivo (PHP)</h2>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 7: TAD Árbol binario de búsqueda en PHP</h3><span class="lvl p">Progresivo</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>Una biblioteca guarda los códigos numéricos de sus libros en una planilla y, cada vez que alguien consulta si un libro existe, un empleado revisa la lista completa. Quieren reemplazar la planilla por un árbol binario de búsqueda implementado como TAD, de modo que el resto del sistema solo use sus operaciones y nunca toque los nodos directamente.</p>
+    <div class="req"><h4>Requerimientos técnicos</h4>
+      <ul class="q">
+        <li><b>Clase <code>Nodo</code></b>
+          <ul class="sub2"><li>Propiedades: <code>valor</code> (int, readonly), <code>izq</code> (?Nodo, pública), <code>der</code> (?Nodo, pública).</li><li>Constructor con tipos declarados.</li></ul></li>
+        <li><b>Clase <code>ArbolBinarioBusqueda</code></b>
+          <ul class="sub2">
+            <li>Propiedad privada <code>raiz</code> (?Nodo), inicialmente <code>null</code>.</li>
+            <li><code>insertar(int $valor): void</code> — Ubica el valor según la regla del árbol de búsqueda. Si ya existe, no lo repite. Implementarlo de forma <b>recursiva</b> con un método privado auxiliar.</li>
+            <li><code>buscar(int $valor): bool</code> — Devuelve si el valor está en el árbol. Implementarlo de forma <b>iterativa</b> (con <code>while</code>).</li>
+            <li><code>preorden(): array</code>, <code>inorden(): array</code>, <code>postorden(): array</code> — Devuelven los valores visitados en el orden correspondiente.</li>
+            <li><code>altura(): int</code> — Calculada recursivamente: un árbol vacío tiene altura 0 y una hoja altura 1.</li>
+            <li><code>contarHojas(): int</code> y <code>contarNodos(): int</code>.</li>
+            <li><code>estaVacio(): bool</code>.</li>
+          </ul></li>
+        <li><b>Script de prueba <code>prueba.php</code></b>
+          <ul class="sub2"><li>Insertar, en este orden: 50, 30, 70, 20, 40, 60, 80, 45, 65.</li><li>Mostrar los tres recorridos, la altura, la cantidad de nodos y de hojas.</li><li>Buscar 45, 65 y 100, e informar el resultado de cada búsqueda.</li><li>Verificar que el inorden salga ordenado de menor a mayor.</li></ul></li>
+      </ul>
+    </div>
+    <div class="note"><b>Para empezar:</b> podés partir de esta estructura mínima y completar los métodos que faltan.</div>
+<pre class="code">&lt;?php
+class Nodo {
+    public ?Nodo $izq = null;
+    public ?Nodo $der = null;
+    public function __construct(public readonly int $valor) {}
+}
+
+class ArbolBinarioBusqueda {
+    private ?Nodo $raiz = null;
+
+    public function insertar(int $valor): void {
+        $this-&gt;raiz = $this-&gt;insertarEn($this-&gt;raiz, $valor);
+    }
+
+    private function insertarEn(?Nodo $nodo, int $valor): Nodo {
+        // si $nodo es null, devolver un Nodo nuevo
+        // si $valor es menor, insertar en $nodo-&gt;izq; si es mayor, en $nodo-&gt;der
+        // devolver $nodo
+    }
+
+    // buscar(), inorden(), preorden(), postorden(), altura(), contarHojas(), contarNodos(), estaVacio()
+}</pre>
+    <details class="sol"><summary>Autocorrección: salida esperada de prueba.php</summary><div class="body">
+<pre class="code">Preorden:  50 30 20 40 45 70 60 65 80
+Inorden:   20 30 40 45 50 60 65 70 80
+Postorden: 20 45 40 30 65 60 80 70 50
+Altura: 4
+Nodos: 9  |  Hojas: 4
+¿Está 45?  sí
+¿Está 65?  sí
+¿Está 100? no
+Inorden ordenado: sí</pre>
+      <p>Si tu altura da 3, probablemente estás contando aristas en vez de niveles; en este documento una hoja sola tiene altura 1.</p>
+    </div></details>
+  </article>
+
+  <article class="act">
+    <div class="ahead"><h3>Actividad 8: Legajos de alumnos (integradora)</h3><span class="lvl p">Progresivo</span></div>
+    <p class="ctx"><span class="lab">Contexto</span>La oficina de alumnos de una facultad atiende consultas por número de legajo. Hoy busca en una lista sin ordenar y, con miles de registros, cada consulta demora. Desean guardar los alumnos en un árbol binario de búsqueda ordenado por legajo, consultar rápidamente, y poder emitir un listado ordenado y estadísticas del árbol.</p>
+    <div class="req"><h4>Requerimientos técnicos</h4>
+      <ul class="q">
+        <li><b>Clase <code>Alumno</code></b>
+          <ul class="sub2"><li>Propiedades: <code>legajo</code> (int, readonly), <code>nombre</code> (string, pública), <code>carrera</code> (string, pública).</li><li>Método mágico <code>__toString()</code> que devuelva <code>"[legajo] nombre (carrera)"</code>.</li></ul></li>
+        <li><b>Clase <code>NodoAlumno</code></b> — Guarda un <code>Alumno</code> y las referencias <code>izq</code> y <code>der</code>.</li>
+        <li><b>Clase <code>ArbolAlumnos</code></b>
+          <ul class="sub2">
+            <li><code>agregar(Alumno $a): void</code> — Inserta según el legajo. Si el legajo ya existe, lanza una <code>Exception</code> con un mensaje claro.</li>
+            <li><code>buscarPorLegajo(int $legajo): ?Alumno</code> — Devuelve el alumno o <code>null</code>.</li>
+            <li><code>listadoOrdenado(): array</code> — Devuelve los alumnos ordenados por legajo de menor a mayor usando el recorrido adecuado (sin usar <code>sort</code> ni <code>usort</code>).</li>
+            <li><code>menorLegajo(): ?Alumno</code> y <code>mayorLegajo(): ?Alumno</code> — Pensá en qué parte del árbol están siempre, sin recorrerlo entero.</li>
+            <li><code>altura(): int</code> y <code>cantidad(): int</code>.</li>
+            <li>Método estático <code>contarConsultas(): int</code> — Cantidad acumulada de búsquedas realizadas en todos los árboles.</li>
+          </ul></li>
+        <li><b>Script <code>legajos.php</code></b>
+          <ul class="sub2"><li>Cargar al menos 8 alumnos con legajos en desorden (por ejemplo: 4120, 3050, 5870, 2010, 3500, 5100, 6300, 3200).</li><li>Intentar cargar un legajo repetido y capturar la excepción con <code>try/catch</code>.</li><li>Mostrar el listado ordenado, el menor y el mayor legajo, la altura y la cantidad de alumnos.</li><li>Buscar dos legajos (uno que exista y otro que no) y mostrar la cantidad de consultas realizadas.</li></ul></li>
+      </ul>
+    </div>
+    <div class="req"><h4>Preguntas para responder en el documento</h4>
+      <ol class="q">
+        <li>¿Qué recorrido usaste en <code>listadoOrdenado()</code> y por qué garantiza el orden?</li>
+        <li>Dibujá el árbol que queda con los legajos de ejemplo en el orden dado. ¿Está balanceado? ¿Qué altura tiene?</li>
+        <li>Si los legajos se cargaran en orden creciente (2010, 3050, 3200, …), ¿cómo quedaría el árbol y qué pasaría con el tiempo de búsqueda?</li>
+      </ol>
+    </div>
+    <details class="sol"><summary>Autocorrección</summary><div class="body">
+      <div class="figs"><div class="fig wide" data-tree="s8"><div class="cap">Árbol con los legajos de ejemplo (pregunta b)</div></div></div>
+      <ol><li>Inorden: izquierda (legajos menores), raíz, derecha (mayores), aplicado en cada subárbol.</li><li>Ver figura: 8 nodos, altura 4, balanceado (en ningún nodo las ramas difieren en más de un nivel). El menor legajo (2010) es el nodo más a la izquierda y el mayor (6300) el más a la derecha: para encontrarlos basta con bajar siempre por el mismo lado.</li><li>Quedaría una fila hacia la derecha de altura 8: cada búsqueda podría hacer hasta 8 comparaciones, igual que en una lista. Por eso existen los árboles balanceados, que se ven en la Parte II.</li></ol>
+    </div></details>
+  </article>
+
+  <footer>Programación II · UTN Facultad Regional Resistencia · Unidad IV: TAD Árbol (Parte I) · Material optativo de refuerzo</footer>
+</div>
+
+<script>
+/* ---------- Dibujo de árboles ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const N = (id, ...ch) => ({ id: String(id), ch });
+const M = (id, ...ch) => ({ id: String(id), ch, mark: true });
+const bst = arr => { const ins = (n, v) => { if (!n) return { id: String(v), ch: [null, null] }; if (v < +n.id) n.ch[0] = ins(n.ch[0], v); else if (v > +n.id) n.ch[1] = ins(n.ch[1], v); return n; }; let r = null; arr.forEach(v => r = ins(r, v)); return r; };
+const TREES = {
+  t1: N('A', N('B', N('D'), N('E', null, N('H'))), N('C', N('F'), N('G'))),
+  t2a: N(8, N(3, N(1), N(6)), N(10, null, N(14))),
+  t2b: N('A', N('B', N('E'), N('F'), N('G')), N('C'), N('D', N('H'))),
+  t2c: N(5, N(2, N(1, N(0), null), null), N(9)),
+  t2d: N(20, N(10, N(5), N(15)), N(30, N(25), N(35))),
+  t3a: N('A', N('B', N('D'), N('E')), N('C', N('F', M('G'), N('H')), null)),
+  t3b: N('R', N('S', N('V')), N('T'), N('U', N('W', M('X')), N('Y'))),
+  t3c: N(1, N(2, N(3, M(4), null), null), null),
+  s4a: bst([50, 30, 70, 20, 40, 60, 80]),
+  s4b: bst([20, 30, 40, 50, 60, 70, 80]),
+  t5: N(40, N(20, N(10), N(30, N(25), N(35))), N(60, N(50), N(70, null, N(80)))),
+  t6a: N('F', N('B', N('A'), N('D', N('C'), N('E'))), N('G', null, N('I', N('H'), null))),
+  t6b: N(7, N(3, N(1), N(5)), N(9, N(8), null)),
+  s8: bst([4120, 3050, 5870, 2010, 3500, 5100, 6300, 3200]),
+};
+function layout(root) {
+  let x = 0, maxd = 0; const pos = {};
+  const walk = (n, d) => { maxd = Math.max(maxd, d); const kids = n.ch || [];
+    if (!kids.some(Boolean)) { pos[n.id] = { x: x++, y: d }; return; }
+    const xs = []; kids.forEach(c => { if (c) { walk(c, d + 1); xs.push(pos[c.id].x); } else xs.push(x++); });
+    pos[n.id] = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: d }; };
+  walk(root, 0); return { pos, w: x, h: maxd + 1 };
+}
+function treeSVG(root) {
+  const { pos, w, h } = layout(root), U = 64, V = 70, PAD = 34, R = 20;
+  const W = Math.max(1, w - 1) * U + PAD * 2, H = (h - 1) * V + PAD * 2;
+  const X = id => PAD + pos[id].x * U, Y = id => PAD + pos[id].y * V;
+  let edges = '', nodes = '';
+  const walk = (n, depth) => { (n.ch || []).forEach(c => { if (!c) return; edges += `<line class="ed" x1="${X(n.id)}" y1="${Y(n.id)}" x2="${X(c.id)}" y2="${Y(c.id)}"/>`; walk(c, depth + 1); });
+    const big = n.id.length > 3;
+    nodes += `<g class="tn ${n.mark ? 'mark' : ''} ${depth === 0 ? 'root' : ''}" transform="translate(${X(n.id)},${Y(n.id)})"><circle r="${big ? R + 6 : R}"/><text text-anchor="middle" dy=".36em" ${big ? 'font-size="12"' : ''}>${esc(n.id)}</text></g>`; };
+  walk(root, 0);
+  return `<svg class="tree" viewBox="0 0 ${W} ${H}" style="max-width:${Math.round(W * 1.25)}px" role="img" aria-label="Árbol">${edges}${nodes}</svg>`;
+}
+document.querySelectorAll('[data-tree]').forEach(el => el.insertAdjacentHTML('afterbegin', treeSVG(TREES[el.dataset.tree])));
+
+/* ---------- Controles ---------- */
+const root = document.documentElement;
+document.getElementById('themeBtn').onclick = () => root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : (matchMedia('(prefers-color-scheme: dark)').matches && root.getAttribute('data-theme') !== 'light' ? 'light' : 'dark'));
+const solBtn = document.getElementById('solBtn');
+solBtn.onclick = () => { const all = [...document.querySelectorAll('details.sol')]; const open = all.some(d => !d.open); all.forEach(d => d.open = open); solBtn.textContent = open ? 'Ocultar todas las respuestas' : 'Mostrar todas las respuestas'; };
+</script>
+</body>
+</html>
