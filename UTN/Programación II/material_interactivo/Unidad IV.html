@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II · Unidad IV: TAD Árbol (Parte I)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;--code-gutter:#A2A6C0;--code-hl:#E9ECF8;
+  --t-kw:#6A3DB8;--t-var:#B3332A;--t-str:#7F5300;--t-num:#9A4F00;--t-fn:#0A6A94;--t-cls:#136B4C;--t-com:#7D819C;--t-this:#C0306A;
+  --term-bg:#1C1D2B;--term-text:#E7E7F1;--term-muted:#8C8FB0;
+  --shadow:0 1px 0 rgba(30,32,60,.04),0 18px 40px -24px rgba(30,32,60,.45);
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+    --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+    --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+    --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+    --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+    --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+  --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+  --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100%;overflow:hidden}
+
+/* ---------- Top bar ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-bottom:1px solid var(--line);background:var(--surface)}
+.iconbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);transition:background .2s,border-color .2s}
+.iconbtn:hover{background:var(--surface-2);border-color:var(--line-strong)}
+.iconbtn svg{width:20px;height:20px}
+.brand{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:0 1 auto}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.elephant{width:38px;height:24px;flex:none}
+.modname{margin-left:auto;margin-right:auto;font-weight:600;color:var(--muted);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.right{display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}
+.modname+.right{margin-left:0}
+.score{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;background:var(--accent-soft);color:var(--text);font-weight:600;font-size:.88rem;border:0}
+.score svg{width:16px;height:16px;color:var(--accent)}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.theme-ico .moon{display:none}
+:root[data-theme="dark"] .theme-ico .sun{display:none}
+:root[data-theme="dark"] .theme-ico .moon{display:block}
+
+/* ---------- Stage / frame ---------- */
+.stage{position:relative;overflow:hidden;padding:clamp(8px,2vw,22px);min-height:0}
+.frame{position:relative;height:100%;max-width:1240px;margin:0 auto;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tabbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:42px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
+.tab{display:inline-flex;align-items:center;gap:8px;height:100%;padding:0 12px;font-family:var(--mono);font-size:.8rem;color:var(--text);background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);position:relative;top:1px}
+.tab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.crumb{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slide-wrap{position:relative;flex:1;min-height:0}
+.slide{position:absolute;inset:0;overflow:auto;padding:clamp(18px,3.6vw,46px) clamp(16px,4vw,56px) clamp(24px,3.6vw,46px);scrollbar-gutter:stable}
+.slide.enter{animation:slideIn .42s cubic-bezier(.2,.8,.2,1) both}
+.slide.leave{animation:slideOut .22s ease both;pointer-events:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(calc(var(--dir,1)*36px))}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(calc(var(--dir,1)*-24px))}}
+.rv{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*70ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.stitle{font-size:clamp(1.55rem,3.1vw,2.5rem);line-height:1.12;letter-spacing:-.02em;font-weight:700;margin:0 0 .5em;max-width:28ch}
+.stitle .brace,.cbrace{font-family:var(--mono);font-weight:400;color:var(--accent);opacity:.7}
+.stitle .brace{margin-left:.35em}
+.cbrace{font-size:clamp(1.4rem,2.6vw,2rem);margin-top:22px;line-height:1}
+.lead{font-size:clamp(1.02rem,1.5vw,1.22rem);max-width:68ch;margin:0 0 1.1em;color:var(--text)}
+.lead b,.pts b,.card b{font-weight:650}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.85em;padding:0 .45em;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+.pts{list-style:none;padding:0;margin:0 0 1em;display:grid;gap:10px;max-width:72ch}
+.pts li{position:relative;padding-left:22px}
+.pts li::before{content:"";position:absolute;left:2px;top:.62em;width:9px;height:9px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.pts li b{color:var(--text)}
+.ptitle{font-size:.95rem;font-weight:700;margin:1.2em 0 .6em;color:var(--muted)}
+.analogy{display:flex;gap:14px;align-items:flex-start;max-width:72ch;margin:1.2em 0 0;padding:16px 18px;border-radius:12px;background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent)}
+.analogy svg{flex:none;width:24px;height:24px;color:var(--amber);margin-top:2px}
+.analogy p{margin:0}
+.analogy strong{display:block;font-size:.85rem;color:var(--amber);margin-bottom:2px}
+.note{max-width:76ch;margin:1.2em 0 0;padding:14px 18px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 10px 10px 0}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;margin:0 0 1em}
+.group{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.group h3{margin:0 0 6px;font-size:1.1rem}
+.group p{margin:0}
+.group .pts{margin:8px 0 0}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,220px)),1fr));gap:14px;margin:0 0 .5em}
+.card{position:relative;padding:18px 18px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:left}
+.card h3{margin:0 0 6px;font-size:1.08rem;letter-spacing:-.01em}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.card .ex{margin-top:12px;font-family:var(--mono);font-size:.78rem;padding:8px 10px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;white-space:pre}
+.cards.flow{grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}
+.cards.flow .card::after{content:"";position:absolute;right:-26px;top:50%;width:18px;height:18px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);transform:translateY(-50%) rotate(45deg)}
+.cards.flow .card:last-child::after{display:none}
+.cards.flow .card h3{color:var(--accent)}
+@media (max-width:720px){.cards.flow{grid-template-columns:1fr;gap:30px}.cards.flow .card::after{right:50%;top:auto;bottom:-24px;transform:translateX(50%) rotate(135deg)}}
+.flip{perspective:900px;padding:0;border:0;background:none;min-height:190px}
+.flip-in{position:relative;height:100%;min-height:190px;transition:transform .6s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.face h3{margin:0 0 6px;font-size:1.15rem}
+.face p{margin:0;color:var(--muted)}
+.face.back p{color:var(--text)}
+.face small{margin-top:auto;color:var(--accent);font-weight:600;font-size:.8rem}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;counter-reset:st}
+.steps>li{counter-increment:st;position:relative;padding:54px 16px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.steps>li::before{content:counter(st);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.9rem}
+.steps h3{margin:0 0 4px;font-size:1.02rem}
+.steps p{margin:0;color:var(--muted);font-size:.95rem}
+.steps ul{margin:8px 0 0;padding-left:18px;font-size:.92rem}
+
+/* tables */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 1em}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--surface-2);font-weight:700}
+tbody th{font-weight:700;color:var(--accent);white-space:nowrap;background:var(--surface-2);width:1%}
+tbody tr:last-child>*{border-bottom:0}
+td code{background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+
+/* cover */
+.cover{min-height:100%;display:grid;align-content:center;gap:10px;max-width:900px}
+.cover .unit{font-family:var(--mono);color:var(--accent);font-size:.95rem}
+.cover h1{font-size:clamp(2.4rem,7vw,5.2rem);line-height:.98;letter-spacing:-.035em;margin:0;font-weight:700}
+.cover h1 .brace{font-family:var(--mono);font-weight:400;color:var(--accent);font-size:.6em;vertical-align:.15em;margin-left:.15em}
+.cover .sub{font-size:clamp(1.05rem,1.8vw,1.35rem);color:var(--muted);max-width:52ch;margin:6px 0 10px}
+.topics{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:8px 0 0;list-style:none}
+.topics button{border:1px solid var(--line);background:var(--surface-2);padding:8px 14px;border-radius:999px;font-size:.92rem;transition:border-color .2s,background .2s}
+.topics button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.cover .start{justify-self:start;margin-top:18px}
+
+/* buttons / controls */
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;transition:transform .15s,filter .2s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn svg{width:16px;height:16px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ctrls{display:grid;gap:12px;margin:0 0 14px}
+.ctrl{display:grid;gap:5px;font-size:.88rem;color:var(--muted);font-weight:500}
+.ctrl input[type=text],.ctrl input[type=number],.ctrl select{height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.9rem;width:100%}
+.ctrl input:focus,.ctrl select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctrl output{font-family:var(--mono);color:var(--text);font-weight:600}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font-family:var(--mono);font-size:.82rem;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;color:var(--text)}
+.switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;transition:background .2s;cursor:pointer;margin:0;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(18px)}
+
+/* code */
+.code-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.code-layout{grid-template-columns:minmax(0,1fr)}}
+.code{position:relative;margin:0;font-family:var(--mono);font-size:clamp(.74rem,1.02vw,.86rem);line-height:1.65;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;overflow:auto;padding:14px 0;counter-reset:l;tab-size:4}
+.code.flash{animation:flash .6s ease}
+@keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}to{box-shadow:0 0 0 0 transparent}}
+.ln{display:block;padding:0 18px 0 0;white-space:pre;min-height:1.65em}
+.ln::before{counter-increment:l;content:counter(l);display:inline-block;width:2.4em;margin-right:1.1em;text-align:right;color:var(--code-gutter);user-select:none}
+.ln.hl{background:var(--code-hl)}
+.ln.click{cursor:pointer;transition:background .15s}
+.ln.click:hover{background:var(--code-hl)}
+.ln.bad{background:var(--coral-soft)}
+.ln.good{background:var(--mint-soft)}
+.t-kw{color:var(--t-kw);font-weight:600}.t-var{color:var(--t-var)}.t-str{color:var(--t-str)}.t-num{color:var(--t-num)}.t-fn{color:var(--t-fn)}.t-cls{color:var(--t-cls)}.t-com{color:var(--t-com);font-style:italic}.t-this{color:var(--t-this);font-weight:600}.t-tag{color:var(--t-kw)}
+.side{display:grid;gap:14px}
+.term{background:var(--term-bg);color:var(--term-text);border-radius:12px;overflow:hidden;font-family:var(--mono);font-size:.84rem;border:1px solid #2c2e44}
+.term-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #2c2e44;color:var(--term-muted);font-size:.78rem}
+.term-h .p{color:#A3ACE6}
+.term-out{margin:0;padding:14px;min-height:96px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term-out .e{color:#FF8E82}.term-out .w{color:#F2C15F}.term-out .ok{color:#7FDDB2}.term-out .dim{color:var(--term-muted)}
+.caret{display:inline-block;width:8px;height:1.05em;background:#A3ACE6;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.extra{margin-top:4px}
+
+/* quiz */
+.quiz{max-width:780px}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+.qdots{display:flex;gap:6px}
+.qdots i{width:26px;height:6px;border-radius:3px;background:var(--line)}
+.qdots i.cur{background:var(--accent)}
+.qdots i.ok{background:var(--mint)}
+.qdots i.ko{background:var(--coral)}
+.qtext{font-size:clamp(1.1rem,1.8vw,1.35rem);font-weight:600;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);transition:border-color .2s,background .2s,transform .15s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt .k{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-family:var(--mono);font-weight:600;font-size:.85rem}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--mint);background:var(--mint-soft)}
+.opt.right .k{background:var(--mint);color:#fff;border-color:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.opt.wrong .k{background:var(--coral);color:#fff;border-color:var(--coral)}
+.opt.dim{opacity:.55}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.why{margin:14px 0 0;padding:14px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);animation:rise .35s both}
+.why b{display:block;margin-bottom:2px}
+.why.ok b{color:var(--mint)}.why.ko b{color:var(--coral)}
+.qnav{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.result{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+@media (max-width:560px){.result{grid-template-columns:1fr;justify-items:start}}
+.ring{width:132px;height:132px}
+.ring circle{fill:none;stroke-width:10}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring text{font-family:var(--sans);font-weight:700;fill:var(--text)}
+.result h3{margin:0 0 4px;font-size:1.4rem}
+
+/* footer */
+.foot{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-top:1px solid var(--line);background:var(--surface)}
+.foot .pos{font-size:.88rem;color:var(--muted);margin:0 auto;text-align:center;white-space:nowrap}
+.foot .pos b{color:var(--text)}
+.navbtn{height:42px}
+@media (max-width:560px){.top{gap:8px}#fsBtn{display:none!important}.elephant{width:32px}.frow{grid-template-columns:minmax(0,1fr) 48px;gap:6px 12px}.frow>span{grid-column:1/-1}.refs{grid-template-columns:1fr;gap:6px}.navbtn span{display:none}.navbtn{padding:0 14px}.modname{display:none}.brand span{display:none}.score{padding:0 10px}}
+
+/* drawer */
+.backdrop{position:fixed;inset:0;background:rgba(10,10,25,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.backdrop.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,92vw);background:var(--surface);border-right:1px solid var(--line);z-index:21;transform:translateX(-102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead h2{margin:0;font-size:1.05rem}
+.dlist{overflow:auto;padding:8px 8px 24px}
+.dmod{margin:4px 0}
+.dmod>button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:10px;border:0;background:transparent}
+.dmod>button:hover{background:var(--surface-2)}
+.dmod .num{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);font-family:var(--mono);font-weight:600;font-size:.82rem}
+.dmod .mt{flex:1;min-width:0}
+.dmod .mt b{display:block;font-size:.95rem}
+.dmod .mt span{font-size:.78rem;color:var(--muted)}
+.dmod .chev{width:16px;height:16px;transition:transform .2s;color:var(--muted)}
+.dmod.open .chev{transform:rotate(90deg)}
+.dslides{list-style:none;margin:0 0 6px 50px;padding:0;display:none}
+.dmod.open .dslides{display:block}
+.dslides button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:7px;font-size:.88rem;color:var(--muted)}
+.dslides button:hover{background:var(--surface-2);color:var(--text)}
+.dslides button.cur{background:var(--accent-soft);color:var(--text);font-weight:600}
+.dslides .qb{margin-left:auto;font-family:var(--mono);font-size:.74rem;padding:1px 6px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line)}
+.dslides .qb.done{background:var(--mint-soft);border-color:var(--mint);color:var(--text)}
+
+/* demos */
+.demo{display:grid;gap:16px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface-2)}
+.panel h4{margin:0 0 10px;font-size:.9rem;color:var(--muted);font-weight:600}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);text-align:left;transition:transform .15s,border-color .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.order{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:o;min-height:44px}
+.order li button{width:100%;counter-increment:o;justify-content:flex-start}
+.order li button::before{content:counter(o);display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.8rem;flex:none}
+.order li.bad button{border-color:var(--coral);background:var(--coral-soft)}
+.order li.good button{border-color:var(--mint);background:var(--mint-soft)}
+.msg{padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);animation:rise .3s both}
+.msg.ok{background:var(--mint-soft);border-color:var(--mint)}
+.msg.ko{background:var(--coral-soft);border-color:var(--coral)}
+.cells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{position:relative;width:46px;height:52px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;font-family:var(--mono);font-weight:600;transition:all .25s}
+.cell small{position:absolute;bottom:-17px;font-size:.66rem;color:var(--muted);font-weight:400}
+.cell.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-4px)}
+.cell.seen{opacity:.45}
+.cell.out{opacity:.22}
+.cell.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-4px) scale(1.06)}
+.status{font-family:var(--mono);font-size:.85rem;min-height:1.6em;color:var(--text)}
+.bars{display:flex;align-items:flex-end;gap:clamp(4px,1vw,10px);height:200px;padding:10px 4px 0}
+.bar{flex:1;border-radius:7px 7px 0 0;background:var(--accent);opacity:.85;display:flex;align-items:flex-start;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--accent-ink);padding-top:4px;transition:height .25s ease,background .2s}
+.bar.cmp{background:var(--amber)}
+.bar.swp{background:var(--coral)}
+.bar.done{background:var(--mint)}
+.counters{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.counters b{color:var(--text);font-family:var(--mono)}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:260px;justify-content:flex-start}
+.frame-c{padding:9px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);font-family:var(--mono);font-size:.82rem;animation:rise .3s both;display:flex;justify-content:space-between;gap:10px}
+.frame-c.top{border-color:var(--amber);background:var(--amber-soft)}
+.frame-c.ret{border-color:var(--mint);background:var(--mint-soft)}
+.inspect{font-family:var(--mono);font-size:.86rem;display:grid;gap:8px}
+.attr{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.attr span:first-child{color:var(--t-var)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter.h i{background:var(--amber)}
+.pop{animation:pop .45s}
+@keyframes pop{40%{transform:scale(1.08)}}
+.log{font-family:var(--mono);font-size:.82rem;background:var(--term-bg);color:var(--term-text);border-radius:10px;padding:12px;height:180px;overflow:auto}
+.log div{animation:rise .25s both}
+.log .c{color:#A3ACE6}
+.objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.obj{border:1px solid var(--line-strong);border-radius:12px;padding:12px;background:var(--surface);font-family:var(--mono);font-size:.78rem;animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}}
+.obj b{color:var(--t-var)}
+.obj svg{width:100%;height:56px;margin:4px 0}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-strong)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
+.refs{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;align-items:center}
+.vbox{font-family:var(--mono);padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--surface);white-space:nowrap}
+.objbox{padding:12px 14px;border-radius:12px;border:2px solid;font-family:var(--mono);font-size:.85rem}
+.o1{border-color:var(--accent);background:var(--accent-soft)}
+.o2{border-color:var(--amber);background:var(--amber-soft)}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.two>*,.panel,.side,.demo>*{min-width:0}
+.slide{overflow-x:hidden}
+.matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcell{padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:.85rem;transition:all .25s}
+.mcell b{display:block;font-size:1.1rem}
+.mcell.yes{border-color:var(--mint);background:var(--mint-soft)}
+.mcell.no{border-color:var(--coral);background:var(--coral-soft)}
+.mcell.sel{outline:2px solid var(--accent);outline-offset:2px}
+.bigo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:8px}
+.lg{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);border-left-width:4px}
+.lg b{font-family:var(--mono)}
+.lg span{font-size:.8rem;color:var(--muted)}
+.lg em{font-style:normal;font-family:var(--mono);font-size:.85rem;color:var(--text)}
+.bigo-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(200px,1fr);gap:14px;align-items:start}.bigo-grid .bigo-legend{grid-template-columns:1fr}@media (max-width:820px){.bigo-grid{grid-template-columns:1fr}.bigo-grid .bigo-legend{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+.chart{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.chart path{fill:none;stroke-width:3;stroke-linecap:round;transition:d .4s}
+.chart .ax{stroke:var(--line-strong);stroke-width:1}
+.chart text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+.cmpbars{display:grid;gap:10px}
+.cmpbars .row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;font-size:.85rem}
+.cmpbars .track{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.cmpbars .track i{display:block;height:100%;border-radius:7px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.final{display:grid;gap:12px;max-width:780px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) 140px 60px;gap:12px;align-items:center}
+.frow .meter{height:12px;width:100%}
+
+/* ---------- Componentes de demos ---------- */
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.btn.sm{height:36px;padding:0 12px;font-size:.85rem}
+.bigcard{display:grid;justify-items:center;gap:4px;text-align:center;font-size:clamp(1.3rem,2.6vw,1.8rem);font-weight:700;letter-spacing:-.01em;margin:8px 0 4px}
+.chip.good{border-color:var(--mint);background:var(--mint-soft)}
+.chip.bad{border-color:var(--coral);background:var(--coral-soft)}
+.cell.w{width:auto;min-width:56px;padding:0 12px;font-size:.88rem}
+button.cell{cursor:pointer;color:var(--text)}
+.cell.ok{border-color:var(--mint)}
+.cell.prev{border-color:var(--amber);background:var(--amber-soft)}
+.cell.next{border-color:var(--mint);background:var(--mint-soft)}
+.cell.empty{border-style:dashed;color:var(--muted);font-weight:400}
+.cell.err{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.log .e{color:#FF8E82}.log .dim{color:var(--term-muted)}
+.stk{display:flex;flex-direction:column-reverse;gap:6px;min-height:290px;padding:10px;border:2px solid var(--line-strong);border-top:0;border-radius:0 0 14px 14px;background:var(--surface)}
+.it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface-2);font-family:var(--mono);font-size:.88rem;transition:opacity .25s,transform .25s}
+.it small{color:var(--amber);font-size:.72rem;font-weight:600}
+.it.tope{border-color:var(--amber);background:var(--amber-soft)}
+.it.fresh{animation:drop .35s cubic-bezier(.2,.8,.2,1) both}
+.it.out{opacity:0;transform:translateY(-22px)}
+@keyframes drop{from{opacity:0;transform:translateY(-22px)}}
+.que{display:flex;gap:8px;align-items:stretch;min-height:66px;padding:10px;border-top:2px solid var(--line-strong);border-bottom:2px solid var(--line-strong);background:var(--surface);overflow-x:auto}
+.it.qi{flex:none;flex-direction:column;justify-content:center;gap:2px;min-width:72px}
+.it.qi.fresh{animation:slideL .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slideL{from{opacity:0;transform:translateX(26px)}}
+.qlabels{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:var(--muted);margin:0 2px 6px}
+.ll{display:flex;flex-wrap:wrap;align-items:center;gap:8px 5px;font-family:var(--mono);font-size:.86rem;min-height:44px}
+.node{display:inline-flex;border:1.5px solid var(--line-strong);border-radius:9px;overflow:hidden;background:var(--surface);transition:transform .25s,border-color .25s,background .25s}
+.node .v{padding:8px 10px;font-weight:600;min-width:36px;text-align:center}
+.node .p{padding:8px 9px;border-left:1.5px solid var(--line-strong);color:var(--accent);background:var(--surface-2)}
+.node.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-3px)}
+.node.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-3px)}
+.node.new{animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both;border-color:var(--accent);background:var(--accent-soft)}
+.ar{color:var(--accent);font-weight:700}
+.nul{color:var(--muted);font-style:italic}
+.ptr{font-size:.76rem;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* ---------- Unidad IV: árboles ---------- */
+.tree{width:100%;height:auto;max-height:300px;display:block;margin:0 auto}
+.tree .ed{stroke:var(--line-strong);stroke-width:2;transition:stroke .25s,opacity .25s}
+.tree .ed.hl{stroke:var(--accent);stroke-width:3.5}
+.tree .ed.dim{opacity:.3}
+.tree .tn circle{fill:var(--surface);stroke:var(--line-strong);stroke-width:2;transition:fill .25s,stroke .25s}
+.tree .tn text{font-family:var(--mono);font-weight:700;font-size:17px;fill:var(--text)}
+.tree .tn .sub{font-size:11px;font-weight:600;fill:var(--muted);font-family:var(--sans)}
+.tree .tn.click{cursor:pointer}
+.tree .tn.click:hover circle{stroke:var(--accent);stroke-width:3}
+.tree .tn.cur circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.tree .tn .in{transform-box:fill-box;transform-origin:center}
+.tree .tn.cur .in{animation:pop .45s}
+.tree .tn.found circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.tree .tn.path circle{fill:var(--accent-soft);stroke:var(--accent)}
+.tree .tn.sel circle{fill:var(--accent);stroke:var(--accent)}
+.tree .tn.sel text{fill:var(--accent-ink)}
+.tree .tn.sel .sub{fill:var(--muted)}
+.tree .tn.kid circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.tree .tn.par circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.tree .tn.sib circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.tree .tn.err circle{fill:var(--coral-soft);stroke:var(--coral);stroke-width:3}
+.tree .tn.err .in{animation:shake .4s}
+.tree .tn.new .in{animation:popIn .5s cubic-bezier(.2,.9,.3,1.3) both}
+.tree .tn.ghost circle{fill:none;stroke:var(--amber);stroke-dasharray:5 4;stroke-width:2.5}
+.tree .tn.ghost text{fill:var(--amber)}
+.tree .tn.ghost .in{animation:blink 1s steps(1) infinite}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.84rem;color:var(--muted);padding:0 4px}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:2px solid}
+.seq{min-height:52px}
+.lead,.pts,.note,.analogy{max-width:none}
+.cell.seen{opacity:.4}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="iconbtn" id="menuBtn" aria-label="Abrir índice" aria-controls="drawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <svg class="elephant" viewBox="0 0 76 48" aria-hidden="true"><ellipse cx="38" cy="24" rx="37" ry="23" fill="var(--accent)"/><text x="38" y="31" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="21" fill="var(--accent-ink)">php</text></svg>
+    <div class="brand"><b>Programación II</b><span>UTN Facultad Regional Resistencia</span></div>
+    <div class="modname" id="modName"></div>
+    <div class="right">
+      <button class="score" id="scoreBtn" title="Respuestas correctas en los cuestionarios"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg><span id="scoreTxt">0</span></button>
+      <button class="iconbtn theme-ico" id="themeBtn" aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="iconbtn" id="fsBtn" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <main class="stage" id="stage">
+    <div class="frame">
+      <div class="tabbar"><span class="tab" id="tabName">inicio.php</span><span class="crumb" id="crumb"></span></div>
+      <div class="slide-wrap" id="wrap" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="foot">
+    <button class="btn ghost navbtn" id="prev" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button>
+    <div class="pos" id="pos"></div>
+    <button class="btn navbtn" id="next" aria-label="Diapositiva siguiente"><span>Siguiente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  </footer>
+</div>
+<div class="backdrop" id="backdrop"></div>
+<nav class="drawer" id="drawer" aria-label="Índice de temas">
+  <div class="dhead"><h2>Índice del resumen</h2><button class="iconbtn" id="closeDrawer" aria-label="Cerrar índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlist" id="dlist"></div>
+</nav>
+<script>
+/* ============ Utilidades para los ejemplos ============ */
+const P = String.raw;
+const clean = (s, d='') => { const r = String(s ?? '').replace(/["'\\$`{}<>]/g, '').trim().slice(0, 40); return r || d; };
+const pn = x => { if (!isFinite(x)) return x > 0 ? 'INF' : 'NAN'; return Number.isInteger(x) ? String(x) : String(parseFloat(x.toPrecision(14))); };
+const nums = s => String(s).split(',').map(t => t.trim()).filter(t => t !== '' && !isNaN(Number(t))).map(Number);
+const ints = s => nums(s).filter(Number.isInteger);
+const FE = (cls, msg) => `Fatal error: Uncaught ${cls}: ${msg}`;
+
+/* ---- Árbol binario de búsqueda en JS (para simular la salida de PHP) ---- */
+function bstInsert(root, v, log) {
+  if (!root) { log && log.push(`Insertado ${v}${log.length === 0 ? ' como raíz' : ''}.`); return { v, l: null, r: null }; }
+  if (v < root.v) { log && log.push(`${v} < ${root.v}: voy a la izquierda.`); root.l = bstInsert(root.l, v, log); }
+  else if (v > root.v) { log && log.push(`${v} > ${root.v}: voy a la derecha.`); root.r = bstInsert(root.r, v, log); }
+  else log && log.push(`${v} ya está en el árbol: no lo repito.`);
+  return root;
+}
+const bstFrom = arr => { let r = null; arr.forEach(v => r = bstInsert(r, v)); return r; };
+const bstAltura = n => n ? 1 + Math.max(bstAltura(n.l), bstAltura(n.r)) : 0;
+const bstCount = n => n ? 1 + bstCount(n.l) + bstCount(n.r) : 0;
+function bstBuscar(root, v) { const path = []; let n = root; while (n) { path.push(n.v); if (v === n.v) return { ok: true, path }; n = v < n.v ? n.l : n.r; } return { ok: false, path }; }
+const rec = (n, modo, out = []) => { if (!n) return out;
+  if (modo === 'preorden') out.push(n.v); rec(n.l, modo, out);
+  if (modo === 'inorden') out.push(n.v); rec(n.r, modo, out);
+  if (modo === 'postorden') out.push(n.v); return out; };
+
+/* ============ Contenido ============ */
+const MODULES = [
+/* ---------------------------------------------------------------- 1 */
+{ title:'¿Qué es un árbol?', unit:'Unidad IV', part:'Parte I', slides:[
+ {type:'cover', title:'El TAD Árbol', file:'arbol.php', sub:'Una estructura de datos que no es una fila: tiene niveles y ramas, como un árbol genealógico o las carpetas de tu compu.', topics:['¿Qué es un árbol?','Las partes de un árbol','Tipos de árboles']},
+ {type:'concept', title:'¿Qué es un árbol?', file:'que_es.php',
+  lead:'Hasta ahora vimos estructuras <b>lineales</b>: los datos van uno detrás del otro. Un <b>árbol</b> es una estructura <b>no lineal</b>: un dato puede estar conectado con varios datos a la vez, formando <b>niveles</b>.',
+  points:[['Cada dato','se guarda en un <b>nodo</b>.'],['Las conexiones','entre nodos se llaman <b>aristas</b> (las líneas del dibujo).'],['Siempre hay','un nodo que está arriba de todo: la <b>raíz</b>.'],['De cada nodo','pueden salir ramas hacia otros nodos.']],
+  analogy:'Las <b>carpetas de tu computadora</b>: la carpeta «Documentos» tiene adentro «Facultad» y «Fotos». «Facultad» tiene adentro «Programación II». Cada carpeta es un nodo y las carpetas de adentro son sus ramas. Fijate que el dibujo <b>está al revés</b> que un árbol de verdad: la raíz va arriba.',
+  note:'<b>¿Por qué se usan?</b> Porque guardan cosas que tienen <b>jerarquía</b> (niveles) y porque, bien armados, permiten <b>buscar muy rápido</b>. Eso lo vamos a ver en el módulo 3.'},
+ {type:'demo', demo:'familia', title:'Lineal o árbol', file:'lineal_vs_arbol.php',
+  lead:'Los mismos seis datos guardados de dos maneras. Tocá cualquier dato en las dos estructuras y mirá con quién está conectado. En la lista, cada dato tiene <b>un</b> siguiente. En el árbol, un dato puede tener <b>varios</b>.'},
+ {type:'concept', title:'Las partes de un árbol', file:'partes.php',
+  lead:'Cada nodo tiene un nombre según el lugar que ocupa. Son los mismos nombres que en una familia.',
+  points:[['Raíz:','el nodo de arriba de todo. <b>No tiene padre.</b>'],['Padre:','un nodo que tiene uno o más nodos colgando de él.'],['Hijos:','los nodos que cuelgan de un padre.'],['Hermanos:','nodos que tienen <b>el mismo padre</b>.'],['Hojas:','nodos que <b>no tienen hijos</b>. Están al final de las ramas.']],
+  note:'Un mismo nodo puede ser <b>varias cosas a la vez</b>: por ejemplo, ser hijo de la raíz y, al mismo tiempo, padre de otros dos nodos.'},
+ {type:'demo', demo:'partes', title:'Tocá un nodo y mirá qué es', file:'partes_demo.php',
+  lead:'Es el árbol del apunte. Tocá cualquier nodo: te muestra quién es su <b>padre</b>, quiénes son sus <b>hijos</b> y quiénes son sus <b>hermanos</b>.'},
+ {type:'demo', demo:'roles', title:'Juego: ¿quién es quién?', file:'roles.php',
+  lead:'Te hago preguntas sobre el árbol y respondés <b>tocando un nodo</b>. Son 8 preguntas.'},
+ {type:'concept', title:'Tipos de árboles', file:'tipos.php',
+  lead:'Hay muchos tipos de árboles. Los tres que más vamos a nombrar son estos.',
+  groups:[{h:'Árbol binario',p:'Cada nodo tiene <b>como máximo 2 hijos</b>: uno izquierdo y uno derecho. Puede tener 0, 1 o 2, pero nunca 3.'},
+          {h:'Árbol N-ario',p:'Cada nodo puede tener <b>hasta N hijos</b>. Por ejemplo, en un árbol 3-ario, cada nodo tiene como máximo 3.'},
+          {h:'Árbol balanceado',p:'Las ramas tienen <b>más o menos el mismo largo</b>. La regla exacta: en cada nodo, la rama izquierda y la derecha pueden diferir <b>como máximo en 1 nivel</b>. Así las búsquedas son rápidas.'}],
+  analogy:'Un <b>árbol binario</b> es como un torneo de fútbol: de cada partido salen a lo sumo dos equipos (el que ganó y el que perdió). Un <b>N-ario</b> es como las carpetas: una carpeta puede tener la cantidad de subcarpetas que quieras.'},
+ {type:'demo', demo:'tipos', title:'Armá tu propio árbol', file:'armar.php',
+  lead:'Empezás con la raíz. Tocá un nodo para elegirlo y agregale hijos. Fijate cómo cambia el tipo de árbol mientras lo armás.'},
+ {type:'quiz', title:'Cuestionario: partes y tipos', file:'quiz_partes.php', questions:[
+  {q:'¿Cómo se llama el nodo que está arriba de todo y no tiene padre?',o:['Hoja','Raíz','Hermano','Rama'],a:1,why:'La raíz es el punto de partida del árbol: de ella cuelga todo lo demás.'},
+  {q:'Un nodo que no tiene hijos se llama...',o:['Raíz','Padre','Hoja','Arista'],a:2,why:'Las hojas están al final de las ramas y no tienen nada colgando.'},
+  {q:'Dos nodos que tienen el mismo padre son...',o:['Hermanos','Raíces','Hojas','Primos'],a:0,why:'Igual que en una familia: mismo padre, hermanos.'},
+  {q:'En un árbol binario, ¿cuántos hijos puede tener como máximo un nodo?',o:['1','2','3','Los que quiera'],a:1,why:'Binario quiere decir «de a dos»: izquierdo y derecho.'},
+  {q:'¿Qué es un árbol?',o:['Una estructura lineal','Una estructura no lineal con niveles','Un tipo de variable','Una lista ordenada'],a:1,why:'Un nodo se conecta con varios, formando ramas y niveles. Por eso no es lineal.'}]}
+]},
+/* ---------------------------------------------------------------- 2 */
+{ title:'Propiedades de un árbol', unit:'Unidad IV', part:'Parte II', slides:[
+ {type:'cover', title:'Propiedades', file:'propiedades.php', sub:'Tres números que describen un árbol: altura, profundidad y grado.', topics:['Altura del árbol','Profundidad de un nodo','Grado del árbol']},
+ {type:'concept', title:'Las tres propiedades', file:'tres.php',
+  lead:'Para describir un árbol usamos tres medidas. Las vemos una por una, con un ejemplo interactivo cada una.',
+  points:[['Altura del árbol:','cuántos <b>niveles</b> tiene el camino más largo desde la raíz hasta una hoja.'],['Profundidad de un nodo:','cuántas <b>aristas</b> hay desde la raíz hasta ese nodo.'],['Grado del árbol:','el <b>máximo de hijos</b> que tiene cualquier nodo del árbol.']],
+  analogy:'En un edificio: la <b>altura</b> es cuántos pisos tiene en total; la <b>profundidad</b> de un departamento es cuántos pisos tenés que subir para llegar; el <b>grado</b> es la mayor cantidad de departamentos que hay en un piso.'},
+ {type:'concept', title:'1) Altura del árbol', file:'altura.php',
+  lead:'La altura se mide desde la raíz hasta la <b>hoja más lejana</b>. Contamos los <b>niveles</b> que tiene ese camino.',
+  points:[['Nivel 0:','la raíz.'],['Nivel 1:','los hijos de la raíz.'],['Nivel 2:','los nietos. Y así sigue.'],['La altura','es la cantidad de niveles del camino más largo.']],
+  note:'<b>Cómo se calcula en un programa:</b> cada nodo le pregunta la altura a sus hijos, se queda con la mayor y le suma 1. Una hoja tiene altura 1. Es una idea <b>recursiva</b>: la función se llama a sí misma.'},
+ {type:'demo', demo:'altura', title:'Probá la altura', file:'altura_demo.php',
+  lead:'Tocá una <b>hoja</b> para ver el camino desde la raíz y contar sus niveles. Después tocá «Calcular la altura»: el programa prueba todos los caminos y se queda con el más largo.'},
+ {type:'concept', title:'2) Profundidad de un nodo', file:'profundidad.php',
+  lead:'La profundidad de un nodo es <b>cuántas aristas</b> (líneas) hay que recorrer desde la raíz hasta llegar a él.',
+  points:[['La raíz','tiene profundidad <b>0</b>: ya estamos ahí.'],['Los hijos de la raíz','tienen profundidad <b>1</b>.'],['Cada nivel que bajamos','suma 1.']],
+  note:'<b>Ojo con la diferencia:</b> la <b>altura</b> es del árbol entero y cuenta niveles. La <b>profundidad</b> es de <b>un nodo</b> y cuenta aristas desde la raíz.'},
+ {type:'demo', demo:'profundidad', title:'Probá la profundidad', file:'profundidad_demo.php',
+  lead:'Tocá cualquier nodo. El camino se marca desde la raíz y se cuentan las aristas una por una.'},
+ {type:'concept', title:'3) Grado del árbol', file:'grado.php',
+  lead:'El <b>grado de un nodo</b> es la cantidad de hijos que tiene. El <b>grado del árbol</b> es el grado más grande de todos sus nodos.',
+  points:[['Una hoja','tiene grado 0: no tiene hijos.'],['Si el grado del árbol es 2,','ningún nodo tiene más de 2 hijos: es un árbol <b>binario</b>.'],['Si el grado es 3,','es un árbol 3-ario, y así.']],
+  analogy:'Pensá en una familia: el grado de una persona es cuántos hijos tiene. El grado de la familia es el de la persona que más hijos tuvo.'},
+ {type:'demo', demo:'grado', title:'Probá el grado', file:'grado_demo.php',
+  lead:'Es el árbol del apunte. Tocá cada nodo para ver cuántos hijos tiene. Después pedí el grado del árbol.'},
+ {type:'table', title:'Resumen de propiedades', file:'resumen.php', lead:'Las tres medidas, lado a lado.',
+  head:['Propiedad','¿De qué es?','¿Qué cuenta?','Ejemplo del apunte'],
+  rows:[['Altura','Del árbol entero','Niveles del camino más largo','El camino A → B → D → G tiene 4 niveles: altura 4.'],
+        ['Profundidad','De un nodo','Aristas desde la raíz hasta el nodo','G está a 3 aristas de A: profundidad 3.'],
+        ['Grado','De un nodo, o del árbol','Cantidad de hijos (el máximo, para el árbol)','A tiene 3 hijos y nadie tiene más: grado 3.']]},
+ {type:'quiz', title:'Cuestionario: propiedades', file:'quiz_propiedades.php', questions:[
+  {q:'¿Qué profundidad tiene la raíz?',o:['0','1','Depende del árbol','La misma que la altura'],a:0,why:'Para llegar a la raíz no hay que recorrer ninguna arista.'},
+  {q:'Un árbol tiene un solo nodo (solo la raíz). ¿Cuál es su altura?',o:['0','1','2','No tiene'],a:1,why:'Hay un solo nivel, el de la raíz. Una hoja sola tiene altura 1.'},
+  {q:'El nodo que más hijos tiene en un árbol tiene 4 hijos. ¿Cuál es el grado del árbol?',o:['1','2','4','8'],a:2,why:'El grado del árbol es el máximo de hijos que tiene algún nodo.'},
+  {q:'¿Cuál es el grado de una hoja?',o:['0','1','2','Igual al del árbol'],a:0,why:'Una hoja no tiene hijos, así que su grado es 0.'},
+  {q:'La altura se mide...',o:['De una hoja a otra hoja','Desde la raíz hasta la hoja más lejana','Contando todos los nodos','Contando las hojas'],a:1,why:'Es el camino más largo que sale de la raíz.'}]}
+]},
+/* ---------------------------------------------------------------- 3 */
+{ title:'Operaciones: insertar, buscar y recorrer', unit:'Unidad IV', part:'Parte III', slides:[
+ {type:'cover', title:'Operaciones', file:'operaciones.php', sub:'Qué podemos hacer con un árbol: agregar datos, encontrarlos y visitarlos a todos en orden.', topics:['Inserción','Búsqueda','Recorridos']},
+ {type:'concept', title:'Un árbol binario de búsqueda', file:'abb.php',
+  lead:'Para insertar y buscar vamos a usar un árbol binario con una <b>regla de orden</b>. Esa regla es la que hace que todo sea rápido.',
+  groups:[{h:'La regla',p:'En cada nodo, los valores <b>menores van a la izquierda</b> y los <b>mayores van a la derecha</b>. Siempre. En todos los nodos.'},
+          {h:'¿Para qué sirve?',p:'Para encontrar un dato <b>sin mirar todo</b>. En cada paso descartamos la mitad del árbol, como cuando buscás una palabra en el diccionario.'}],
+  analogy:'El juego de <b>adivinar un número del 1 al 100</b>: si te dicen «es más chico», ya no miras la mitad de arriba. Cada pregunta descarta un montón de números. El árbol hace lo mismo con los datos.'},
+ {type:'steps', title:'Inserción: el proceso', file:'insercion.php', lead:'Para insertar un valor, se repiten estos pasos hasta encontrar un lugar libre.',
+  steps:[{t:'Empezar en la raíz',d:'Si el árbol está vacío, el nuevo valor <b>es</b> la raíz y listo.'},
+   {t:'Comparar',d:'Comparo el valor con el nodo actual.',sub:['Si es <b>menor</b>, voy al hijo izquierdo.','Si es <b>mayor</b>, voy al hijo derecho.']},
+   {t:'Repetir',d:'Llego a otro nodo y vuelvo a comparar. Así bajo por el árbol.'},
+   {t:'Insertar',d:'Cuando el lugar al que tengo que ir está <b>vacío</b> (<code>null</code>), pongo ahí el nuevo nodo.'}]},
+ {type:'demo', demo:'insertar', title:'Inserción paso a paso', file:'insertar_demo.php',
+  lead:'Es el ejemplo del apunte: insertamos <b>10, 5, 15, 3, 7, 12, 18</b> en ese orden. Tocá «Insertar el siguiente» y mirá cómo cada valor baja comparando hasta encontrar su lugar. Al final podés agregar los números que quieras.'},
+ {type:'code', title:'La inserción en PHP', file:'Nodo.php',
+  lead:'Cada nodo es un objeto con su <b>valor</b> y dos lugares para hijos: <code>$izq</code> y <code>$der</code>. La función <code>insertar()</code> se llama a sí misma hasta encontrar un lugar vacío. Cambiá los valores y mirá qué pasa.',
+  controls:[{k:'vals',label:'Valores a insertar, en orden',type:'text',value:'10, 5, 15, 3, 7, 12, 18'}],
+  code:v=>P`<?php
+class Nodo {
+    public int $valor;
+    public ?Nodo $izq = null;    // hijo izquierdo (puede estar vacío)
+    public ?Nodo $der = null;    // hijo derecho
+
+    public function __construct(int $valor) {
+        $this->valor = $valor;
+    }
+}
+
+function insertar(?Nodo $nodo, int $valor): Nodo {
+    if ($nodo === null) {
+        return new Nodo($valor);          // lugar vacío: acá va
+    }
+    if ($valor < $nodo->valor) {
+        $nodo->izq = insertar($nodo->izq, $valor);   // menor: izquierda
+    } elseif ($valor > $nodo->valor) {
+        $nodo->der = insertar($nodo->der, $valor);   // mayor: derecha
+    }
+    return $nodo;                         // si es igual, no se repite
+}
+
+$raiz = null;
+foreach ([${ints(v.vals).slice(0, 12).join(', ')}] as $v) {
+    $raiz = insertar($raiz, $v);
+}
+echo "Raíz: " . $raiz->valor . "\n";
+echo "Hijo izquierdo de la raíz: " . ($raiz->izq?->valor ?? "ninguno") . "\n";
+echo "Hijo derecho de la raíz: " . ($raiz->der?->valor ?? "ninguno");`,
+  run:v=>{ const a=ints(v.vals).slice(0,12); if(!a.length) return FE('Error','Call to a member function on null') + '\n' + '(el árbol quedó vacío: no hay raíz)';
+    const r=bstFrom(a); return `Raíz: ${r.v}\nHijo izquierdo de la raíz: ${r.l?r.l.v:'ninguno'}\nHijo derecho de la raíz: ${r.r?r.r.v:'ninguno'}`; },
+  after:v=>{ const a=ints(v.vals).slice(0,12); if(!a.length) return ''; const r=bstFrom(a);
+    return `<div class="note"><b>El primer valor siempre es la raíz.</b> Con estos datos el árbol tiene ${bstCount(r)} nodos y altura ${bstAltura(r)}. ${bstAltura(r)>=a.length&&a.length>2?'Quedó como una fila: <b>no está balanceado</b>. Eso pasa cuando los datos vienen ordenados.':''}</div>`; }},
+ {type:'concept', title:'Búsqueda: cómo se hace', file:'busqueda.php',
+  lead:'Buscar es casi igual que insertar: bajamos comparando, pero en vez de buscar un lugar vacío, buscamos <b>el valor</b>.',
+  points:[['Empiezo en la raíz','y comparo con el valor que busco.'],['Si es igual,','¡lo encontré!'],['Si es menor,','sigo por la izquierda. Si es mayor, por la derecha.'],['Si llego a un lugar vacío,','el valor <b>no está</b> en el árbol.']],
+  note:'<b>Lo bueno:</b> en el ejemplo del apunte hay 7 valores y encontramos el 7 en solo <b>3 comparaciones</b>. En una lista podríamos haber necesitado 7.'},
+ {type:'demo', demo:'buscar', title:'Búsqueda paso a paso', file:'buscar_demo.php',
+  lead:'Escribí un número y tocá «Buscar». Mirá cómo baja comparando. Probá con el 7 (está) y con el 13 (no está).'},
+ {type:'code', title:'La búsqueda en PHP', file:'buscar.php',
+  lead:'Con un <code>while</code> bajamos por el árbol hasta encontrar el valor o hasta quedarnos sin nodos. Elegí qué buscar.',
+  controls:[{k:'x',label:'Valor a buscar',type:'range',min:1,max:20,value:7}],
+  code:v=>P`<?php
+function buscar(?Nodo $raiz, int $valor): bool {
+    $actual = $raiz;
+    while ($actual !== null) {
+        if ($valor === $actual->valor) {
+            return true;                  // ¡lo encontré!
+        }
+        if ($valor < $actual->valor) {
+            $actual = $actual->izq;       // menor: bajo por la izquierda
+        } else {
+            $actual = $actual->der;       // mayor: bajo por la derecha
+        }
+    }
+    return false;                         // me quedé sin nodos: no está
+}
+
+// El árbol del ejemplo: 10, 5, 15, 3, 7, 12, 18
+echo buscar($raiz, ${v.x}) ? "El ${v.x} está en el árbol" : "El ${v.x} no está";`,
+  run:v=>{ const r=bstFrom([10,5,15,3,7,12,18]), b=bstBuscar(r,+v.x); return (b.ok?`El ${v.x} está en el árbol`:`El ${v.x} no está`)+`\n`+`(miré ${b.path.length} nodo${b.path.length>1?'s':''}: ${b.path.join(' → ')})`; }},
+ {type:'quiz', title:'Cuestionario: insertar y buscar', file:'quiz_insertar.php', questions:[
+  {q:'En un árbol binario de búsqueda, los valores menores que un nodo van...',o:['A la derecha','A la izquierda','Arriba','Donde haya lugar'],a:1,why:'Menores a la izquierda, mayores a la derecha. Esa es la regla.'},
+  {q:'Insertamos 20 y después 30. ¿Dónde queda el 30?',o:['Como hijo izquierdo de 20','Como hijo derecho de 20','Como nueva raíz','No se puede'],a:1,why:'30 es mayor que 20, así que va a la derecha.'},
+  {q:'Buscamos un valor y llegamos a un lugar vacío (null). ¿Qué pasó?',o:['Lo encontramos','El valor no está en el árbol','Hay que empezar de nuevo','El árbol se rompió'],a:1,why:'Si el camino se termina sin encontrarlo, el valor no existe en el árbol.'},
+  {q:'¿Por qué buscar en un árbol ordenado es rápido?',o:['Porque mira todos los nodos','Porque en cada paso descarta una parte del árbol','Porque los datos son chicos','Porque usa un for'],a:1,why:'Cada comparación descarta un subárbol entero.'},
+  {q:'¿Cuál es el primer nodo que miramos al buscar?',o:['Una hoja','El más chico','La raíz','El último que insertamos'],a:2,why:'Toda búsqueda e inserción empieza en la raíz.'}]},
+ {type:'concept', title:'Recorridos: visitar todos los nodos', file:'recorridos.php',
+  lead:'Recorrer un árbol es <b>pasar por todos sus nodos</b>, sin saltearse ninguno. Como no es una fila, hay que decidir en qué orden. Hay tres formas clásicas.',
+  points:[['Preorden:','primero la <b>raíz</b>, después el hijo izquierdo, después el derecho.'],['Inorden:','primero el hijo izquierdo, después la <b>raíz</b>, después el derecho.'],['Postorden:','primero el hijo izquierdo, después el derecho, y la <b>raíz</b> al final.']],
+  analogy:'Los nombres dicen <b>cuándo visitamos la raíz</b>: <b>pre</b> (antes de los hijos), <b>in</b> (en el medio de los hijos) o <b>post</b> (después de los hijos). Y la regla se repite igual en cada subárbol.',
+  note:'<b>Dato útil:</b> si el árbol es de búsqueda (menores a la izquierda), el recorrido <b>inorden</b> devuelve los valores <b>ordenados de menor a mayor</b>.'},
+ {type:'demo', demo:'recorrer', title:'Recorridos paso a paso', file:'recorrer_demo.php',
+  lead:'Elegí un recorrido y tocá «Recorrer». Cada nodo se marca cuando lo <b>visitamos</b> y aparece en la lista de resultado.'},
+ {type:'code', title:'Los recorridos en PHP', file:'recorridos.php',
+  lead:'Las tres funciones son casi iguales: cambia <b>el lugar del <code>echo</code></b>. Elegí un recorrido y fijate dónde está.',
+  controls:[{k:'m',label:'Recorrido',type:'seg',options:['preorden','inorden','postorden'],value:'preorden'},{k:'vals',label:'Valores del árbol, en orden de inserción',type:'text',value:'10, 5, 15, 3, 7, 12, 18'}],
+  code:v=>{ const e='echo $nodo->valor . " ";'; return P`<?php
+function ${v.m}(?Nodo $nodo): void {
+    if ($nodo === null) {
+        return;                       // lugar vacío: no hay nada que visitar
+    }
+${v.m==='preorden'?'    '+e+'       // 1) visito la raíz\n    '+v.m+'($nodo->izq);            // 2) todo el lado izquierdo\n    '+v.m+'($nodo->der);            // 3) todo el lado derecho':v.m==='inorden'?'    '+v.m+'($nodo->izq);             // 1) todo el lado izquierdo\n    '+e+'       // 2) visito la raíz\n    '+v.m+'($nodo->der);             // 3) todo el lado derecho':'    '+v.m+'($nodo->izq);           // 1) todo el lado izquierdo\n    '+v.m+'($nodo->der);           // 2) todo el lado derecho\n    '+e+'       // 3) visito la raíz al final'}
+}
+
+// Árbol armado con: ${ints(v.vals).slice(0,12).join(', ')}
+${v.m}($raiz);`; },
+  run:v=>{ const a=ints(v.vals).slice(0,12); if(!a.length) return '(el árbol está vacío: no imprime nada)'; return rec(bstFrom(a),v.m).join(' '); },
+  after:v=>v.m==='inorden'?'<div class="note"><b>Mirá el resultado:</b> salió <b>ordenado de menor a mayor</b>. Pasa siempre que el árbol respeta la regla de menores a la izquierda.</div>':v.m==='preorden'?'<div class="note">Preorden empieza <b>siempre por la raíz</b>. Es el orden que usarías para copiar el árbol: si insertás estos valores en este orden, te queda el mismo árbol.</div>':'<div class="note">Postorden deja la raíz <b>para el final</b>. Es el orden que usarías para borrar el árbol: primero los hijos, después el padre.</div>'},
+ {type:'table', title:'Los tres recorridos, lado a lado', file:'tabla_recorridos.php', lead:'Con el árbol del apunte: A es la raíz, B y C sus hijos, D y E hijos de B, F hijo de C.',
+  head:['Recorrido','Orden de la regla','Resultado','¿Cuándo visita la raíz?'],
+  rows:[['Preorden','Raíz → izquierda → derecha','A, B, D, E, C, F','Primero'],
+        ['Inorden','Izquierda → raíz → derecha','D, B, E, A, C, F','En el medio'],
+        ['Postorden','Izquierda → derecha → raíz','D, E, B, F, C, A','Último']]},
+ {type:'quiz', title:'Cuestionario: recorridos', file:'quiz_recorridos.php', questions:[
+  {q:'¿Qué recorrido visita la raíz primero?',o:['Preorden','Inorden','Postorden'],a:0,why:'«Pre» significa antes: la raíz va antes que sus hijos.'},
+  {q:'¿Qué recorrido devuelve los valores ordenados en un árbol de búsqueda?',o:['Preorden','Inorden','Postorden'],a:1,why:'Primero los menores (izquierda), después la raíz, después los mayores (derecha).'},
+  {q:'En postorden, la raíz se visita...',o:['Primero','En el medio','Al final'],a:2,why:'«Post» significa después: la raíz va después de los dos hijos.'},
+  {q:'Un árbol tiene raíz 8, hijo izquierdo 4 y derecho 12. ¿Qué da el preorden?',o:['4, 8, 12','8, 4, 12','4, 12, 8'],a:1,why:'Raíz (8), después izquierda (4), después derecha (12).'},
+  {q:'Con el mismo árbol (8, con hijos 4 y 12), ¿qué da el inorden?',o:['4, 8, 12','8, 4, 12','12, 8, 4'],a:0,why:'Izquierda (4), raíz (8), derecha (12). Y queda ordenado.'}]},
+ {type:'quiz', title:'Desafío final', file:'quiz_final.php', questions:[
+  {q:'Las carpetas de tu computadora se parecen a...',o:['Una pila','Una cola','Un árbol','Un arreglo'],a:2,why:'Una carpeta puede tener varias carpetas adentro: eso es un árbol.'},
+  {q:'Un árbol tiene raíz 10 con un hijo 5, y 5 tiene un hijo 3. ¿Cuál es la profundidad de 3?',o:['1','2','3','0'],a:1,why:'De 10 a 5 hay una arista, de 5 a 3 otra: dos aristas.'},
+  {q:'Ese mismo árbol (10 → 5 → 3), ¿qué altura tiene?',o:['2','3','1','5'],a:1,why:'Tiene tres niveles: el de 10, el de 5 y el de 3.'},
+  {q:'Insertamos 10, 5, 15 en ese orden. ¿Cómo queda el árbol?',o:['10 arriba, 5 a la izquierda, 15 a la derecha','5 arriba, 10 y 15 abajo','10 arriba, 5 a la derecha, 15 a la izquierda','Todos en una fila'],a:0,why:'10 es la raíz; 5 es menor y va a la izquierda; 15 es mayor y va a la derecha.'},
+  {q:'Con el árbol anterior (10, 5, 15), ¿qué devuelve el inorden?',o:['10, 5, 15','5, 10, 15','15, 10, 5','5, 15, 10'],a:1,why:'Izquierda (5), raíz (10), derecha (15): ordenado.'},
+  {q:'Si insertamos 1, 2, 3, 4, 5 en ese orden, el árbol...',o:['Queda balanceado','Queda como una fila hacia la derecha','Queda como una fila hacia la izquierda','No se puede armar'],a:1,why:'Cada número es mayor que el anterior, así que siempre va a la derecha. Buscar ahí es lento: por eso existen los árboles balanceados.'}]},
+ {type:'end', title:'Resumen final', file:'fin.php'}
+]}
+];
+
+</script>
+<script>
+/* ============ Motor de la presentación ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = ms => new Promise(r => setTimeout(r, RM.matches ? Math.min(ms, 30) : ms));
+const store = { get(k, d) { try { const v = localStorage.getItem('p2u4:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem('p2u4:' + k, JSON.stringify(v)); } catch {} } };
+
+const SLIDES = [];
+MODULES.forEach((m, mi) => m.slides.forEach((s, si) => { s.mi = mi; s.si = si; s.idx = SLIDES.length; if (s.type === 'quiz') s.qid = `m${mi}-${si}`; SLIDES.push(s); }));
+const QUIZZES = SLIDES.filter(s => s.type === 'quiz');
+const TOTALQ = QUIZZES.reduce((a, s) => a + s.questions.length, 0);
+let scores = store.get('scores', {});
+let cur = -1, NAV = 0;
+
+/* ---------- Resaltado de sintaxis PHP ---------- */
+const KW = new Set('abstract and array as break callable case catch class clone const continue declare default do echo else elseif empty extends final finally fn for foreach function global if implements include instanceof insteadof interface isset list match namespace new or print private protected public readonly require return static switch throw trait try unset use var while yield true false null void int float string bool mixed iterable object self parent never'.split(' '));
+function hl(code) {
+  const re = /(<\?php)|(\/\/[^\n]*|#(?!\[)[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index)); const t = m[0];
+    if (m[1]) out += `<span class="t-tag">${esc(t)}</span>`;
+    else if (m[2]) out += `<span class="t-com">${esc(t)}</span>`;
+    else if (m[3]) out += `<span class="t-str">${esc(t).replace(/\$[A-Za-z_]\w*/g, v => `<span class="t-var">${v}</span>`)}</span>`;
+    else if (m[4]) out += `<span class="${t === '$this' ? 't-this' : 't-var'}">${t}</span>`;
+    else if (m[5]) out += `<span class="t-num">${t}</span>`;
+    else {
+      const before = code.slice(Math.max(0, m.index - 2), m.index), call = /^\s*\(/.test(code.slice(re.lastIndex));
+      if (before === '->' || before === '?>') out += call ? `<span class="t-fn">${t}</span>` : esc(t);
+      else if (KW.has(t.toLowerCase()) && !(call && !['function','fn','array','isset','unset','empty','match','list','echo','print','declare','if','foreach','for','while','switch','catch'].includes(t))) out += `<span class="t-kw">${t}</span>`;
+      else if (call) out += `<span class="t-fn">${t}</span>`;
+      else if (/^[A-Z]/.test(t)) out += `<span class="t-cls">${t}</span>`;
+      else out += esc(t);
+    }
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+const codeLines = code => hl(code).split('\n').map((l, i) => `<span class="ln" data-l="${i}">${l || ' '}</span>`).join('');
+
+/* ---------- Íconos ---------- */
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>',
+};
+
+/* ---------- Bloques reutilizables ---------- */
+const title = s => `<h2 class="stitle rv">${s.title}<span class="brace">{</span></h2>`;
+const close = d => `<div class="cbrace rv" style="--d:${d}">}</div>`;
+const lead = (s, d = 1) => s.lead ? `<p class="lead rv" style="--d:${d}">${s.lead}</p>` : '';
+const ptsHTML = pts => `<ul class="pts">${pts.map(([b, t]) => `<li><b>${b}</b> ${t}</li>`).join('')}</ul>`;
+const groupsHTML = (g, d) => `<div class="groups rv" style="--d:${d}">${g.map(x => `<div class="group"><h3>${x.h}</h3>${x.p ? `<p>${x.p}</p>` : ''}${x.pts ? ptsHTML(x.pts) : ''}</div>`).join('')}</div>`;
+const analogyHTML = (a, d) => `<aside class="analogy rv" style="--d:${d}">${ICON.bulb}<p><strong>Pensalo así</strong>${a}</p></aside>`;
+const noteHTML = (n, d) => `<div class="note rv" style="--d:${d}">${n}</div>`;
+function extras(s, d) { let h = '';
+  if (s.groups) h += groupsHTML(s.groups, d++);
+  if (s.points) h += `<div class="rv" style="--d:${d++}">${s.ptitle ? `<div class="ptitle">${s.ptitle}</div>` : ''}${ptsHTML(s.points)}</div>`;
+  if (s.analogy) h += analogyHTML(s.analogy, d++);
+  if (s.note) h += noteHTML(s.note, d++);
+  return [h, d]; }
+
+/* ---------- Renderizadores ---------- */
+const R = {
+  cover(s) {
+    const m = MODULES[s.mi];
+    return `<div class="cover"><div class="unit rv">${m.unit}, ${m.part.replace('Parte','parte')}, módulo ${s.mi + 1} de ${MODULES.length}</div>
+      <h1 class="rv" style="--d:1">${s.title}<span class="brace">{ }</span></h1>
+      <p class="sub rv" style="--d:2">${s.sub}</p>
+      <ul class="topics rv" style="--d:3">${s.topics.map(t => `<li><button data-topic="${esc(t)}">${t}</button></li>`).join('')}</ul>
+      <button class="btn start rv" style="--d:4" data-go="next">Empezar ${ICON.chev.replace('class="chev"', 'width="16" height="16"')}</button></div>`;
+  },
+  concept(s) { const [x, d] = extras(s, 2); return title(s) + lead(s) + x + close(d); },
+  cards(s) {
+    const cards = s.cards.map((c, i) => s.flipcards
+      ? `<button class="flip rv" style="--d:${i + 2}" aria-pressed="false"><div class="flip-in"><div class="face"><h3>${c.t}</h3><p>${c.d}</p><small>Ver ejemplo</small></div><div class="face back"><h3>${c.t}</h3><p>${c.back}</p><small>Volver</small></div></div></button>`
+      : `<div class="card rv" style="--d:${i + 2}"><h3>${c.t}</h3>${c.d ? `<p>${c.d}</p>` : ''}${c.list ? `<ul>${c.list.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}${c.ex ? `<div class="ex">${hl(c.ex)}</div>` : ''}</div>`).join('');
+    const [x, d] = extras(s, s.cards.length + 2);
+    return title(s) + lead(s) + `<div class="cards ${s.flow ? 'flow' : ''}" style="--min:${s.min || '220px'}">${cards}</div>` + x + close(d);
+  },
+  steps(s) {
+    return title(s) + lead(s) + `<ol class="steps">${s.steps.map((st, i) => `<li class="rv" style="--d:${i + 2}"><h3>${st.t}</h3><p>${st.d}</p>${st.sub ? `<ul>${st.sub.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ol>` + close(s.steps.length + 2);
+  },
+  table(s) {
+    const t = `<div class="twrap rv" style="--d:2"><table><thead><tr>${s.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r => `<tr><th>${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const [x, d] = extras(s, 3); return title(s) + lead(s) + t + x + close(d);
+  },
+  code(s) {
+    return title(s) + lead(s) + `<div class="code-layout rv" style="--d:2"><pre class="code" tabindex="0" aria-label="Código PHP"></pre>
+      <div class="side">${s.controls ? `<div class="ctrls">${s.controls.map(ctrlHTML).join('')}</div>` : ''}
+      <div><button class="btn run">${ICON.play}Ejecutar</button></div>
+      <div class="term"><div class="term-h"><span class="p">$</span> php ${esc(s.file)}</div><pre class="term-out" aria-live="polite"><span class="dim">Tocá «Ejecutar» para ver la salida.</span></pre></div>
+      <div class="extra"></div></div></div>` + close(3);
+  },
+  demo(s) { return title(s) + lead(s) + `<div class="demo rv" style="--d:2"></div>` + close(3); },
+  quiz(s) { return title(s) + `<div class="quiz rv" style="--d:1"></div>`; },
+  end(s) { return title(s) + `<p class="lead rv" style="--d:1">Terminaste la Unidad IV, parte I: qué es un árbol, sus partes, sus propiedades y cómo insertar, buscar y recorrer. Este es tu resultado en los cuestionarios.</p><div class="final rv" style="--d:2"></div>` + close(3); },
+};
+
+function ctrlHTML(c) {
+  const id = 'c_' + c.k;
+  if (c.type === 'toggle') return `<label class="ctrl switch"><input type="checkbox" data-k="${c.k}" ${c.value ? 'checked' : ''}><span>${c.label}</span></label>`;
+  if (c.type === 'seg') return `<div class="ctrl"><span>${c.label}</span><div class="seg" role="group">${c.options.map(o => `<button type="button" data-k="${c.k}" data-v="${esc(o)}" aria-pressed="${o === c.value}">${esc(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'range') return `<label class="ctrl" for="${id}"><span>${c.label}: <output>${c.value}</output></span><input id="${id}" type="range" data-k="${c.k}" min="${c.min}" max="${c.max}" value="${c.value}"></label>`;
+  return `<label class="ctrl" for="${id}"><span>${c.label}</span><input id="${id}" type="${c.type}" data-k="${c.k}" value="${esc(c.value)}" ${c.min != null ? `min="${c.min}" max="${c.max}"` : ''} spellcheck="false" autocomplete="off"></label>`;
+}
+
+/* ---------- Terminal con efecto de tipeo ---------- */
+function colorize(text) {
+  return text.split('\n').map(l => { const e = esc(l);
+    if (/^(PHP )?Fatal error/.test(l)) return `<span class="e">${e}</span>`;
+    if (/^(Warning|Deprecated|Notice)/.test(l)) return `<span class="w">${e}</span>`;
+    return e; }).join('\n');
+}
+async function typeOut(el, text) {
+  const tk = ++el._tk || (el._tk = 1);
+  el.innerHTML = '<span class="caret"></span>';
+  if (!RM.matches) { await sleep(180); let i = 0; const step = Math.max(1, Math.ceil(text.length / 70));
+    while (i < text.length) { if (el._tk !== tk) return; i += step; el.innerHTML = esc(text.slice(0, i)) + '<span class="caret"></span>'; await sleep(14); } }
+  if (el._tk === tk) el.innerHTML = colorize(text) + '\n<span class="dim">— fin de la ejecución —</span>';
+}
+
+/* ---------- Hidratación ---------- */
+const H = {
+  cover(el, s) {
+    $$('[data-topic]', el).forEach(b => b.onclick = () => {
+      const t = b.dataset.topic.toLowerCase().replace(/[¿?]/g, '');
+      const words = t.split(/[\s,]+/).filter(w => w.length > 3);
+      const target = SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.title === b.dataset.topic) || SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.type !== 'quiz' && words.some(w => x.title.toLowerCase().includes(w)));
+      go(target ? target.idx : s.idx + 1);
+    });
+  },
+  cards(el) { $$('.flip', el).forEach(f => f.onclick = () => { f.classList.toggle('on'); f.setAttribute('aria-pressed', f.classList.contains('on')); }); },
+  code(el, s) {
+    const v = {}; (s.controls || []).forEach(c => v[c.k] = c.value);
+    const pre = $('.code', el), out = $('.term-out', el), ex = $('.extra', el); let ran = false;
+    const paint = (flash) => { pre.innerHTML = codeLines(typeof s.code === 'function' ? s.code(v) : s.code);
+      if (flash) { pre.classList.remove('flash'); void pre.offsetWidth; pre.classList.add('flash'); }
+      if (s.after) ex.innerHTML = s.after(v); };
+    const run = () => { ran = true; typeOut(out, s.run(v)); };
+    paint(false);
+    $('.run', el).onclick = run;
+    let t;
+    const changed = () => { paint(true); clearTimeout(t); if (ran) t = setTimeout(run, 250); };
+    $$('input[data-k]', el).forEach(i => i.addEventListener('input', () => {
+      v[i.dataset.k] = i.type === 'checkbox' ? i.checked : (i.type === 'range' || i.type === 'number') ? (i.value === '' ? 0 : +i.value) : i.value;
+      const o = i.parentElement.querySelector('output'); if (o) o.textContent = i.value; changed(); }));
+    $$('.seg button', el).forEach(b => b.onclick = () => { $$(`.seg button[data-k="${b.dataset.k}"]`, el).forEach(x => x.setAttribute('aria-pressed', x === b)); v[b.dataset.k] = b.dataset.v; changed(); });
+  },
+  demo(el, s) { DEMOS[s.demo]($('.demo', el), s); },
+  quiz(el, s) { runQuiz($('.quiz', el), s); },
+  end(el) {
+    const box = $('.final', el); let tc = 0;
+    box.innerHTML = MODULES.map((m, mi) => { const qs = QUIZZES.filter(q => q.mi === mi); const t = qs.reduce((a, q) => a + q.questions.length, 0); const c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0); tc += c;
+      return `<div class="frow"><span><b>${m.title}</b><br><span class="muted" style="font-size:.85rem">${m.unit}, ${m.part.replace("Parte","parte")}</span></span><div class="meter"><i style="width:0" data-w="${t ? c / t * 100 : 0}"></i></div><b class="mono">${c}/${t}</b></div>`; }).join('')
+      + `<div class="note"><b>Total: ${tc} de ${TOTALQ} respuestas correctas.</b> ${tc === TOTALQ ? '¡Impecable! Dominás todos los temas.' : tc >= TOTALQ * .7 ? 'Muy buen trabajo. Repasá los módulos con barras más cortas.' : 'Volvé a los cuestionarios que te costaron: podés reintentarlos cuantas veces quieras.'}</div>
+      <div><button class="btn ghost" id="resetAll">${ICON.redo}Borrar mi progreso</button></div>`;
+    requestAnimationFrame(() => setTimeout(() => $$('.meter i', box).forEach(i => i.style.width = i.dataset.w + '%'), 80));
+    $('#resetAll', box).onclick = () => { scores = {}; store.set('scores', scores); updateScore(); buildDrawer(); H.end(el); };
+  },
+};
+
+/* ---------- Cuestionarios ---------- */
+function runQuiz(box, s) {
+  let qi = 0, ok = 0; const marks = [];
+  const show = () => {
+    const q = s.questions[qi];
+    box.innerHTML = `<div class="qhead"><div class="qdots">${s.questions.map((_, i) => `<i class="${marks[i] === true ? 'ok' : marks[i] === false ? 'ko' : i === qi ? 'cur' : ''}"></i>`).join('')}</div><span>Pregunta ${qi + 1} de ${s.questions.length}</span></div>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div class="qfb"></div>`;
+    $$('.opt', box).forEach(b => b.onclick = () => answer(+b.dataset.j));
+    $('.opt', box).focus({ preventScroll: true });
+  };
+  const answer = j => {
+    const q = s.questions[qi], right = j === q.a; marks[qi] = right; if (right) ok++;
+    $$('.opt', box).forEach((b, k) => { b.disabled = true; if (k === q.a) b.classList.add('right'); else if (k === j) b.classList.add('wrong'); else b.classList.add('dim'); });
+    $$('.qdots i', box)[qi].className = right ? 'ok' : 'ko';
+    const last = qi === s.questions.length - 1;
+    $('.qfb', box).innerHTML = `<div class="why ${right ? 'ok' : 'ko'}"><b>${right ? '¡Correcto!' : 'No es correcto.'}</b>${esc(q.why)}</div>
+      <div class="qnav"><button class="btn nextq">${last ? 'Ver resultado' : 'Siguiente pregunta'}</button></div>`;
+    const nb = $('.nextq', box); nb.focus({ preventScroll: true });
+    nb.onclick = () => { if (last) result(); else { qi++; show(); } };
+  };
+  const result = () => {
+    const t = s.questions.length, prev = scores[s.qid]?.c || 0;
+    scores[s.qid] = { c: Math.max(prev, ok), t }; store.set('scores', scores); updateScore(); buildDrawer();
+    const pct = ok / t, C = 2 * Math.PI * 54;
+    const msg = pct === 1 ? ['¡Puntaje perfecto!', 'Respondiste todo bien. Seguí con el próximo tema.'] : pct >= .6 ? ['¡Bien hecho!', 'Repasá las explicaciones de las que fallaste y seguí adelante.'] : ['A repasar un poco', 'Volvé a las diapositivas anteriores y reintentá el cuestionario.'];
+    box.innerHTML = `<div class="result"><svg class="ring" viewBox="0 0 132 132" role="img" aria-label="${ok} de ${t} correctas"><circle class="bgc" cx="66" cy="66" r="54"/><circle class="fgc" cx="66" cy="66" r="54" stroke-dasharray="${C}" stroke-dashoffset="${C}"/><text x="66" y="74" text-anchor="middle" font-size="26">${ok}/${t}</text></svg>
+      <div><h3>${msg[0]}</h3><p class="muted" style="margin:0 0 14px">${msg[1]}${prev > ok ? ` Tu mejor puntaje sigue siendo ${prev}/${t}.` : ''}</p>
+      <div class="qnav"><button class="btn ghost retry">${ICON.redo}Reintentar</button><button class="btn" data-go="next">Continuar</button></div></div></div>`;
+    requestAnimationFrame(() => setTimeout(() => { const c = $('.fgc', box); if (c) c.style.strokeDashoffset = C * (1 - pct); }, 60));
+    if (pct === 1) confetti(box);
+    $('.retry', box).onclick = () => { qi = 0; ok = 0; marks.length = 0; show(); };
+  };
+  show();
+}
+function confetti(box) {
+  if (RM.matches) return;
+  const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:30;width:100%;height:100%'; document.body.appendChild(cv);
+  const ctx = cv.getContext('2d'), W = cv.width = innerWidth, Hh = cv.height = innerHeight, cs = getComputedStyle(document.documentElement);
+  const cols = ['--accent', '--amber', '--mint', '--coral'].map(v => cs.getPropertyValue(v).trim());
+  const ps = Array.from({ length: 110 }, () => ({ x: W / 2 + (Math.random() - .5) * 200, y: Hh * .45, vx: (Math.random() - .5) * 12, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * 4 | 0], a: Math.random() * 6 }));
+  let f = 0; (function tick() { ctx.clearRect(0, 0, W, Hh); ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += .2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
+    if (++f < 110) requestAnimationFrame(tick); else cv.remove(); })();
+}
+
+/* ---------- Demos interactivas ---------- */
+const logLine = (log, text, cls = '') => { log.insertAdjacentHTML('beforeend', `<div class="${cls}">${esc(text)}</div>`); log.scrollTop = log.scrollHeight; };
+
+/* ---- Dibujo de árboles en SVG ---- */
+const N = (id, ...ch) => ({ id, label: id, ch });
+const T6 = () => N('A', N('B', N('D'), N('E')), N('C', null, N('F')));                     // árbol del apunte (partes y recorridos)
+const T7 = () => N('A', N('B', N('D', N('G'), null), N('E')), N('C', null, N('F')));      // árbol del apunte (altura y profundidad)
+const T10 = () => N('A', N('B', N('E', N('I'), N('J')), N('F')), N('C', N('G')), N('D', N('H')));  // árbol del apunte (grado)
+function tIndex(root) { const map = {}; const walk = (n, parent, depth) => { if (!n) return; map[n.id] = { n, parent, depth, kids: (n.ch || []).filter(Boolean) }; (n.ch || []).forEach(c => walk(c, n, depth + 1)); }; walk(root, null, 0); return map; }
+function tLayout(root) {
+  let x = 0, maxd = 0; const pos = {};
+  const walk = (n, d) => { maxd = Math.max(maxd, d); const kids = n.ch || [];
+    if (!kids.some(Boolean)) { pos[n.id] = { x: x++, y: d }; return; }
+    const xs = []; kids.forEach(c => { if (c) { walk(c, d + 1); xs.push(pos[c.id].x); } else xs.push(x++); });
+    pos[n.id] = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: d }; };
+  walk(root, 0); return { pos, w: x, h: maxd + 1 };
+}
+function treeSVG(root, o = {}) {
+  if (!root) return `<div class="muted" style="text-align:center;padding:30px">Árbol vacío.</div>`;
+  const { pos, w, h } = tLayout(root), U = 70, V = 80, PAD = 40, R = 23;
+  const W = Math.max(1, w - 1) * U + PAD * 2, Hh = (h - 1) * V + PAD * 2 + 10;
+  const X = id => PAD + pos[id].x * U, Y = id => PAD + pos[id].y * V;
+  let edges = '', nodes = '';
+  const walk = n => { (n.ch || []).forEach(c => { if (!c) return;
+      const k = n.id + '>' + c.id, cls = o.edges?.has(k) ? 'hl' : o.dimEdges ? 'dim' : '';
+      edges += `<line class="ed ${cls}" x1="${X(n.id)}" y1="${Y(n.id)}" x2="${X(c.id)}" y2="${Y(c.id)}"/>`; walk(c); });
+    const cls = (o.cls?.[n.id] || '') + (o.click ? ' click' : '') + (n.ghost ? ' ghost' : '');
+    nodes += `<g class="tn ${cls}" data-id="${esc(n.id)}" transform="translate(${X(n.id)},${Y(n.id)})"><g class="in"><circle r="${R}"/><text text-anchor="middle" dy=".36em">${esc(n.label)}</text>${o.sub?.[n.id] ? `<text class="sub" text-anchor="middle" y="${R + 15}">${esc(o.sub[n.id])}</text>` : ''}</g></g>`; };
+  walk(root);
+  return `<svg class="tree" viewBox="0 0 ${W} ${Hh}" style="max-width:${Math.round(W * 1.35)}px" role="img" aria-label="Árbol">${edges}${nodes}</svg>`;
+}
+const pathTo = (idx, id) => { const p = []; let c = id; while (c != null) { p.unshift(c); c = idx[c].parent?.id; } return p; };
+const edgesOf = p => new Set(p.slice(1).map((id, i) => p[i] + '>' + id));
+const bin2gen = n => n ? { id: String(n.v), label: String(n.v), ch: (n.l || n.r) ? [bin2gen(n.l), bin2gen(n.r)] : [] } : null;
+const legend = items => `<div class="legend">${items.map(([c, t]) => `<span><i style="border-color:var(--${c});background:var(--${c}-soft)"></i>${t}</span>`).join('')}</div>`;
+
+const DEMOS = {
+  familia(box) {
+    const L = ['A', 'B', 'C', 'D', 'E', 'F'], tree = T6(), idx = tIndex(tree); let sel = null;
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Lineal: una lista</h4><div class="ll lst"></div><div style="height:12px"></div><div class="status s1"></div></div>
+      <div class="panel"><h4>No lineal: un árbol</h4><div class="tr"></div><div class="status s2"></div></div></div><div class="res"></div>`;
+    const draw = () => {
+      const i = L.indexOf(sel);
+      $('.lst', box).innerHTML = L.map((v, k) => `<button class="node ${k === i ? 'cur' : (k === i - 1 || k === i + 1) ? 'found' : ''}" data-id="${v}"><span class="v">${v}</span><span class="p">•</span></button><span class="ar">→</span>`).join('') + '<span class="nul">null</span>';
+      const cls = {}; if (sel) { cls[sel] = 'cur'; const e = idx[sel]; if (e.parent) cls[e.parent.id] = 'par'; e.kids.forEach(k => cls[k.id] = 'kid'); }
+      $('.tr', box).innerHTML = treeSVG(tree, { cls, click: true });
+      $$('[data-id]', box).forEach(b => b.onclick = () => { sel = b.dataset.id; draw(); });
+      if (!sel) { $('.s1', box).textContent = 'Tocá un dato.'; $('.s2', box).textContent = 'Tocá un nodo.'; $('.res', box).innerHTML = ''; return; }
+      const prev = L[i - 1], next = L[i + 1], e = idx[sel];
+      $('.s1', box).innerHTML = `<b>${sel}</b>: antes ${prev ? `está <b>${prev}</b>` : 'no hay nadie'}, después ${next ? `está <b>${next}</b>` : 'no hay nadie'}.`;
+      $('.s2', box).innerHTML = `<b>${sel}</b>: arriba ${e.parent ? `está <b>${e.parent.id}</b>` : 'no hay nadie (es la raíz)'}; abajo ${e.kids.length ? `cuelgan <b>${e.kids.map(k => k.id).join(' y ')}</b>` : 'no cuelga nadie (es una hoja)'}.`;
+      $('.res', box).innerHTML = `<div class="msg ok">En la lista, <b>${sel}</b> tiene como mucho <b>un vecino para cada lado</b>. En el árbol, de <b>${sel}</b> ${e.kids.length > 1 ? `salen <b>${e.kids.length} ramas</b> a la vez` : e.kids.length === 1 ? 'sale una rama, pero de otros nodos salen varias' : 'no sale ninguna rama: es el final de una rama'}. Esa es la diferencia entre lineal y no lineal.</div>`;
+    };
+    draw();
+  },
+
+  partes(box) {
+    const tree = T6(), idx = tIndex(tree); let sel = null;
+    box.innerHTML = `<div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Nodo elegido</h4><div class="info"></div></div>${legend([['amber', 'Padre'], ['mint', 'Hijos'], ['accent', 'Hermanos']])}</div></div>`;
+    const draw = () => {
+      const cls = {}; if (sel) { cls[sel] = 'sel'; const e = idx[sel]; if (e.parent) { cls[e.parent.id] = 'par'; idx[e.parent.id].kids.forEach(k => { if (k.id !== sel) cls[k.id] = 'sib'; }); } e.kids.forEach(k => cls[k.id] = 'kid'); }
+      $('.tr', box).innerHTML = treeSVG(tree, { cls, click: true });
+      $$('.tn', box).forEach(g => g.onclick = () => { sel = g.dataset.id; draw(); });
+      if (!sel) { $('.info', box).innerHTML = '<span class="muted">Todavía no elegiste ninguno.</span>'; return; }
+      const e = idx[sel], sibs = e.parent ? idx[e.parent.id].kids.filter(k => k.id !== sel).map(k => k.id) : [];
+      const roles = []; if (!e.parent) roles.push('es la <b>raíz</b> (no tiene padre)'); else roles.push(`es <b>hijo</b> de ${e.parent.id}`);
+      if (e.kids.length) roles.push(`es <b>padre</b> de ${e.kids.map(k => k.id).join(' y ')}`); else roles.push('es una <b>hoja</b> (no tiene hijos)');
+      if (sibs.length) roles.push(`es <b>hermano</b> de ${sibs.join(' y ')}`); else if (e.parent) roles.push('no tiene hermanos');
+      $('.info', box).innerHTML = `<div class="bigcard" style="margin:0 0 8px">Nodo ${sel}</div><ul class="pts">${roles.map(r => `<li>${r}</li>`).join('')}</ul>`;
+    };
+    draw();
+  },
+
+  roles(box) {
+    const tree = T6(), idx = tIndex(tree);
+    const Q = [['Tocá la raíz.', id => !idx[id].parent, 'La raíz es A: el único nodo sin padre.'],
+      ['Tocá una hoja (un nodo sin hijos).', id => !idx[id].kids.length, 'D, E y F no tienen hijos: son las hojas.'],
+      ['Tocá el padre de F.', id => id === 'C', 'F cuelga de C, así que C es su padre.'],
+      ['Tocá un hermano de D.', id => id === 'E', 'D y E tienen el mismo padre (B): son hermanos.'],
+      ['Tocá un hijo de A.', id => id === 'B' || id === 'C', 'De A cuelgan B y C: esos son sus hijos.'],
+      ['Tocá un nodo que sea hijo y padre a la vez.', id => idx[id].parent && idx[id].kids.length, 'B y C tienen padre (A) y también tienen hijos.'],
+      ['Tocá un nodo que sea hermano de C.', id => id === 'B', 'B y C tienen el mismo padre (A): son hermanos.'],
+      ['Tocá un nodo que no tenga hermanos (aparte de la raíz).', id => id === 'F', 'F es el único hijo de C, así que no tiene hermanos.']];
+    let i = 0, ok = 0, lock = false;
+    const draw = (cls = {}, fb = '') => {
+      const fin = i >= Q.length;
+      box.innerHTML = `<div class="two"><div class="panel tr">${treeSVG(tree, { cls, click: !fin })}</div><div class="side"><div class="panel">${fin
+        ? `<div class="bigcard"><span class="muted" style="font-size:.95rem;font-weight:500">Resultado</span>${ok} de ${Q.length} correctas</div><div class="qnav" style="justify-content:center"><button class="btn ghost again">${ICON.redo}Volver a jugar</button></div>`
+        : `<div class="muted" style="font-size:.85rem">Pregunta ${i + 1} de ${Q.length}</div><p class="qtext" style="margin:6px 0 0">${Q[i][0]}</p>`}</div>${fb}</div></div>`;
+      $$('.tn.click', box).forEach(g => g.onclick = () => { if (lock) return; lock = true;
+        const good = !!Q[i][1](g.dataset.id); if (good) ok++;
+        draw({ [g.dataset.id]: good ? 'found' : 'err' }, `<div class="msg ${good ? 'ok' : 'ko'}"><b>${good ? '¡Bien!' : 'No es correcto.'}</b> ${Q[i][2]}</div><div class="qnav"><button class="btn nx">${i === Q.length - 1 ? 'Ver resultado' : 'Siguiente pregunta'}</button></div>`);
+        $('.nx', box).onclick = () => { i++; lock = false; draw(); }; $('.nx', box).focus({ preventScroll: true }); });
+      const ag = $('.again', box); if (ag) ag.onclick = () => { i = 0; ok = 0; lock = false; draw(); };
+    };
+    draw();
+  },
+
+  tipos(box) {
+    let tree, sel, nextId;
+    const height = n => n ? 1 + Math.max(0, ...(n.ch || []).map(height)) : 0;
+    const count = n => 1 + (n.ch || []).reduce((a, c) => a + count(c), 0);
+    const longest = n => { const idx = tIndex(n); const ls = Object.values(idx).filter(e => !e.kids.length).map(e => e.depth + 1); return [Math.max(...ls), Math.min(...ls)]; };
+    const unbal = n => { if (!n) return null; const hs = (n.ch || []).map(height); if (hs.length === 1) hs.push(0); /* un solo hijo: la otra rama está vacía (altura 0) */ if (hs.length && Math.max(...hs) - Math.min(...hs) > 1) return n; for (const c of n.ch || []) { const u = unbal(c); if (u) return u; } return null; };
+    box.innerHTML = `<div class="qnav" style="margin-top:0"><button class="btn add">${ICON.play}Agregar un hijo al nodo elegido</button><button class="btn ghost del">Quitar sus hijos</button><button class="btn ghost rst">${ICON.redo}Empezar de nuevo</button></div>
+      <div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Cómo es este árbol</h4><div class="info"></div></div><div class="res"></div></div></div>`;
+    const reset = () => { tree = { id: 'A', label: 'A', ch: [] }; sel = 'A'; nextId = 1; draw(); };
+    const draw = (fresh) => {
+      const idx = tIndex(tree), cls = { [sel]: 'sel' }; if (fresh) cls[fresh] = 'new';
+      $('.tr', box).innerHTML = treeSVG(tree, { cls, click: true });
+      $$('.tn', box).forEach(g => g.onclick = () => { sel = g.dataset.id; draw(); });
+      const grado = Math.max(...Object.values(idx).map(e => e.kids.length)), top = Object.values(idx).find(e => e.kids.length === grado), u = unbal(tree), h = height(tree);
+      const tipo = count(tree) === 1 ? 'Por ahora es solo la raíz.' : grado <= 2 ? '<b>Binario</b>: ningún nodo tiene más de 2 hijos.' : `<b>N-ario</b> (${grado}-ario): el nodo ${top.n.id} tiene ${grado} hijos, así que ya no es binario.`;
+      $('.info', box).innerHTML = `<ul class="pts"><li><b>Tipo:</b> ${tipo}</li><li><b>Nodo con más hijos:</b> ${count(tree) === 1 ? 'todavía ninguno tiene hijos' : `${top.n.id}, con ${grado}`}.</li><li><b>Cantidad de nodos:</b> ${count(tree)}</li><li><b>¿Balanceado?</b> ${count(tree) === 1 ? 'Sí: es solo la raíz.' : u ? `<b>No</b>: en el nodo ${u.id}, una rama es más larga que la otra por más de 1 nivel. La regla es que en cada nodo las dos ramas difieran como máximo en 1.` : `<b>Sí</b>: la rama más larga tiene ${longest(tree)[0]} niveles y la más corta ${longest(tree)[1]}; en ningún nodo las ramas difieren en más de 1 nivel.`}</li></ul>`;
+    };
+    $('.add', box).onclick = () => { const idx = tIndex(tree); const e = idx[sel];
+      if (e.depth >= 3) { $('.res', box).innerHTML = '<div class="msg ko">En esta demo el árbol llega hasta 4 niveles. Elegí un nodo más arriba.</div>'; return; }
+      if (count(tree) >= 15) { $('.res', box).innerHTML = '<div class="msg ko">Ya hay 15 nodos, suficiente para esta demo.</div>'; return; }
+      const id = String.fromCharCode(65 + nextId++); e.n.ch.push({ id, label: id, ch: [] }); $('.res', box).innerHTML = ''; draw(id);
+      if (e.kids.length + 1 === 3) $('.res', box).innerHTML = `<div class="msg ok"><b>${sel} ahora tiene 3 hijos.</b> Un árbol binario permite 2 como máximo, así que este árbol pasó a ser N-ario.</div>`; };
+    $('.del', box).onclick = () => { const idx = tIndex(tree); idx[sel].n.ch = []; $('.res', box).innerHTML = ''; draw(); };
+    $('.rst', box).onclick = reset;
+    reset();
+  },
+
+  altura(box) {
+    const tree = T7(), idx = tIndex(tree); let tk = 0;
+    const leaves = Object.values(idx).filter(e => !e.kids.length).map(e => e.n.id);
+    box.innerHTML = `<div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Camino</h4><div class="seq cells"></div><div style="height:22px"></div><div class="status"></div></div><div class="qnav" style="margin:0"><button class="btn calc">${ICON.play}Calcular la altura</button></div><div class="res"></div></div></div>`;
+    const draw = (cls = {}, edges, sub) => { $('.tr', box).innerHTML = treeSVG(tree, { cls, edges, sub, click: true, dimEdges: !!edges });
+      $$('.tn', box).forEach(g => g.onclick = () => { const id = g.dataset.id; if (idx[id].kids.length) { $('.status', box).innerHTML = `<b>${id}</b> no es una hoja: tiene hijos. Tocá D, E, F o G.`; return; } showPath(id); }); };
+    const showPath = async (leaf, fast) => {
+      const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; const p = pathTo(idx, leaf); $('.res', box).innerHTML = '';
+      const cls = {}, sub = {}; const sq = $('.seq', box); sq.innerHTML = '';
+      for (let i = 0; i < p.length; i++) { cls[p[i]] = i === p.length - 1 ? 'found' : 'path'; sub[p[i]] = 'nivel ' + i;
+        draw(cls, edgesOf(p.slice(0, i + 1)), sub); sq.innerHTML += `<div class="cell ${i === p.length - 1 ? 'found' : 'cur'}">${p[i]}<small>nivel ${i}</small></div>`;
+        $('.status', box).innerHTML = `Nivel ${i}: <b>${p[i]}</b>.`; await sleep(fast ? 220 : 520); if (!alive()) return; }
+      $('.status', box).innerHTML = `El camino de A hasta <b>${leaf}</b> tiene <b>${p.length} niveles</b> (del 0 al ${p.length - 1}).`;
+    };
+    $('.calc', box).onclick = async () => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; let best = null, bl = 0; const res = [];
+      for (const lf of leaves) { await showPath(lf, true); tk = my; if (!alive()) return; const n = pathTo(idx, lf).length; res.push(`${lf}: ${n} niveles`); if (n > bl) { bl = n; best = lf; } await sleep(350); if (!alive()) return; }
+      await showPath(best, true); tk = my; if (!alive()) return;
+      $('.res', box).innerHTML = `<div class="msg ok"><b>La altura del árbol es ${bl}.</b> Probé todas las hojas (${res.join(', ')}) y el camino más largo es el que llega a ${best}.</div>`; };
+    draw(); $('.status', box).textContent = 'Tocá una hoja para empezar.';
+  },
+
+  profundidad(box) {
+    const tree = T7(), idx = tIndex(tree); let tk = 0; const seen = {};
+    box.innerHTML = `<div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Aristas recorridas</h4><div class="seq cells"></div><div style="height:22px"></div><div class="status"></div></div><div class="panel"><h4>Profundidades que ya calculaste</h4><div class="pool done"><span class="muted">Todavía ninguna.</span></div></div></div></div>`;
+    const draw = (cls = {}, edges) => { $('.tr', box).innerHTML = treeSVG(tree, { cls, edges, sub: seen, click: true, dimEdges: !!edges }); $$('.tn', box).forEach(g => g.onclick = () => show(g.dataset.id)); };
+    const show = async id => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; const p = pathTo(idx, id), sq = $('.seq', box); sq.innerHTML = ''; const cls = { A: 'path' };
+      draw(cls, new Set()); $('.status', box).innerHTML = `Empiezo en la raíz <b>A</b>. Llevo <b>0</b> aristas.`; await sleep(500); if (!alive()) return;
+      for (let i = 1; i < p.length; i++) { cls[p[i]] = i === p.length - 1 ? 'found' : 'path'; draw(cls, edgesOf(p.slice(0, i + 1)));
+        sq.innerHTML += `<div class="cell w cur">${p[i - 1]}→${p[i]}<small>${i}</small></div>`; $('.status', box).innerHTML = `Bajo de ${p[i - 1]} a <b>${p[i]}</b>. Llevo <b>${i}</b> arista${i > 1 ? 's' : ''}.`; await sleep(600); if (!alive()) return; }
+      seen[id] = 'prof. ' + (p.length - 1); draw(cls, edgesOf(p));
+      $('.status', box).innerHTML = `<b>La profundidad de ${id} es ${p.length - 1}</b>${p.length === 1 ? ': es la raíz, no hay que moverse' : `: hay ${p.length - 1} arista${p.length > 2 ? 's' : ''} entre A y ${id}`}.`;
+      $('.done', box).innerHTML = Object.keys(idx).filter(k => seen[k]).map(k => `<span class="chip good">${k}: ${seen[k].replace('prof. ', '')}</span>`).join('');
+      if (Object.keys(seen).length === Object.keys(idx).length) $('.done', box).innerHTML += '<div class="msg ok" style="width:100%"><b>¡Calculaste todas!</b> Fijate que los nodos del mismo nivel tienen la misma profundidad.</div>'; };
+    draw(); $('.status', box).textContent = 'Tocá cualquier nodo.';
+  },
+
+  grado(box) {
+    const tree = T10(), idx = tIndex(tree); const sub = {};
+    box.innerHTML = `<div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Nodo elegido</h4><div class="status"></div></div><div class="qnav" style="margin:0"><button class="btn calc">${ICON.play}Calcular el grado del árbol</button></div><div class="res"></div></div></div>`;
+    const draw = (cls = {}) => { $('.tr', box).innerHTML = treeSVG(tree, { cls, sub, click: true }); $$('.tn', box).forEach(g => g.onclick = () => pick(g.dataset.id)); };
+    const pick = id => { const e = idx[id]; sub[id] = 'grado ' + e.kids.length; const cls = { [id]: 'sel' }; e.kids.forEach(k => cls[k.id] = 'kid'); draw(cls); $('.res', box).innerHTML = '';
+      $('.status', box).innerHTML = `<div class="bigcard" style="margin:0 0 6px">${id}: grado ${e.kids.length}</div>${e.kids.length ? `Tiene ${e.kids.length} hijo${e.kids.length > 1 ? 's' : ''}: <b>${e.kids.map(k => k.id).join(', ')}</b>.` : 'No tiene hijos: es una <b>hoja</b>, y las hojas siempre tienen grado 0.'}`; };
+    $('.calc', box).onclick = async () => { const nav = NAV; const all = Object.values(idx); let best = all[0];
+      for (const e of all) { sub[e.n.id] = 'grado ' + e.kids.length; draw({ [e.n.id]: 'cur' }); $('.status', box).innerHTML = `Miro <b>${e.n.id}</b>: grado ${e.kids.length}.`; if (e.kids.length > best.kids.length) best = e; await sleep(280); if (nav !== NAV) return; }
+      const cls = { [best.n.id]: 'sel' }; best.kids.forEach(k => cls[k.id] = 'kid'); draw(cls);
+      $('.status', box).innerHTML = `El nodo con más hijos es <b>${best.n.id}</b>, con ${best.kids.length}.`;
+      $('.res', box).innerHTML = `<div class="msg ok"><b>El grado del árbol es ${best.kids.length}.</b> Miré todos los nodos y me quedé con el que más hijos tiene. Como el grado es 3, este árbol <b>no es binario</b>: es 3-ario.</div>`; };
+    draw(); $('.status', box).innerHTML = '<span class="muted">Tocá un nodo para ver su grado.</span>';
+  },
+
+  insertar(box) {
+    const SEQ = [10, 5, 15, 3, 7, 12, 18]; let root, i, tk = 0, busy = false;
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Valores a insertar, en este orden</h4><div class="cells sq"></div><div style="height:26px"></div><div class="status"></div><div style="height:8px"></div><div class="tr"></div></div>
+      <div class="side"><div class="qnav" style="margin:0"><button class="btn nx">${ICON.play}Insertar el siguiente</button><button class="btn ghost rst">${ICON.redo}Reiniciar</button></div>
+      <div class="ctrls custom" style="grid-template-columns:minmax(0,1fr) auto;align-items:end;display:none"><label class="ctrl"><span>Otro valor (1 a 99)</span><input type="number" class="val" min="1" max="99" value="8"></label><button class="btn go">Insertar</button></div>
+      <div class="log" aria-live="polite"></div><div class="res"></div></div></div>`;
+    const log = $('.log', box), st = $('.status', box);
+    const drawSeq = (cur = -1) => { $('.sq', box).innerHTML = SEQ.map((v, k) => `<div class="cell ${k < i ? 'seen' : k === cur ? 'cur' : ''}">${v}<small>paso ${k + 1}</small></div>`).join(''); };
+    const draw = (cls = {}, ghost) => { let g = bin2gen(root);
+      if (ghost && g) { const place = (n, b) => { if (!n) return; if (String(b.v) === n.id && b === ghost.at) { if (!n.ch.length) n.ch = [null, null]; n.ch[ghost.side] = { id: 'ghost', label: String(ghost.v), ch: [], ghost: true }; return; } n.ch.forEach((c, k) => c && place(c, k === 0 ? b.l : b.r)); }; place(g, root); }
+      $('.tr', box).innerHTML = treeSVG(g, { cls }); };
+    const insert = async v => { if (busy) return; busy = true; const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; $('.res', box).innerHTML = '';
+      logLine(log, `$raiz = insertar($raiz, ${v});`, 'c');
+      if (!root) { root = { v, l: null, r: null }; draw({ [v]: 'new' }); st.innerHTML = `El árbol estaba vacío, así que <b>${v} es la raíz</b>.`; logLine(log, `// ${v} es la raíz`, 'dim'); busy = false; return; }
+      let n = root;
+      while (true) { draw({ [n.v]: 'cur' }); const less = v < n.v, eq = v === n.v;
+        st.innerHTML = `Comparo <b>${v}</b> con <b>${n.v}</b>: ${eq ? 'son iguales.' : `${v} ${less ? '<' : '>'} ${n.v}, voy a la <b>${less ? 'izquierda' : 'derecha'}</b>.`}`;
+        logLine(log, `// ${eq ? `${v} ya existe` : `${v} ${less ? '<' : '>'} ${n.v}: ${less ? 'izquierda' : 'derecha'}`}`, 'dim'); await sleep(900); if (!alive()) { busy = false; return; }
+        if (eq) { draw({ [n.v]: 'err' }); st.innerHTML = `<b>${v} ya está en el árbol.</b> En este árbol no se repiten valores, así que no hago nada.`; busy = false; return; }
+        const next = less ? n.l : n.r;
+        if (!next) { draw({ [n.v]: 'cur' }, { at: n, side: less ? 0 : 1, v }); st.innerHTML = `El lugar ${less ? 'izquierdo' : 'derecho'} de ${n.v} está <b>vacío</b>: acá va el ${v}.`; await sleep(900); if (!alive()) { busy = false; return; }
+          if (less) n.l = { v, l: null, r: null }; else n.r = { v, l: null, r: null }; draw({ [v]: 'new' }); st.innerHTML = `<b>Listo: ${v} quedó como hijo ${less ? 'izquierdo' : 'derecho'} de ${n.v}.</b>`; logLine(log, `// ${v} insertado como hijo ${less ? 'izquierdo' : 'derecho'} de ${n.v}`, 'dim'); busy = false; return; }
+        n = next; }
+    };
+    const reset = () => { tk++; busy = false; root = null; i = 0; log.innerHTML = '<div class="c">$raiz = null;</div>'; $('.res', box).innerHTML = ''; $('.custom', box).style.display = 'none'; $('.nx', box).disabled = false; drawSeq(); draw(); st.textContent = 'Tocá «Insertar el siguiente».'; };
+    $('.nx', box).onclick = async () => { if (busy || i >= SEQ.length) return; drawSeq(i); const v = SEQ[i]; i++; await insert(v); drawSeq();
+      if (i >= SEQ.length) { $('.nx', box).disabled = true; $('.custom', box).style.display = 'grid'; $('.res', box).innerHTML = '<div class="msg ok"><b>Es el árbol del apunte.</b> Ahora probá insertar otros valores: por ejemplo 8, 1, 20 o alguno que ya esté.</div>'; } };
+    $('.go', box).onclick = () => { const v = Math.round(+$('.val', box).value); if (!(v >= 1 && v <= 99)) return; if (bstCount(root) >= 20) { $('.res', box).innerHTML = '<div class="msg ko">Ya hay 20 nodos, suficiente para esta demo.</div>'; return; } insert(v); };
+    $('.val', box).addEventListener('keydown', e => { if (e.key === 'Enter') $('.go', box).click(); });
+    $('.rst', box).onclick = reset;
+    reset();
+  },
+
+  buscar(box) {
+    const root = bstFrom([10, 5, 15, 3, 7, 12, 18]); let tk = 0;
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:minmax(0,1fr) auto;align-items:end"><label class="ctrl"><span>Valor a buscar (1 a 20)</span><input type="number" class="val" min="1" max="20" value="7"></label><button class="btn go">${ICON.play}Buscar</button></div>
+      <div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Comparaciones</h4><div class="seq cells"></div><div style="height:22px"></div><div class="status"></div></div><div class="res"></div></div></div>`;
+    const draw = (cls = {}, edges) => { $('.tr', box).innerHTML = treeSVG(bin2gen(root), { cls, edges, dimEdges: !!edges }); };
+    const run = async () => { const v = Math.round(+$('.val', box).value); if (!(v >= 1 && v <= 20)) return; const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV;
+      const sq = $('.seq', box); sq.innerHTML = ''; $('.res', box).innerHTML = ''; const cls = {}, path = []; let n = root, steps = 0;
+      while (n) { steps++; path.push(String(n.v)); cls[n.v] = 'cur'; draw(cls, edgesOf(path)); const eq = v === n.v, less = v < n.v;
+        sq.innerHTML += `<div class="cell w ${eq ? 'found' : 'cur'}">${v} ${eq ? '=' : less ? '<' : '>'} ${n.v}<small>${steps}</small></div>`;
+        $('.status', box).innerHTML = `Paso ${steps}: comparo <b>${v}</b> con <b>${n.v}</b>. ${eq ? '<b>¡Son iguales!</b>' : `${v} es ${less ? 'menor' : 'mayor'}: voy a la <b>${less ? 'izquierda' : 'derecha'}</b>.`}`;
+        await sleep(900); if (!alive()) return;
+        if (eq) { cls[n.v] = 'found'; draw(cls, edgesOf(path)); $('.res', box).innerHTML = `<div class="msg ok"><b>Encontré el ${v}</b> en el nivel ${steps - 1}, con solo ${steps} comparaci${steps > 1 ? 'ones' : 'ón'}. En una lista de 7 datos podría haber necesitado hasta 7.</div>`; return; }
+        cls[n.v] = 'path'; n = less ? n.l : n.r; }
+      draw(cls, edgesOf(path)); $('.status', box).innerHTML = `Tendría que seguir por ${v < +path.at(-1) ? 'la izquierda' : 'la derecha'} de ${path.at(-1)}, pero ahí <b>no hay nada</b> (null).`;
+      $('.res', box).innerHTML = `<div class="msg ko"><b>El ${v} no está en el árbol.</b> Llegué a un lugar vacío después de ${steps} comparaciones. Fijate que igual no tuve que mirar todos los nodos.</div>`; };
+    $('.go', box).onclick = run; $('.val', box).addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+    draw(); $('.status', box).textContent = 'Elegí un valor y tocá «Buscar».';
+  },
+
+  recorrer(box) {
+    const tree = T6(), idx = tIndex(tree); let modo = 'preorden', tk = 0;
+    const RULE = { preorden: 'Raíz → izquierda → derecha', inorden: 'Izquierda → raíz → derecha', postorden: 'Izquierda → derecha → raíz' };
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:auto auto;justify-content:start;align-items:end"><div class="ctrl"><span>Recorrido</span><div class="seg">${Object.keys(RULE).map(m => `<button data-m="${m}" aria-pressed="${m === modo}">${m}</button>`).join('')}</div></div><div><button class="btn go">${ICON.play}Recorrer</button></div></div>
+      <div class="two"><div class="panel tr"></div><div class="side"><div class="panel"><h4>Regla: <span class="rule mono"></span></h4><div class="status"></div></div><div class="panel"><h4>Resultado</h4><div class="seq cells"></div></div><div class="res"></div></div></div>`;
+    const draw = (cls = {}) => { $('.tr', box).innerHTML = treeSVG(tree, { cls }); };
+    const setMode = m => { modo = m; $$('[data-m]', box).forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m)); $('.rule', box).textContent = RULE[m]; tk++; draw(); $('.seq', box).innerHTML = ''; $('.res', box).innerHTML = ''; $('.status', box).textContent = 'Tocá «Recorrer».'; };
+    $$('[data-m]', box).forEach(b => b.onclick = () => setMode(b.dataset.m));
+    const steps = []; const gen = n => { if (!n) return; const [l, r] = n.ch || [];
+      const visit = () => steps.push({ id: n.id, t: 'visit' });
+      const side = (c, s) => { if (c) { steps.push({ id: n.id, t: 'go', s, to: c.id }); gen(c); steps.push({ id: n.id, t: 'back', from: c.id }); } else steps.push({ id: n.id, t: 'none', s }); };
+      if (modo === 'preorden') { visit(); side(l, 'izquierda'); side(r, 'derecha'); }
+      else if (modo === 'inorden') { side(l, 'izquierda'); visit(); side(r, 'derecha'); }
+      else { side(l, 'izquierda'); side(r, 'derecha'); visit(); } };
+    $('.go', box).onclick = async () => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; steps.length = 0; gen(tree);
+      const done = {}, out = []; const sq = $('.seq', box); sq.innerHTML = ''; $('.res', box).innerHTML = '';
+      for (const s of steps) { const cls = { ...done, [s.id]: done[s.id] ? 'found' : 'cur' }; if (s.t === 'go') cls[s.to] = done[s.to] ? 'found' : 'cur'; draw(cls);
+        if (s.t === 'visit') { done[s.id] = 'found'; out.push(s.id); sq.innerHTML += `<div class="cell found">${s.id}</div>`; $('.status', box).innerHTML = `<b>Visito ${s.id}</b> y lo agrego al resultado.`; }
+        else if (s.t === 'go') $('.status', box).innerHTML = `Desde ${s.id} bajo por la <b>${s.s}</b>, al nodo ${s.to}.`;
+        else if (s.t === 'none') { $('.status', box).innerHTML = `${s.id} no tiene hijo a la ${s.s}: no hay nada para recorrer ahí.`; }
+        else $('.status', box).innerHTML = `Terminé con ${s.from}: vuelvo a ${s.id}.`;
+        await sleep(s.t === 'visit' ? 850 : s.t === 'none' ? 500 : 650); if (!alive()) return; }
+      draw(done); $('.status', box).innerHTML = `<b>¡Listo!</b> Pasé por los 6 nodos.`;
+      $('.res', box).innerHTML = `<div class="msg ok"><b>${modo[0].toUpperCase() + modo.slice(1)}: ${out.join(', ')}.</b> ${modo === 'preorden' ? 'La raíz A salió primera.' : modo === 'inorden' ? 'La raíz A salió en el medio, después de todo su lado izquierdo.' : 'La raíz A salió última, después de sus dos hijos.'} Compará con el apunte.</div>`; };
+    setMode(modo);
+  },
+};
+
+/* ---------- Navegación ---------- */
+const wrap = $('#wrap');
+function go(i, dir) {
+  i = Math.max(0, Math.min(SLIDES.length - 1, i)); if (i === cur) return;
+  dir = dir ?? (i > cur ? 1 : -1); NAV++;
+  const s = SLIDES[i], m = MODULES[s.mi];
+  const old = $('.slide:not(.leave)', wrap);
+  if (old) { old.style.setProperty('--dir', dir); old.classList.add('leave'); setTimeout(() => old.remove(), 230); }
+  const el = document.createElement('section'); el.className = 'slide enter'; el.style.setProperty('--dir', dir);
+  el.setAttribute('aria-label', s.title); el.innerHTML = R[s.type](s); wrap.appendChild(el);
+  H[s.type]?.(el, s);
+  $$('[data-go="next"]', el).forEach(b => b.onclick = () => go(cur + 1));
+  cur = i;
+  $('#tabName').textContent = s.file || 'slide.php';
+  $('#crumb').textContent = `${m.unit}, ${m.part.replace('Parte','parte')}`;
+  $('#modName').textContent = `${s.mi + 1}. ${m.title}`;
+  $('#pos').innerHTML = `<b>${i + 1}</b> de ${SLIDES.length}`;
+  $('#bar').style.width = ((i + 1) / SLIDES.length * 100) + '%';
+  $('#prev').disabled = i === 0; $('#next').disabled = i === SLIDES.length - 1;
+  store.set('pos', i);
+  try { history.replaceState(null, '', '#' + (i + 1)); } catch {}
+  markDrawer();
+}
+
+/* ---------- Índice lateral ---------- */
+function buildDrawer() {
+  const open = new Set($$('.dmod.open').map(d => +d.dataset.mi)); if (!open.size && cur >= 0) open.add(SLIDES[cur].mi);
+  $('#dlist').innerHTML = MODULES.map((m, mi) => {
+    const qs = QUIZZES.filter(q => q.mi === mi), t = qs.reduce((a, q) => a + q.questions.length, 0), c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0);
+    return `<div class="dmod ${open.has(mi) ? 'open' : ''}" data-mi="${mi}"><button aria-expanded="${open.has(mi)}"><span class="num">${mi + 1}</span><span class="mt"><b>${m.title}</b><span>${m.unit}, ${m.part.replace('Parte','parte')}: ${c}/${t} correctas</span></span>${ICON.chev}</button>
+      <ul class="dslides">${m.slides.map(s => `<li><button data-i="${s.idx}">${s.type === 'quiz' ? 'Cuestionario' : s.type === 'cover' ? 'Portada' : s.title}${s.type === 'quiz' ? `<span class="qb ${scores[s.qid] ? 'done' : ''}">${scores[s.qid] ? scores[s.qid].c + '/' + scores[s.qid].t : s.questions.length + ' preg.'}</span>` : ''}</button></li>`).join('')}</ul></div>`;
+  }).join('');
+  $$('.dmod>button').forEach(b => b.onclick = () => { const d = b.parentElement; d.classList.toggle('open'); b.setAttribute('aria-expanded', d.classList.contains('open')); });
+  $$('.dslides button').forEach(b => b.onclick = () => { go(+b.dataset.i); drawer(false); });
+  markDrawer();
+}
+function markDrawer() { $$('.dslides button').forEach(b => b.classList.toggle('cur', +b.dataset.i === cur)); }
+function drawer(on) { $('#drawer').classList.toggle('on', on); $('#backdrop').classList.toggle('on', on); $('#menuBtn').setAttribute('aria-expanded', on);
+  if (on) { const s = SLIDES[cur]; const d = $(`.dmod[data-mi="${s.mi}"]`); if (d && !d.classList.contains('open')) d.firstElementChild.click(); setTimeout(() => $('.dslides button.cur')?.scrollIntoView({ block: 'center' }), 50); } }
+function updateScore() { const c = Object.values(scores).reduce((a, x) => a + x.c, 0); $('#scoreTxt').textContent = `${c}/${TOTALQ}`; }
+
+/* ---------- Tema ---------- */
+const root = document.documentElement;
+function setTheme(t) { root.setAttribute('data-theme', t); store.set('theme', t); }
+setTheme(store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#themeBtn').onclick = () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+/* ---------- Eventos globales ---------- */
+$('#prev').onclick = () => go(cur - 1);
+$('#next').onclick = () => go(cur + 1);
+$('#menuBtn').onclick = () => drawer(true);
+$('#closeDrawer').onclick = $('#backdrop').onclick = () => drawer(false);
+$('#scoreBtn').onclick = () => go(SLIDES.length - 1);
+if (!document.fullscreenEnabled) $('#fsBtn').style.display = 'none';
+$('#fsBtn').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen(); } catch {} };
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea') || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape') return drawer(false);
+  if ($('#drawer').classList.contains('on')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0); else if (e.key === 'End') go(SLIDES.length - 1);
+  else if (SLIDES[cur].type === 'quiz' && /^[a-dA-D1-4]$/.test(e.key)) { const j = isNaN(e.key) ? 'abcd'.indexOf(e.key.toLowerCase()) : +e.key - 1; $$('.slide:not(.leave) .opt:not([disabled])')[j]?.click(); }
+});
+let tx = null, ty = 0;
+$('#stage').addEventListener('touchstart', e => { tx = e.target.closest('.code,.twrap,input,.bars,.cells,.log,.chart,.flip,.ll,.que,.stk') ? null : e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; }, { passive: true });
+
+/* ---------- Inicio ---------- */
+const fromHash = parseInt(location.hash.slice(1), 10);
+updateScore(); buildDrawer();
+go(!isNaN(fromHash) ? fromHash - 1 : store.get('pos', 0), 1);
+</script>
+</body>
+</html>
