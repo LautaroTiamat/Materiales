@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programación II · Unidad V: TAD Grafo y Tablas Hash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;--code-gutter:#A2A6C0;--code-hl:#E9ECF8;
+  --t-kw:#6A3DB8;--t-var:#B3332A;--t-str:#7F5300;--t-num:#9A4F00;--t-fn:#0A6A94;--t-cls:#136B4C;--t-com:#7D819C;--t-this:#C0306A;
+  --term-bg:#1C1D2B;--term-text:#E7E7F1;--term-muted:#8C8FB0;
+  --shadow:0 1px 0 rgba(30,32,60,.04),0 18px 40px -24px rgba(30,32,60,.45);
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+    --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+    --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+    --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+    --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+    --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;--code-gutter:#5B5F80;--code-hl:#2A2E48;
+  --t-kw:#C0A9FF;--t-var:#FF9389;--t-str:#EBC777;--t-num:#F7B26A;--t-fn:#86D0F2;--t-cls:#8EDDB6;--t-com:#7C7FA0;--t-this:#FF8FC0;
+  --term-bg:#11121C;--shadow:0 1px 0 rgba(0,0,0,.2),0 24px 48px -28px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100%;overflow:hidden}
+
+/* ---------- Top bar ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-bottom:1px solid var(--line);background:var(--surface)}
+.iconbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);transition:background .2s,border-color .2s}
+.iconbtn:hover{background:var(--surface-2);border-color:var(--line-strong)}
+.iconbtn svg{width:20px;height:20px}
+.brand{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:0 1 auto}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.elephant{width:38px;height:24px;flex:none}
+.modname{margin-left:auto;margin-right:auto;font-weight:600;color:var(--muted);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.right{display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}
+.modname+.right{margin-left:0}
+.score{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;background:var(--accent-soft);color:var(--text);font-weight:600;font-size:.88rem;border:0}
+.score svg{width:16px;height:16px;color:var(--accent)}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.theme-ico .moon{display:none}
+:root[data-theme="dark"] .theme-ico .sun{display:none}
+:root[data-theme="dark"] .theme-ico .moon{display:block}
+
+/* ---------- Stage / frame ---------- */
+.stage{position:relative;overflow:hidden;padding:clamp(8px,2vw,22px);min-height:0}
+.frame{position:relative;height:100%;max-width:1240px;margin:0 auto;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tabbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:42px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
+.tab{display:inline-flex;align-items:center;gap:8px;height:100%;padding:0 12px;font-family:var(--mono);font-size:.8rem;color:var(--text);background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);position:relative;top:1px}
+.tab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.crumb{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slide-wrap{position:relative;flex:1;min-height:0}
+.slide{position:absolute;inset:0;overflow:auto;padding:clamp(18px,3.6vw,46px) clamp(16px,4vw,56px) clamp(24px,3.6vw,46px);scrollbar-gutter:stable}
+.slide.enter{animation:slideIn .42s cubic-bezier(.2,.8,.2,1) both}
+.slide.leave{animation:slideOut .22s ease both;pointer-events:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(calc(var(--dir,1)*36px))}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(calc(var(--dir,1)*-24px))}}
+.rv{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*70ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.stitle{font-size:clamp(1.55rem,3.1vw,2.5rem);line-height:1.12;letter-spacing:-.02em;font-weight:700;margin:0 0 .5em;max-width:28ch}
+.stitle .brace,.cbrace{font-family:var(--mono);font-weight:400;color:var(--accent);opacity:.7}
+.stitle .brace{margin-left:.35em}
+.cbrace{font-size:clamp(1.4rem,2.6vw,2rem);margin-top:22px;line-height:1}
+.lead{font-size:clamp(1.02rem,1.5vw,1.22rem);max-width:68ch;margin:0 0 1.1em;color:var(--text)}
+.lead b,.pts b,.card b{font-weight:650}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.85em;padding:0 .45em;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+.pts{list-style:none;padding:0;margin:0 0 1em;display:grid;gap:10px;max-width:72ch}
+.pts li{position:relative;padding-left:22px}
+.pts li::before{content:"";position:absolute;left:2px;top:.62em;width:9px;height:9px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.pts li b{color:var(--text)}
+.ptitle{font-size:.95rem;font-weight:700;margin:1.2em 0 .6em;color:var(--muted)}
+.analogy{display:flex;gap:14px;align-items:flex-start;max-width:72ch;margin:1.2em 0 0;padding:16px 18px;border-radius:12px;background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent)}
+.analogy svg{flex:none;width:24px;height:24px;color:var(--amber);margin-top:2px}
+.analogy p{margin:0}
+.analogy strong{display:block;font-size:.85rem;color:var(--amber);margin-bottom:2px}
+.note{max-width:76ch;margin:1.2em 0 0;padding:14px 18px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 10px 10px 0}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;margin:0 0 1em}
+.group{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.group h3{margin:0 0 6px;font-size:1.1rem}
+.group p{margin:0}
+.group .pts{margin:8px 0 0}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--min,220px)),1fr));gap:14px;margin:0 0 .5em}
+.card{position:relative;padding:18px 18px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:left}
+.card h3{margin:0 0 6px;font-size:1.08rem;letter-spacing:-.01em}
+.card p{margin:0;color:var(--muted)}
+.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.card .ex{margin-top:12px;font-family:var(--mono);font-size:.78rem;padding:8px 10px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;white-space:pre}
+.cards.flow{grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}
+.cards.flow .card::after{content:"";position:absolute;right:-26px;top:50%;width:18px;height:18px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);transform:translateY(-50%) rotate(45deg)}
+.cards.flow .card:last-child::after{display:none}
+.cards.flow .card h3{color:var(--accent)}
+@media (max-width:720px){.cards.flow{grid-template-columns:1fr;gap:30px}.cards.flow .card::after{right:50%;top:auto;bottom:-24px;transform:translateX(50%) rotate(135deg)}}
+.flip{perspective:900px;padding:0;border:0;background:none;min-height:190px}
+.flip-in{position:relative;height:100%;min-height:190px;transition:transform .6s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.face h3{margin:0 0 6px;font-size:1.15rem}
+.face p{margin:0;color:var(--muted)}
+.face.back p{color:var(--text)}
+.face small{margin-top:auto;color:var(--accent);font-weight:600;font-size:.8rem}
+
+/* steps */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;counter-reset:st}
+.steps>li{counter-increment:st;position:relative;padding:54px 16px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.steps>li::before{content:counter(st);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.9rem}
+.steps h3{margin:0 0 4px;font-size:1.02rem}
+.steps p{margin:0;color:var(--muted);font-size:.95rem}
+.steps ul{margin:8px 0 0;padding-left:18px;font-size:.92rem}
+
+/* tables */
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 1em}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--surface-2);font-weight:700}
+tbody th{font-weight:700;color:var(--accent);white-space:nowrap;background:var(--surface-2);width:1%}
+tbody tr:last-child>*{border-bottom:0}
+td code{background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+
+/* cover */
+.cover{min-height:100%;display:grid;align-content:center;gap:10px;max-width:900px}
+.cover .unit{font-family:var(--mono);color:var(--accent);font-size:.95rem}
+.cover h1{font-size:clamp(2.4rem,7vw,5.2rem);line-height:.98;letter-spacing:-.035em;margin:0;font-weight:700}
+.cover h1 .brace{font-family:var(--mono);font-weight:400;color:var(--accent);font-size:.6em;vertical-align:.15em;margin-left:.15em}
+.cover .sub{font-size:clamp(1.05rem,1.8vw,1.35rem);color:var(--muted);max-width:52ch;margin:6px 0 10px}
+.topics{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:8px 0 0;list-style:none}
+.topics button{border:1px solid var(--line);background:var(--surface-2);padding:8px 14px;border-radius:999px;font-size:.92rem;transition:border-color .2s,background .2s}
+.topics button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.cover .start{justify-self:start;margin-top:18px}
+
+/* buttons / controls */
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;transition:transform .15s,filter .2s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn svg{width:16px;height:16px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ctrls{display:grid;gap:12px;margin:0 0 14px}
+.ctrl{display:grid;gap:5px;font-size:.88rem;color:var(--muted);font-weight:500}
+.ctrl input[type=text],.ctrl input[type=number],.ctrl select{height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.9rem;width:100%}
+.ctrl input:focus,.ctrl select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctrl output{font-family:var(--mono);color:var(--text);font-weight:600}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font-family:var(--mono);font-size:.82rem;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;color:var(--text)}
+.switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;transition:background .2s;cursor:pointer;margin:0;flex:none}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(18px)}
+
+/* code */
+.code-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.code-layout{grid-template-columns:minmax(0,1fr)}}
+.code{position:relative;margin:0;font-family:var(--mono);font-size:clamp(.74rem,1.02vw,.86rem);line-height:1.65;background:var(--code-bg);border:1px solid var(--line);border-radius:12px;overflow:auto;padding:14px 0;counter-reset:l;tab-size:4}
+.code.flash{animation:flash .6s ease}
+@keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 45%,transparent)}to{box-shadow:0 0 0 0 transparent}}
+.ln{display:block;padding:0 18px 0 0;white-space:pre;min-height:1.65em}
+.ln::before{counter-increment:l;content:counter(l);display:inline-block;width:2.4em;margin-right:1.1em;text-align:right;color:var(--code-gutter);user-select:none}
+.ln.hl{background:var(--code-hl)}
+.ln.click{cursor:pointer;transition:background .15s}
+.ln.click:hover{background:var(--code-hl)}
+.ln.bad{background:var(--coral-soft)}
+.ln.good{background:var(--mint-soft)}
+.t-kw{color:var(--t-kw);font-weight:600}.t-var{color:var(--t-var)}.t-str{color:var(--t-str)}.t-num{color:var(--t-num)}.t-fn{color:var(--t-fn)}.t-cls{color:var(--t-cls)}.t-com{color:var(--t-com);font-style:italic}.t-this{color:var(--t-this);font-weight:600}.t-tag{color:var(--t-kw)}
+.side{display:grid;gap:14px}
+.term{background:var(--term-bg);color:var(--term-text);border-radius:12px;overflow:hidden;font-family:var(--mono);font-size:.84rem;border:1px solid #2c2e44}
+.term-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #2c2e44;color:var(--term-muted);font-size:.78rem}
+.term-h .p{color:#A3ACE6}
+.term-out{margin:0;padding:14px;min-height:96px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term-out .e{color:#FF8E82}.term-out .w{color:#F2C15F}.term-out .ok{color:#7FDDB2}.term-out .dim{color:var(--term-muted)}
+.caret{display:inline-block;width:8px;height:1.05em;background:#A3ACE6;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.extra{margin-top:4px}
+
+/* quiz */
+.quiz{max-width:780px}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:var(--muted);font-size:.9rem}
+.qdots{display:flex;gap:6px}
+.qdots i{width:26px;height:6px;border-radius:3px;background:var(--line)}
+.qdots i.cur{background:var(--accent)}
+.qdots i.ok{background:var(--mint)}
+.qdots i.ko{background:var(--coral)}
+.qtext{font-size:clamp(1.1rem,1.8vw,1.35rem);font-weight:600;line-height:1.35;margin:0 0 16px;letter-spacing:-.01em}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);transition:border-color .2s,background .2s,transform .15s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt .k{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-family:var(--mono);font-weight:600;font-size:.85rem}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--mint);background:var(--mint-soft)}
+.opt.right .k{background:var(--mint);color:#fff;border-color:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.opt.wrong .k{background:var(--coral);color:#fff;border-color:var(--coral)}
+.opt.dim{opacity:.55}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.why{margin:14px 0 0;padding:14px 16px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);animation:rise .35s both}
+.why b{display:block;margin-bottom:2px}
+.why.ok b{color:var(--mint)}.why.ko b{color:var(--coral)}
+.qnav{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.result{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+@media (max-width:560px){.result{grid-template-columns:1fr;justify-items:start}}
+.ring{width:132px;height:132px}
+.ring circle{fill:none;stroke-width:10}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ring text{font-family:var(--sans);font-weight:700;fill:var(--text)}
+.result h3{margin:0 0 4px;font-size:1.4rem}
+
+/* footer */
+.foot{display:flex;align-items:center;gap:12px;padding:10px clamp(10px,2.4vw,24px);border-top:1px solid var(--line);background:var(--surface)}
+.foot .pos{font-size:.88rem;color:var(--muted);margin:0 auto;text-align:center;white-space:nowrap}
+.foot .pos b{color:var(--text)}
+.navbtn{height:42px}
+@media (max-width:560px){.top{gap:8px}#fsBtn{display:none!important}.elephant{width:32px}.frow{grid-template-columns:minmax(0,1fr) 48px;gap:6px 12px}.frow>span{grid-column:1/-1}.refs{grid-template-columns:1fr;gap:6px}.navbtn span{display:none}.navbtn{padding:0 14px}.modname{display:none}.brand span{display:none}.score{padding:0 10px}}
+
+/* drawer */
+.backdrop{position:fixed;inset:0;background:rgba(10,10,25,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.backdrop.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,92vw);background:var(--surface);border-right:1px solid var(--line);z-index:21;transform:translateX(-102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead h2{margin:0;font-size:1.05rem}
+.dlist{overflow:auto;padding:8px 8px 24px}
+.dmod{margin:4px 0}
+.dmod>button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:10px;border:0;background:transparent}
+.dmod>button:hover{background:var(--surface-2)}
+.dmod .num{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);font-family:var(--mono);font-weight:600;font-size:.82rem}
+.dmod .mt{flex:1;min-width:0}
+.dmod .mt b{display:block;font-size:.95rem}
+.dmod .mt span{font-size:.78rem;color:var(--muted)}
+.dmod .chev{width:16px;height:16px;transition:transform .2s;color:var(--muted)}
+.dmod.open .chev{transform:rotate(90deg)}
+.dslides{list-style:none;margin:0 0 6px 50px;padding:0;display:none}
+.dmod.open .dslides{display:block}
+.dslides button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:7px;font-size:.88rem;color:var(--muted)}
+.dslides button:hover{background:var(--surface-2);color:var(--text)}
+.dslides button.cur{background:var(--accent-soft);color:var(--text);font-weight:600}
+.dslides .qb{margin-left:auto;font-family:var(--mono);font-size:.74rem;padding:1px 6px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line)}
+.dslides .qb.done{background:var(--mint-soft);border-color:var(--mint);color:var(--text)}
+
+/* demos */
+.demo{display:grid;gap:16px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface-2)}
+.panel h4{margin:0 0 10px;font-size:.9rem;color:var(--muted);font-weight:600}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);text-align:left;transition:transform .15s,border-color .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.order{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:o;min-height:44px}
+.order li button{width:100%;counter-increment:o;justify-content:flex-start}
+.order li button::before{content:counter(o);display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.8rem;flex:none}
+.order li.bad button{border-color:var(--coral);background:var(--coral-soft)}
+.order li.good button{border-color:var(--mint);background:var(--mint-soft)}
+.msg{padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);animation:rise .3s both}
+.msg.ok{background:var(--mint-soft);border-color:var(--mint)}
+.msg.ko{background:var(--coral-soft);border-color:var(--coral)}
+.cells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{position:relative;width:46px;height:52px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface);display:grid;place-items:center;font-family:var(--mono);font-weight:600;transition:all .25s}
+.cell small{position:absolute;bottom:-17px;font-size:.66rem;color:var(--muted);font-weight:400}
+.cell.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-4px)}
+.cell.seen{opacity:.45}
+.cell.out{opacity:.22}
+.cell.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-4px) scale(1.06)}
+.status{font-family:var(--mono);font-size:.85rem;min-height:1.6em;color:var(--text)}
+.bars{display:flex;align-items:flex-end;gap:clamp(4px,1vw,10px);height:200px;padding:10px 4px 0}
+.bar{flex:1;border-radius:7px 7px 0 0;background:var(--accent);opacity:.85;display:flex;align-items:flex-start;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--accent-ink);padding-top:4px;transition:height .25s ease,background .2s}
+.bar.cmp{background:var(--amber)}
+.bar.swp{background:var(--coral)}
+.bar.done{background:var(--mint)}
+.counters{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.counters b{color:var(--text);font-family:var(--mono)}
+.stack{display:flex;flex-direction:column-reverse;gap:6px;min-height:260px;justify-content:flex-start}
+.frame-c{padding:9px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);font-family:var(--mono);font-size:.82rem;animation:rise .3s both;display:flex;justify-content:space-between;gap:10px}
+.frame-c.top{border-color:var(--amber);background:var(--amber-soft)}
+.frame-c.ret{border-color:var(--mint);background:var(--mint-soft)}
+.inspect{font-family:var(--mono);font-size:.86rem;display:grid;gap:8px}
+.attr{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.attr span:first-child{color:var(--t-var)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.meter.h i{background:var(--amber)}
+.pop{animation:pop .45s}
+@keyframes pop{40%{transform:scale(1.08)}}
+.log{font-family:var(--mono);font-size:.82rem;background:var(--term-bg);color:var(--term-text);border-radius:10px;padding:12px;height:180px;overflow:auto}
+.log div{animation:rise .25s both}
+.log .c{color:#A3ACE6}
+.objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.obj{border:1px solid var(--line-strong);border-radius:12px;padding:12px;background:var(--surface);font-family:var(--mono);font-size:.78rem;animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}}
+.obj b{color:var(--t-var)}
+.obj svg{width:100%;height:56px;margin:4px 0}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-strong)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
+.refs{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;align-items:center}
+.vbox{font-family:var(--mono);padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-strong);background:var(--surface);white-space:nowrap}
+.objbox{padding:12px 14px;border-radius:12px;border:2px solid;font-family:var(--mono);font-size:.85rem}
+.o1{border-color:var(--accent);background:var(--accent-soft)}
+.o2{border-color:var(--amber);background:var(--amber-soft)}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:.85rem;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.two>*,.panel,.side,.demo>*{min-width:0}
+.slide{overflow-x:hidden}
+.matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcell{padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:.85rem;transition:all .25s}
+.mcell b{display:block;font-size:1.1rem}
+.mcell.yes{border-color:var(--mint);background:var(--mint-soft)}
+.mcell.no{border-color:var(--coral);background:var(--coral-soft)}
+.mcell.sel{outline:2px solid var(--accent);outline-offset:2px}
+.bigo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:8px}
+.lg{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);border-left-width:4px}
+.lg b{font-family:var(--mono)}
+.lg span{font-size:.8rem;color:var(--muted)}
+.lg em{font-style:normal;font-family:var(--mono);font-size:.85rem;color:var(--text)}
+.bigo-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(200px,1fr);gap:14px;align-items:start}.bigo-grid .bigo-legend{grid-template-columns:1fr}@media (max-width:820px){.bigo-grid{grid-template-columns:1fr}.bigo-grid .bigo-legend{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}}
+.chart{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.chart path{fill:none;stroke-width:3;stroke-linecap:round;transition:d .4s}
+.chart .ax{stroke:var(--line-strong);stroke-width:1}
+.chart text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+.cmpbars{display:grid;gap:10px}
+.cmpbars .row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;font-size:.85rem}
+.cmpbars .track{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.cmpbars .track i{display:block;height:100%;border-radius:7px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.final{display:grid;gap:12px;max-width:780px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) 140px 60px;gap:12px;align-items:center}
+.frow .meter{height:12px;width:100%}
+
+/* ---------- Componentes de demos ---------- */
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.btn.sm{height:36px;padding:0 12px;font-size:.85rem}
+.bigcard{display:grid;justify-items:center;gap:4px;text-align:center;font-size:clamp(1.3rem,2.6vw,1.8rem);font-weight:700;letter-spacing:-.01em;margin:8px 0 4px}
+.chip.good{border-color:var(--mint);background:var(--mint-soft)}
+.chip.bad{border-color:var(--coral);background:var(--coral-soft)}
+.cell.w{width:auto;min-width:56px;padding:0 12px;font-size:.88rem}
+button.cell{cursor:pointer;color:var(--text)}
+.cell.ok{border-color:var(--mint)}
+.cell.prev{border-color:var(--amber);background:var(--amber-soft)}
+.cell.next{border-color:var(--mint);background:var(--mint-soft)}
+.cell.empty{border-style:dashed;color:var(--muted);font-weight:400}
+.cell.err{border-color:var(--coral);background:var(--coral-soft);animation:shake .4s}
+.log .e{color:#FF8E82}.log .dim{color:var(--term-muted)}
+.stk{display:flex;flex-direction:column-reverse;gap:6px;min-height:290px;padding:10px;border:2px solid var(--line-strong);border-top:0;border-radius:0 0 14px 14px;background:var(--surface)}
+.it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line-strong);background:var(--surface-2);font-family:var(--mono);font-size:.88rem;transition:opacity .25s,transform .25s}
+.it small{color:var(--amber);font-size:.72rem;font-weight:600}
+.it.tope{border-color:var(--amber);background:var(--amber-soft)}
+.it.fresh{animation:drop .35s cubic-bezier(.2,.8,.2,1) both}
+.it.out{opacity:0;transform:translateY(-22px)}
+@keyframes drop{from{opacity:0;transform:translateY(-22px)}}
+.que{display:flex;gap:8px;align-items:stretch;min-height:66px;padding:10px;border-top:2px solid var(--line-strong);border-bottom:2px solid var(--line-strong);background:var(--surface);overflow-x:auto}
+.it.qi{flex:none;flex-direction:column;justify-content:center;gap:2px;min-width:72px}
+.it.qi.fresh{animation:slideL .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slideL{from{opacity:0;transform:translateX(26px)}}
+.qlabels{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:var(--muted);margin:0 2px 6px}
+.ll{display:flex;flex-wrap:wrap;align-items:center;gap:8px 5px;font-family:var(--mono);font-size:.86rem;min-height:44px}
+.node{display:inline-flex;border:1.5px solid var(--line-strong);border-radius:9px;overflow:hidden;background:var(--surface);transition:transform .25s,border-color .25s,background .25s}
+.node .v{padding:8px 10px;font-weight:600;min-width:36px;text-align:center}
+.node .p{padding:8px 9px;border-left:1.5px solid var(--line-strong);color:var(--accent);background:var(--surface-2)}
+.node.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-3px)}
+.node.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-3px)}
+.node.new{animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both;border-color:var(--accent);background:var(--accent-soft)}
+.ar{color:var(--accent);font-weight:700}
+.nul{color:var(--muted);font-style:italic}
+.ptr{font-size:.76rem;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--text)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* ---------- Unidad IV: árboles ---------- */
+.tree{width:100%;height:auto;max-height:300px;display:block;margin:0 auto}
+.tree .ed{stroke:var(--line-strong);stroke-width:2;transition:stroke .25s,opacity .25s}
+.tree .ed.hl{stroke:var(--accent);stroke-width:3.5}
+.tree .ed.dim{opacity:.3}
+.tree .tn circle{fill:var(--surface);stroke:var(--line-strong);stroke-width:2;transition:fill .25s,stroke .25s}
+.tree .tn text{font-family:var(--mono);font-weight:700;font-size:17px;fill:var(--text)}
+.tree .tn .sub{font-size:11px;font-weight:600;fill:var(--muted);font-family:var(--sans)}
+.tree .tn.click{cursor:pointer}
+.tree .tn.click:hover circle{stroke:var(--accent);stroke-width:3}
+.tree .tn.cur circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.tree .tn .in{transform-box:fill-box;transform-origin:center}
+.tree .tn.cur .in{animation:pop .45s}
+.tree .tn.found circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.tree .tn.path circle{fill:var(--accent-soft);stroke:var(--accent)}
+.tree .tn.sel circle{fill:var(--accent);stroke:var(--accent)}
+.tree .tn.sel text{fill:var(--accent-ink)}
+.tree .tn.sel .sub{fill:var(--muted)}
+.tree .tn.kid circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.tree .tn.par circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.tree .tn.sib circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.tree .tn.err circle{fill:var(--coral-soft);stroke:var(--coral);stroke-width:3}
+.tree .tn.err .in{animation:shake .4s}
+.tree .tn.new .in{animation:popIn .5s cubic-bezier(.2,.9,.3,1.3) both}
+.tree .tn.ghost circle{fill:none;stroke:var(--amber);stroke-dasharray:5 4;stroke-width:2.5}
+.tree .tn.ghost text{fill:var(--amber)}
+.tree .tn.ghost .in{animation:blink 1s steps(1) infinite}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.84rem;color:var(--muted);padding:0 4px}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:2px solid}
+.seq{min-height:52px}
+.lead,.pts,.note,.analogy{max-width:none}
+.cell.seen{opacity:.4}
+
+/* ---------- Unidad V: grafos ---------- */
+.graph{width:100%;height:auto;max-height:340px;display:block;margin:0 auto;overflow:visible}
+.graph .ge .ln2{fill:none;stroke:var(--line-strong);stroke-width:2.4;stroke-linecap:round;transition:stroke .25s,stroke-width .25s,opacity .25s}
+.graph .ge .hit{fill:none;stroke:#000;stroke-opacity:0;stroke-width:26;pointer-events:stroke}
+.graph .ge.click,.graph .gv.click{-webkit-tap-highlight-color:transparent}
+.graph .ge .ah{fill:var(--line-strong);transition:fill .25s,opacity .25s}
+.graph .ge.click{cursor:pointer}
+.graph .ge.click:hover .ln2{stroke:var(--accent)}
+.graph .ge.click:hover .ah{fill:var(--accent)}
+.graph .ge.hl .ln2{stroke:var(--accent);stroke-width:3.6}.graph .ge.hl .ah{fill:var(--accent)}
+.graph .ge.sel .ln2{stroke:var(--amber);stroke-width:4.2}.graph .ge.sel .ah{fill:var(--amber)}
+.graph .ge.adj .ln2{stroke:var(--mint);stroke-width:3.6}.graph .ge.adj .ah{fill:var(--mint)}
+.graph .ge.par .ln2{stroke:var(--coral);stroke-width:3.6}.graph .ge.par .ah{fill:var(--coral)}
+.graph .ge.dim .ln2,.graph .ge.dim .ah{opacity:.22}
+.graph .ge.new .ln2{stroke:var(--accent);stroke-width:3.6;stroke-dasharray:400;animation:draw .6s ease both}
+@keyframes draw{from{stroke-dashoffset:400}to{stroke-dashoffset:0}}
+.graph .gv circle{fill:var(--surface);stroke:var(--line-strong);stroke-width:2.2;transition:fill .25s,stroke .25s,opacity .25s}
+.graph .gv text{font-family:var(--mono);font-weight:700;font-size:16px;fill:var(--text);pointer-events:none}
+.graph .gv .sub{font-family:var(--sans);font-size:11.5px;font-weight:600;fill:var(--muted)}
+.graph .gv .in{transform-box:fill-box;transform-origin:center}
+.graph .gv.click{cursor:pointer}
+.graph .gv.click:hover circle{stroke:var(--accent);stroke-width:3}
+.graph .gv.cur circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.graph .gv.cur .in{animation:pop .45s}
+.graph .gv.found circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.graph .gv.kid circle{fill:var(--mint-soft);stroke:var(--mint);stroke-width:3}
+.graph .gv.path circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.graph .gv.sel circle{fill:var(--accent);stroke:var(--accent)}
+.graph .gv.sel>.in>text:not(.sub){fill:var(--accent-ink)}
+.graph .gv.err circle{fill:var(--coral-soft);stroke:var(--coral);stroke-width:3}
+.graph .gv.err .in{animation:shake .4s}
+.graph .gv.g1 circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:3}
+.graph .gv.g2 circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.graph .gv.dimv circle{opacity:.45}
+.graph .gv.dimv text{opacity:.5}
+.graph .gv.pick circle{stroke:var(--accent);stroke-width:3;stroke-dasharray:5 4}
+.mathline{font-family:var(--mono);font-size:.9rem;padding:10px 12px;border-radius:10px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+.verdict{display:grid;gap:8px}
+.vrow{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:start;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.vrow b{font-size:.92rem}
+.vrow span{font-size:.9rem;color:var(--muted)}
+.vrow.yes{border-color:var(--mint);background:var(--mint-soft)}
+.vrow.yes span{color:var(--text)}
+@media (max-width:560px){.vrow{grid-template-columns:1fr;gap:2px}}
+.mx{display:grid;gap:4px;width:max-content;font-family:var(--mono)}
+.mx .h{display:grid;place-items:center;width:40px;height:34px;font-weight:700;color:var(--accent);font-size:.9rem}
+.mx button{width:40px;height:40px;border-radius:8px;border:1.5px solid var(--line-strong);background:var(--surface);font-family:var(--mono);font-weight:700;color:var(--muted);transition:background .2s,border-color .2s,transform .15s}
+.mx button:hover{border-color:var(--accent);transform:translateY(-1px)}
+.mx button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.mx button.diag{border-style:dashed}
+.adjlist{font-family:var(--mono);font-size:.86rem;display:grid;gap:6px}
+.adjlist div{padding:7px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+.adjlist b{color:var(--t-var)}
+
+/* ---------- Unidad V: tablas hash ---------- */
+.htab{display:grid;gap:6px}
+.hrow{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:stretch}
+.hidx{display:grid;place-items:center;font-family:var(--mono);font-weight:700;border-radius:9px;background:var(--accent-soft);color:var(--text);font-size:.9rem;transition:background .25s,color .25s}
+.hslot{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:5px 8px;border-radius:9px;border:1.5px dashed var(--line-strong);background:var(--surface);transition:border-color .25s,background .25s;font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+.hslot.full{border-style:solid}
+.hrow.cur .hslot{border-color:var(--amber);background:var(--amber-soft);border-style:solid}
+.hrow.cur .hidx{background:var(--amber);color:#fff}
+.hrow.found .hslot{border-color:var(--mint);background:var(--mint-soft);border-style:solid}
+.hrow.found .hidx{background:var(--mint);color:#fff}
+.hrow.err .hslot{border-color:var(--coral);background:var(--coral-soft);border-style:solid;animation:shake .4s}
+.kv{display:inline-flex;align-items:stretch;border:1.5px solid var(--line-strong);border-radius:8px;overflow:hidden;background:var(--surface-2);color:var(--text);transition:border-color .25s,background .25s,transform .25s}
+.kv b{padding:5px 8px;font-weight:700}
+.kv span{padding:5px 8px;border-left:1.5px solid var(--line-strong);color:var(--muted)}
+.kv.cur{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-2px)}
+.kv.found{border-color:var(--mint);background:var(--mint-soft);transform:translateY(-2px)}
+.kv.new{animation:popIn .45s cubic-bezier(.2,.9,.3,1.3) both;border-color:var(--accent);background:var(--accent-soft)}
+.kv.tomb{border-style:dashed;color:var(--muted);background:transparent}
+.kv.tomb b{font-weight:500;font-style:italic}
+.chainar{color:var(--accent);font-weight:700}
+.hcalc{font-family:var(--mono);font-size:.88rem;line-height:1.7;padding:10px 12px;border-radius:10px;background:var(--code-bg);border:1px solid var(--line);overflow-x:auto;min-height:46px}
+.hcalc .r{color:var(--t-num);font-weight:700}
+.ccell{display:inline-grid;justify-items:center;gap:2px;margin:0 3px 4px 0;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line-strong);background:var(--surface);font-family:var(--mono);min-width:38px;animation:rise .3s both}
+.ccell b{font-size:1.05rem}
+.ccell small{font-size:.72rem;color:var(--muted)}
+.dist{display:flex;align-items:flex-end;gap:6px;height:170px;padding:4px 2px 0;border-bottom:2px solid var(--line-strong)}
+.dcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;min-width:0;height:100%}
+.dcol i{display:block;width:100%;max-width:46px;border-radius:6px 6px 0 0;background:var(--accent);transition:height .45s cubic-bezier(.2,.8,.2,1),background .25s}
+.dcol i.bad{background:var(--coral)}
+.dcol em{font-style:normal;font-family:var(--mono);font-size:.75rem;color:var(--text);font-weight:600}
+.dlabels{display:flex;gap:6px;padding:4px 2px 0}
+.dlabels span{flex:1;text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:0}
+.pickers{display:flex;flex-wrap:wrap;gap:6px}
+.pickers .chip{padding:6px 10px;font-size:.85rem}
+.pickers .chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.cells.lst .cell{width:auto;min-width:62px;padding:0 8px;font-size:.8rem}
+.hmini{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px 6px;margin-bottom:12px}
+.hmini .cell{width:auto;height:auto;min-height:52px;padding:6px 4px;font-size:.78rem;display:flex;flex-direction:column;justify-content:center;gap:2px;margin-bottom:12px}
+.hmini .cell span{display:block;line-height:1.2}
+
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px;margin:0 0 .5em}
+.gcard{display:flex;flex-direction:column;padding:14px 16px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.gcard h3{margin:10px 0 4px;font-size:1.08rem;letter-spacing:-.01em}
+.gcard p{margin:0;color:var(--muted);font-size:.95rem}
+.gcard p b{color:var(--text)}
+.gfig{display:flex;gap:8px;justify-content:center;padding:8px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.gfig figure{margin:0;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
+.gfig .graph{max-height:160px}
+.gfig figcaption{font-size:.8rem;color:var(--muted);text-align:center;margin-top:4px;line-height:1.35}
+.gmore{align-self:flex-start;margin-top:auto;padding:10px 0 0;border:0;background:none;color:var(--accent);font-weight:600;font-size:.88rem;display:inline-flex;align-items:center;gap:4px}
+.gmore:hover{text-decoration:underline}
+.figrow{margin:0 0 1em;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.figrow h3{margin:0 0 10px;font-size:1.1rem}
+.figrow p{margin:10px 0 0;color:var(--muted)}
+.figrow p b{color:var(--text)}
+.figrow .gfig{flex-wrap:wrap}
+.figrow .gfig figure{flex:1 1 200px}
+.group .gfig{margin-bottom:12px}
+.group .gfig figcaption{font-family:var(--mono);font-size:.76rem}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="iconbtn" id="menuBtn" aria-label="Abrir índice" aria-controls="drawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <svg class="elephant" viewBox="0 0 76 48" aria-hidden="true"><ellipse cx="38" cy="24" rx="37" ry="23" fill="var(--accent)"/><text x="38" y="31" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="21" fill="var(--accent-ink)">php</text></svg>
+    <div class="brand"><b>Programación II</b><span>UTN Facultad Regional Resistencia</span></div>
+    <div class="modname" id="modName"></div>
+    <div class="right">
+      <button class="score" id="scoreBtn" title="Respuestas correctas en los cuestionarios"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z"/></svg><span id="scoreTxt">0</span></button>
+      <button class="iconbtn theme-ico" id="themeBtn" aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="iconbtn" id="fsBtn" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <main class="stage" id="stage">
+    <div class="frame">
+      <div class="tabbar"><span class="tab" id="tabName">inicio.php</span><span class="crumb" id="crumb"></span></div>
+      <div class="slide-wrap" id="wrap" aria-live="polite"></div>
+    </div>
+  </main>
+  <footer class="foot">
+    <button class="btn ghost navbtn" id="prev" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button>
+    <div class="pos" id="pos"></div>
+    <button class="btn navbtn" id="next" aria-label="Diapositiva siguiente"><span>Siguiente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  </footer>
+</div>
+<div class="backdrop" id="backdrop"></div>
+<nav class="drawer" id="drawer" aria-label="Índice de temas">
+  <div class="dhead"><h2>Índice del resumen</h2><button class="iconbtn" id="closeDrawer" aria-label="Cerrar índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dlist" id="dlist"></div>
+</nav>
+<script>
+/* ============ Utilidades para los ejemplos ============ */
+const P = String.raw;
+const clean = (s, d='') => { const r = String(s ?? '').replace(/["'\\$`{}<>]/g, '').trim().slice(0, 40); return r || d; };
+const FE = (cls, msg) => `Fatal error: Uncaught ${cls}: ${msg}`;
+const ENC = new TextEncoder();
+/* Suma de bytes de la clave: es exactamente lo que hace PHP con ord() y strlen() */
+const hsum = k => [...ENC.encode(k)].reduce((a, b) => a + b, 0);
+const hidx = (k, n) => hsum(k) % n;
+/* Lee aristas escritas como "A-B, B-C" */
+const parseEdges = s => String(s).split(',').map(t => t.trim()).filter(Boolean).map(t => t.split(/\s*-\s*/)).filter(p => p.length === 2)
+  .map(([a, b]) => [clean(a).replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ]/g, '').slice(0, 10), clean(b).replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ]/g, '').slice(0, 10)]).filter(([a, b]) => a && b).slice(0, 14);
+const parseKeys = s => [...new Set(String(s).split(',').map(t => clean(t).replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]/g, '').trim().slice(0, 14)).filter(Boolean))].slice(0, 12);
+
+/* ============ Contenido ============ */
+const MODULES = [
+/* ---------------------------------------------------------------- 1 */
+{ title:'¿Qué es un grafo?', unit:'Unidad V', part:'Parte I', slides:[
+ {type:'cover', title:'El TAD Grafo', file:'grafo.php', sub:'Una estructura para representar relaciones: quién es amigo de quién, qué computadora está conectada con cuál, qué calle te lleva a qué esquina.', topics:['¿Qué es un grafo?','Partes principales de un grafo','Caminos','Grado de un vértice']},
+ {type:'concept', title:'¿Qué es un grafo?', file:'que_es.php',
+  lead:'Un <b>grafo</b> es una estructura matemática que se usa para representar <b>relaciones entre objetos</b>. Tiene solo dos ingredientes: un conjunto de <b>vértices</b> (los objetos) y un conjunto de <b>aristas</b> (las conexiones que unen esos vértices).',
+  points:[['Vértices (o nodos):','son los objetos que queremos relacionar: personas, ciudades, computadoras, estaciones.'],['Aristas (o conexiones):','son las líneas que unen dos vértices e indican que están relacionados.'],['Se escribe','<code>G = (V, A)</code>: un grafo <code>G</code> es el par formado por el conjunto de vértices <code>V</code> y el conjunto de aristas <code>A</code>.'],['Se usa en','matemáticas, ciencias de la computación, redes sociales, biología... en cualquier lugar donde haya <b>cosas relacionadas entre sí</b>.']],
+  analogy:'Un <b>mapa del subte</b>: cada estación es un vértice y cada tramo de vía entre dos estaciones es una arista. Al mapa no le importa la forma exacta de las calles ni las distancias reales: solo le importa <b>qué está conectado con qué</b>. Eso es exactamente lo que guarda un grafo.',
+  note:'<b>¿Y el árbol de la Unidad IV?</b> Un árbol es un <b>caso particular</b> de grafo: tiene una raíz, cada nodo tiene un solo padre y no hay ciclos. En un grafo general <b>no hay raíz ni jerarquía</b>: cualquier vértice se puede conectar con cualquier otro, y puede haber caminos que vuelven al punto de partida.'},
+ {type:'demo', demo:'red', title:'Una red de amigos', file:'red_social.php',
+  lead:'Cada persona es un <b>vértice</b> y cada amistad es una <b>arista</b>. Tocá una persona para ver a sus amigos. Después tocá otra para ver si se conocen y qué amigos tienen en común: así es como una red social te sugiere «personas que quizás conozcas».'},
+ {type:'gallery', title:'Partes principales de un grafo', file:'partes.php',
+  lead:'Un grafo está compuesto por varios elementos que permiten describirlo y analizarlo. Cada tarjeta muestra una parte con un dibujo: <b>lo que está coloreado es la parte de la que se habla</b>. En las próximas diapositivas las vemos de a una, con ejemplos para tocar.',
+  items:[
+   {t:'Vértices', go:'Vértices y aristas', d:'Son los <b>puntos</b> o entidades del grafo. Se dibujan como círculos y se les pone una etiqueta: una letra o un número.',
+    figs:[{G:{w:260,h:120,V:{A:[50,60],B:[130,60],C:[210,60]},E:[]}, o:{cls:{A:'path',B:'path',C:'path'}}, cap:'Tres vértices: A, B y C (todavía sin conexiones).'}]},
+   {t:'Aristas', go:'Vértices y aristas', d:'Son las <b>líneas</b> que conectan dos vértices. Pueden no tener dirección (se recorren para los dos lados) o ser <b>flechas</b> (un solo sentido).',
+    figs:[{G:{w:150,h:120,V:{A:[35,60],B:[115,60]},E:[['A','B']]}, o:{ecls:{0:'hl'}}, cap:'No dirigida: {A, B}'},
+          {G:{w:150,h:120,dir:true,V:{A:[35,60],B:[115,60]},E:[['A','B']]}, o:{ecls:{0:'hl'}}, cap:'Dirigida: (A, B)'}]},
+   {t:'Aristas adyacentes', go:'Adyacentes, paralelas y lazos', d:'Dos aristas son adyacentes si <b>comparten un vértice</b>. Las tres aristas del dibujo se tocan en A.',
+    figs:[{G:{w:260,h:160,V:{A:[130,35],B:[50,125],C:[130,125],D:[210,125]},E:[['A','B'],['A','C'],['A','D']]}, o:{cls:{A:'cur'},ecls:{0:'adj',1:'adj',2:'adj'}}, cap:'{A, B}, {A, C} y {A, D} son adyacentes: comparten el vértice A.'}]},
+   {t:'Aristas paralelas', go:'Adyacentes, paralelas y lazos', d:'Son dos o más aristas que unen <b>el mismo par</b> de vértices. Solo se permiten en los multigrafos.',
+    figs:[{G:{w:260,h:160,V:{A:[130,35],B:[55,130],C:[205,130]},E:[['A','B'],['B','C'],['A','C'],['A','C']]}, o:{ecls:{2:'par',3:'par'}}, cap:'Hay dos aristas distintas entre A y C: son paralelas.'}]},
+   {t:'Lazo', go:'Adyacentes, paralelas y lazos', d:'Es una arista que <b>sale de un vértice y vuelve al mismo</b>. Suma 2 al grado de ese vértice.',
+    figs:[{G:{w:260,h:170,V:{A:[130,75],B:[60,145],C:[200,145]},E:[['A','A'],['A','B'],['B','C'],['A','C']]}, o:{cls:{A:'cur'},ecls:{0:'sel'}}, cap:'El lazo (en naranja) conecta A consigo mismo.'}]},
+   {t:'Caminos', go:'Caminos', d:'Un camino es una <b>secuencia de vértices</b> unidos por aristas. Su longitud es la cantidad de aristas que recorre.',
+    figs:[{G:{w:300,h:170,V:{A:[110,30],E:[260,25],B:[170,75],F:[255,110],D:[45,95],C:[120,135]},E:[['A','E'],['A','D'],['A','B'],['B','E'],['D','B'],['B','F'],['E','F'],['D','C'],['C','B']]}, o:{cls:{D:'sel',C:'path',B:'path',F:'found'},ecls:{7:'hl',8:'hl',5:'hl',0:'dim',1:'dim',2:'dim',3:'dim',4:'dim',6:'dim'}}, cap:'El camino D → C → B → F tiene longitud 3.'}]},
+   {t:'Grado de un vértice', go:'Grado de un vértice', d:'Es la <b>cantidad de aristas</b> que inciden en el vértice. Grado 0 es un vértice <b>aislado</b>; grado 1, un vértice <b>terminal</b>.',
+    figs:[{G:{w:300,h:212,V:{A:[110,30],B:[45,80],C:[175,80],D:[110,120],E:[55,165],F:[165,165],G:[260,80]},E:[['A','B'],['A','C'],['A','D'],['B','D'],['C','D'],['D','E'],['D','F']]}, o:{cls:{D:'sel',G:'dimv',E:'found'},ecls:{2:'hl',3:'hl',4:'hl',5:'hl',6:'hl',0:'dim',1:'dim'},sub:{D:'grado 5',E:'grado 1',G:'grado 0'}}, cap:'D tiene grado 5 (impar). E es terminal (grado 1). G está aislado (grado 0).'}]}]},
+ {type:'concept', title:'Vértices y aristas', file:'vertices_aristas.php',
+  lead:'Los <b>vértices</b> son los puntos o entidades del grafo. Se dibujan como un círculo o un punto y se les pone un nombre o <b>etiqueta</b> (un número o una letra). Las <b>aristas</b> son las líneas que los conectan.',
+  figrow:{title:'Ejemplos de vértices', figs:[
+    {G:{w:250,h:120,V:{A:[45,60],B:[105,60],C:[165,60],D:[225,60]},E:[]}, o:{cls:{A:'path',B:'path',C:'path',D:'path'}}, cap:'Etiquetados con <b>letras</b>: A, B, C, D.'},
+    {G:{w:250,h:120,V:{'1':[45,60],'2':[105,60],'3':[165,60],'4':[225,60]},E:[]}, o:{cls:{'1':'path','2':'path','3':'path','4':'path'}}, cap:'Etiquetados con <b>números</b>: 1, 2, 3, 4.'},
+    {G:{w:270,h:140,V:{R:[50,50],C:[135,50],S:[220,50]},E:[['R','C'],['R','S']]}, o:{cls:{R:'path',C:'path',S:'path'},sub:{R:'Resistencia',C:'Corrientes',S:'Sáenz Peña'}}, cap:'Cada vértice <b>representa algo</b>: acá, ciudades unidas por rutas.'}],
+    p:'La etiqueta es solo un nombre para identificar al vértice. Lo importante es <b>qué representa</b> y <b>con quién está conectado</b>.'},
+  groups:[{h:'Aristas no dirigidas',p:'Conectan dos vértices <b>sin una dirección</b>. Se escriben como <b>pares no ordenados</b>: <code>{A, B}</code> es lo mismo que <code>{B, A}</code>, porque la relación vale para los dos lados.',
+            fig:{G:{w:240,h:170,V:{A:[60,40],B:[180,40],C:[180,130],D:[60,130]},E:[['A','B'],['B','C'],['C','D'],['D','A']]}, o:{ecls:{0:'hl',1:'hl',2:'hl',3:'hl'}}, cap:'Aristas = { {A,B}, {B,C}, {C,D}, {D,A} }<br>De A se puede ir a B, y de B se puede volver a A.'}},
+          {h:'Aristas dirigidas (flechas)',p:'Indican una relación <b>en un solo sentido</b>. Se escriben como <b>pares ordenados</b> <code>(a, b)</code>, donde <code>a</code> es el vértice inicial y <code>b</code> el final. <code>(A, B)</code> <b>no</b> es lo mismo que <code>(B, A)</code>.',
+            fig:{G:{w:240,h:170,dir:true,V:{A:[60,40],B:[180,40],C:[180,130],D:[60,130]},E:[['A','B'],['B','C'],['C','D'],['D','A']]}, o:{ecls:{0:'hl',1:'hl',2:'hl',3:'hl'}}, cap:'Aristas = { (A,B), (B,C), (C,D), (D,A) }<br>De A se va a B, pero de B no se vuelve a A directo.'}}],
+  analogy:'En Instagram podés <b>seguir</b> a alguien sin que esa persona te siga: es una <b>flecha</b>, va de vos hacia ella. En cambio, una <b>amistad</b> en Facebook vale para los dos lados: es una línea <b>sin dirección</b>.',},
+ {type:'demo', demo:'direccion', title:'Con flechas o sin flechas', file:'direccion.php',
+  lead:'Es el ejemplo del apunte: A, B, C y D unidos en forma de cuadrado. Cambiá entre <b>no dirigido</b> y <b>dirigido</b> y tocá un vértice para ver a dónde podés ir directamente desde ahí.'},
+ {type:'concept', title:'Adyacentes, paralelas y lazos', file:'relaciones.php',
+  lead:'Además de unir vértices, las aristas se relacionan entre sí. Hay tres situaciones que tienen nombre propio:',
+  groups:[{h:'Aristas adyacentes',p:'Dos aristas son adyacentes si <b>comparten un mismo vértice</b>: convergen en él. Por ejemplo, <code>{A, B}</code> y <code>{A, C}</code> se tocan en A. Esto influye en cómo se recorren los caminos: desde una arista podés «seguir» por cualquiera de sus adyacentes.'},
+          {h:'Aristas paralelas',p:'Son las que conectan <b>el mismo par de vértices</b>. No todos los grafos las permiten: los <b>multigrafos</b> sí admiten varias aristas entre los mismos nodos.'},
+          {h:'Lazo',p:'Es una arista que conecta un vértice <b>consigo mismo</b>: parte de un vértice y regresa al mismo, formando una conexión cíclica.'}],
+  note:'<b>¿Por qué importan?</b> Las aristas adyacentes nos dicen por dónde podemos <b>continuar</b> cuando recorremos el grafo. Las paralelas y los lazos, en cambio, cambian el <b>tipo</b> de grafo: un grafo que no tiene ni aristas paralelas ni lazos se llama <b>grafo simple</b>.'},
+ {type:'demo', demo:'elementos', title:'Tocá una arista', file:'aristas_demo.php',
+  lead:'Este grafo tiene un <b>lazo</b> y dos aristas <b>paralelas</b>, como el del apunte. Tocá cualquier arista (las líneas, no los círculos): te dice si es un lazo, si tiene paralelas y cuáles son sus adyacentes.'},
+ {type:'concept', title:'Caminos', file:'caminos.php',
+  lead:'Un <b>camino</b> es una <b>secuencia de vértices</b> en la que cada uno está conectado con el siguiente por una arista. Por ejemplo, <code>D → C → B → F</code> es un camino si existen las aristas D–C, C–B y B–F.',
+  points:[['Vértices conectados:','dos vértices están conectados si existe <b>al menos un camino</b> entre ellos.'],['Longitud:','es la cantidad de <b>aristas</b> que recorre el camino. <code>D → C → B → F</code> tiene longitud 3.'],['Camino simple:','no repite aristas.'],['Camino con ciclos:','vuelve a pasar por un vértice por el que ya pasó. Si termina donde empezó, es un camino cerrado.']],
+  analogy:'Cuando el GPS te arma un recorrido, te está dando un <b>camino</b>: una lista de esquinas, cada una unida con la siguiente por una cuadra. Entre dos lugares puede haber muchísimos caminos; el GPS busca el <b>más corto</b>.'},
+ {type:'demo', demo:'caminos', title:'Armá un camino', file:'caminos_demo.php',
+  lead:'Es el grafo del apunte. Tocá vértices uno por uno para armar un camino: solo podés pasar a un vértice que esté <b>conectado</b> con el último que elegiste. Después probá el buscador del camino más corto.'},
+ {type:'concept', title:'Grado de un vértice', file:'grado.php',
+  lead:'El <b>grado</b> de un vértice es la <b>cantidad de aristas que inciden en él</b>: indica cuántas conexiones tiene con otros vértices.',
+  points:[['Grado par:','si la cantidad de aristas es par (0, 2, 4...).'],['Grado impar:','si la cantidad de aristas es impar (1, 3, 5...).'],['Vértice aislado:','tiene grado <b>0</b>. No está conectado con nadie.'],['Vértice terminal:','tiene grado <b>1</b>. Es el final de una rama.'],['En un grafo dirigido','se distingue el <b>grado de entrada</b> (flechas que llegan) del <b>grado de salida</b> (flechas que salen).']],
+  note:'<b>Una regla que siempre se cumple:</b> si sumás los grados de todos los vértices, te da <b>el doble de la cantidad de aristas</b>. ¿Por qué? Porque cada arista toca dos vértices, entonces se cuenta dos veces: una en cada extremo. En el ejemplo del apunte: 3 + 2 + 2 + 5 + 1 + 1 = 14, y el grafo tiene 7 aristas. (Por la misma razón, un lazo suma 2 al grado de su vértice: sale de él y llega a él.)'},
+ {type:'demo', demo:'grado', title:'Calculá los grados', file:'grado_demo.php',
+  lead:'Es el grafo del apunte. Tocá cada vértice para ver su grado y cómo se clasifica. Después tocá «Calcular todos» y comprobá la regla de la suma.'},
+ {type:'quiz', title:'Cuestionario: partes de un grafo', file:'quiz_partes.php', questions:[
+  {q:'¿Qué dos conjuntos forman un grafo?',o:['Raíces y hojas','Vértices y aristas','Claves y valores','Filas y columnas'],a:1,why:'Un grafo es G = (V, A): los vértices son los objetos y las aristas son las conexiones entre ellos.'},
+  {q:'Una arista que conecta un vértice consigo mismo se llama...',o:['Arista paralela','Lazo','Camino','Arista adyacente'],a:1,why:'El lazo sale de un vértice y vuelve al mismo vértice.'},
+  {q:'Dos aristas que comparten un vértice son...',o:['Paralelas','Lazos','Adyacentes','Dirigidas'],a:2,why:'Adyacentes: convergen en un mismo vértice. Paralelas sería si unieran el mismo par de vértices.'},
+  {q:'Un vértice que no tiene ninguna arista se llama...',o:['Terminal','Aislado','Impar','Completo'],a:1,why:'Grado 0: está aislado. El terminal tiene grado 1.'},
+  {q:'Un grafo no dirigido tiene 5 aristas. ¿Cuánto suman los grados de todos sus vértices?',o:['5','10','25','Depende de cuántos vértices tenga'],a:1,why:'Cada arista suma 1 al grado de cada uno de sus dos extremos: 2 × 5 = 10. No importa cuántos vértices haya.'},
+  {q:'La arista dirigida (A, B)...',o:['Permite ir de A a B y de B a A','Va de A hacia B','Va de B hacia A','Es un lazo'],a:1,why:'En un par ordenado (a, b), a es el vértice inicial y b el final: la flecha va de A hacia B.'}]}
+]},
+/* ---------------------------------------------------------------- 2 */
+{ title:'Tipos de grafos y cómo programarlos', unit:'Unidad V', part:'Parte I', slides:[
+ {type:'cover', title:'Tipos de grafos', file:'tipos.php', sub:'Según cómo son sus aristas, un grafo recibe un nombre distinto. Al final, cómo guardar un grafo en un programa PHP y para qué se usan en la vida real.', topics:['Tipos de grafos','Armá tu propio grafo','Un grafo en PHP','Aplicaciones de los grafos']},
+ {type:'concept', title:'Tipos de grafos', file:'tipos_lista.php',
+  lead:'Existen varios tipos de grafos, cada uno con características específicas. Estos son los cinco del apunte:',
+  groups:[{h:'Grafo dirigido (dígrafo)',p:'Las aristas tienen un <b>sentido definido</b>: cada arista conecta dos vértices de manera <b>unidireccional</b>.'},
+          {h:'Grafo no dirigido',p:'Las aristas representan relaciones <b>simétricas</b>, sin sentido: si hay conexión entre dos vértices, se puede recorrer en <b>ambas direcciones</b>.'},
+          {h:'Grafo completo',p:'<b>Cada par de vértices</b> está conectado por una arista. Con <i>n</i> vértices tiene el número máximo de conexiones: <code>n·(n−1)/2</code> aristas.'},
+          {h:'Grafo bipartito',p:'Los vértices se pueden dividir en <b>dos conjuntos disjuntos</b> (sin elementos en común), de forma que <b>toda</b> arista une un vértice de un conjunto con uno del otro. Nunca hay aristas dentro del mismo conjunto.'},
+          {h:'Multigrafo',p:'Permite <b>varias aristas entre el mismo par</b> de vértices (y, como en el ejemplo del apunte, también lazos). Representa relaciones más complejas que un <b>grafo simple</b>, donde solo hay una arista por par.'}],
+  note:'<b>Los tipos se combinan.</b> Cada nombre responde a una pregunta distinta sobre el grafo, así que un mismo grafo puede tener varios: por ejemplo, ser <b>dirigido y multigrafo</b> a la vez, o <b>no dirigido y completo</b>.'},
+ {type:'table', title:'Una pregunta para cada tipo', file:'tipos_tabla.php', lead:'Para clasificar un grafo, hacete estas preguntas. Cada una tiene un ejemplo de la vida real.',
+  head:['Tipo','La pregunta que hay que hacerse','Ejemplo de la vida real'],
+  rows:[['Dirigido','¿Las aristas tienen sentido (son flechas)?','Seguidores en Instagram; calles de una sola mano.'],
+        ['No dirigido','¿Cada relación vale para los dos lados?','Amistades en Facebook; rutas de doble mano.'],
+        ['Completo','¿Cada vértice está conectado con <b>todos</b> los demás?','Un torneo «todos contra todos»: cada equipo juega con cada uno de los otros.'],
+        ['Bipartito','¿Puedo separar los vértices en dos grupos, sin aristas dentro de un mismo grupo?','Alumnos y materias: un alumno se inscribe en materias, pero nunca «se inscribe» en otro alumno.'],
+        ['Multigrafo','¿Hay más de una arista entre el mismo par, o lazos?','Varios vuelos distintos en el día entre Resistencia y Buenos Aires.']]},
+ {type:'demo', demo:'completo', title:'El grafo completo crece rápido', file:'completo.php',
+  lead:'Mové el control para cambiar la cantidad de vértices y mirá cuántas aristas hacen falta para que <b>todos estén conectados con todos</b>. La fórmula se arma sola, paso a paso.'},
+ {type:'steps', title:'¿Cómo me doy cuenta si es bipartito?', file:'bipartito.php', lead:'Mirar el dibujo no alcanza: hay grafos bipartitos que no lo parecen. Este método de <b>pintar con dos colores</b> funciona siempre.',
+  steps:[{t:'Pintar un vértice',d:'Elegí cualquier vértice y pintalo de <b>naranja</b>.'},
+   {t:'Pintar sus vecinos',d:'Todos los vértices conectados con él van del <b>otro</b> color: <b>azul</b>.'},
+   {t:'Seguir alternando',d:'Los vecinos de los azules van naranja, los vecinos de esos van azul... hasta pintar todo.'},
+   {t:'Revisar las aristas',d:'Si alguna arista une dos vértices <b>del mismo color</b>, el grafo <b>no</b> es bipartito.',sub:['Si no pasa nunca, los dos colores son los dos conjuntos.','Un triángulo nunca es bipartito: el tercer vértice no tiene color posible.']}]},
+ {type:'demo', demo:'constructor', title:'Armá tu propio grafo', file:'constructor.php',
+  lead:'Tocá un vértice y después otro para unirlos con una arista (tocá dos veces el mismo para hacer un lazo). Tocá una arista para borrarla. El panel te dice, en todo momento, de qué tipo es tu grafo y <b>por qué</b>. En la fila «Bipartito», tocá «Mostrar en el dibujo» para ver los dos grupos pintados.'},
+ {type:'concept', title:'Cómo se guarda un grafo en un programa', file:'representacion.php',
+  lead:'En el apunte dibujamos los grafos con círculos y líneas, pero la computadora necesita guardarlos en una <b>estructura de datos</b>. Hay dos formas clásicas de hacerlo:',
+  groups:[{h:'Matriz de adyacencia',p:'Una tabla de <i>n</i> × <i>n</i> (un array de arrays). En la fila A, columna B, va un <b>1</b> si hay arista de A a B, y un <b>0</b> si no. En un grafo no dirigido la tabla es <b>simétrica</b>: lo de arriba de la diagonal es un espejo de lo de abajo.'},
+          {h:'Lista de adyacencia',p:'Para cada vértice, una <b>lista con sus vecinos</b>. En PHP es un array asociativo: <code>["A" => ["B", "C"], "B" => ["A"]]</code>. Ocupa menos memoria cuando hay pocas aristas, y el grado de un vértice es simplemente el largo de su lista.'}],
+  note:'<b>¿Cuál conviene?</b> Si el grafo tiene <b>muchas</b> aristas (cerca de ser completo), la matriz es cómoda y preguntar «¿hay arista entre A y B?» es inmediato. Si tiene <b>pocas</b> aristas, la lista ahorra muchísimo lugar: una matriz de 1000 vértices tiene un millón de casillas, aunque casi todas sean 0.'},
+ {type:'demo', demo:'matriz', title:'Matriz y lista, lado a lado', file:'matriz_demo.php',
+  lead:'Tocá las casillas de la matriz para agregar o quitar aristas. El dibujo y la lista de adyacencia se actualizan solos. Probá en modo no dirigido y fijate qué pasa con la casilla «espejo».'},
+ {type:'code', title:'Un grafo en PHP', file:'Grafo.php',
+  lead:'Una clase <code>Grafo</code> que usa una <b>lista de adyacencia</b>. <code>agregarArista()</code> anota la conexión; si el grafo no es dirigido, la anota <b>en los dos sentidos</b>. Cambiá las aristas o el tipo y ejecutá.',
+  controls:[{k:'ar',label:'Aristas (formato A-B, separadas por comas)',type:'text',value:'A-B, A-C, A-D, B-D, C-D, D-E, D-F'},{k:'dir',label:'Grafo dirigido',type:'toggle',value:false}],
+  code:v=>{ const E=parseEdges(v.ar); return P`<?php
+class Grafo {
+    private array $ady = [];       // lista de adyacencia: vértice => [vecinos]
+    private bool $dirigido;
+
+    public function __construct(bool $dirigido = false) {
+        $this->dirigido = $dirigido;
+    }
+
+    public function agregarVertice(string $v): void {
+        if (!isset($this->ady[$v])) {
+            $this->ady[$v] = [];       // un vértice nuevo empieza sin vecinos
+        }
+    }
+
+    public function agregarArista(string $a, string $b): void {
+        $this->agregarVertice($a);
+        $this->agregarVertice($b);
+        $this->ady[$a][] = $b;         // a → b
+        if (!$this->dirigido) {
+            $this->ady[$b][] = $a;     // sin dirección: también b → a
+        }
+    }
+
+    public function grado(string $v): int {
+        return count($this->ady[$v] ?? []);   // largo de su lista
+    }
+
+    public function mostrar(): void {
+        foreach ($this->ady as $v => $vecinos) {
+            echo "$v -> [" . implode(", ", $vecinos) . "]  grado: " . $this->grado($v) . "\n";
+        }
+    }
+}
+
+$g = new Grafo(${v.dir ? 'true' : 'false'});
+${E.map(([a, b]) => `$g->agregarArista("${a}", "${b}");`).join('\n') || '// (sin aristas)'}
+$g->mostrar();`; },
+  run:v=>{ const E=parseEdges(v.ar); if(!E.length) return '(no se imprime nada: el grafo no tiene vértices)';
+    const ady={}; const add=x=>{ if(!ady[x]) ady[x]=[]; };
+    E.forEach(([a,b])=>{ add(a); add(b); ady[a].push(b); if(!v.dir) ady[b].push(a); });
+    return Object.keys(ady).map(k=>`${k} -> [${ady[k].join(', ')}]  grado: ${ady[k].length}`).join('\n'); },
+  after:v=>{ const E=parseEdges(v.ar); if(!E.length) return ''; const ady={}; E.forEach(([a,b])=>{ (ady[a]=ady[a]||[]).push(b); ady[b]=ady[b]||[]; if(!v.dir) ady[b].push(a); });
+    const s=Object.values(ady).reduce((t,l)=>t+l.length,0);
+    return v.dir ? `<div class="note"><b>En el dirigido, <code>grado()</code> devuelve el grado de salida:</b> solo cuenta las flechas que <b>salen</b> de cada vértice. Por eso un vértice al que solo le llegan flechas muestra grado 0. La suma da ${s}, igual a la cantidad de aristas (${E.length}), porque cada flecha se anota una sola vez.</div>`
+      : `<div class="note"><b>Comprobá la regla:</b> los grados suman <b>${s}</b> y hay <b>${E.length}</b> aristas: ${s} = 2 × ${E.length}. Cada arista se anotó en la lista de sus dos extremos.${E.some(([a,b])=>a===b)?' El lazo aparece dos veces en la lista de su vértice, por eso suma 2 a su grado.':''}</div>`; }},
+ {type:'concept', title:'Aplicaciones de los grafos', file:'aplicaciones.php',
+  lead:'Los grafos son herramientas poderosas en muchísimas áreas. En cada caso, la clave es decidir <b>qué son los vértices</b> y <b>qué son las aristas</b>.',
+  groups:[{h:'Redes sociales',p:'<b>Vértices:</b> usuarios. <b>Aristas:</b> amistades (no dirigidas) o «seguir» (dirigidas). Sirve para sugerir amigos: los amigos de tus amigos.'},
+          {h:'Redes informáticas',p:'<b>Vértices:</b> computadoras, routers, servidores. <b>Aristas:</b> cables o enlaces. Sirve para saber si un mensaje puede llegar de una máquina a otra y por dónde.'},
+          {h:'Rutas y navegación',p:'<b>Vértices:</b> esquinas o ciudades. <b>Aristas:</b> calles o rutas, con su distancia. El GPS busca el <b>camino óptimo</b> (el más corto o el más rápido).'},
+          {h:'Biología',p:'<b>Vértices:</b> especies o genes. <b>Aristas:</b> quién se alimenta de quién, o qué gen influye sobre cuál. Sirve para estudiar cómo afecta un cambio a todo el sistema.'}],
+  analogy:'Siempre que te encuentres con <b>cosas</b> y <b>relaciones entre esas cosas</b>, pensá en un grafo. La primera pregunta es: ¿qué son los vértices? La segunda: ¿qué son las aristas, y tienen dirección?'},
+ {type:'quiz', title:'Cuestionario: tipos de grafos', file:'quiz_tipos.php', questions:[
+  {q:'En un grafo dirigido, las aristas...',o:['No tienen sentido','Tienen un sentido definido (son flechas)','Siempre forman ciclos','Conectan todos los vértices'],a:1,why:'Dirigido: cada arista conecta dos vértices en un solo sentido.'},
+  {q:'¿Cuántas aristas tiene un grafo completo (simple, no dirigido) con 5 vértices?',o:['5','10','20','25'],a:1,why:'5 × 4 / 2 = 10. Cada vértice se une con los otros 4, y cada arista se contó dos veces (una por extremo).'},
+  {q:'Un grafo tiene dos aristas distintas entre A y B. ¿Qué tipo de grafo es?',o:['Completo','Bipartito','Multigrafo','Simple'],a:2,why:'Las aristas paralelas solo están permitidas en los multigrafos.'},
+  {q:'Un triángulo (A–B, B–C, C–A), ¿es bipartito?',o:['Sí, siempre','No: dos vértices del mismo grupo quedan unidos','Solo si es dirigido','Sí, si se le agrega un lazo'],a:1,why:'Si A va a un grupo, B y C van al otro; pero B y C están unidos. Un ciclo con cantidad impar de vértices nunca es bipartito.'},
+  {q:'Alumnos que se inscriben en materias forman un grafo...',o:['Completo','Bipartito','Con lazos','Sin aristas'],a:1,why:'Dos conjuntos (alumnos y materias), y las aristas solo van de un conjunto al otro.'},
+  {q:'En una lista de adyacencia, para cada vértice se guarda...',o:['Su posición en el dibujo','La lista de sus vecinos','Una tabla de n × n','Solamente su grado'],a:1,why:'Cada vértice tiene su lista de vecinos. La tabla de n × n es la matriz de adyacencia.'}]}
+]},
+/* ---------------------------------------------------------------- 3 */
+{ title:'Tablas hash', unit:'Unidad V', part:'Parte II', slides:[
+ {type:'cover', title:'Tablas hash', file:'hash.php', sub:'Cómo encontrar un dato entre miles en un solo paso: una función que convierte la clave en la posición exacta donde está guardado.', topics:['¿Qué es una tabla hash?','La función hash','Manejo de colisiones','Ventajas y desventajas']},
+ {type:'concept', title:'¿Qué es una tabla hash?', file:'que_es_hash.php',
+  lead:'Una <b>tabla hash</b> es una estructura de datos que implementa un tipo de dato abstracto llamado <b>diccionario</b>: asocia <b>claves</b> (o llaves) con <b>valores</b>. Su operación principal es la <b>búsqueda eficiente</b>: dada una clave, encontrar su valor rápidamente.',
+  points:[['Clave:','lo que usamos para buscar. Un DNI, un número de legajo, un nombre de usuario.'],['Valor:','lo que queremos obtener. Los datos del alumno, su nota, su saldo.'],['Función hash:','transforma la clave en un número (el <b>hash</b>) que indica la <b>posición</b> de la tabla donde está guardado el valor.']],
+  analogy:'El <b>guardarropa de un boliche</b>: dejás la campera y te dan un número. Cuando volvés, no revisan todas las camperas una por una: van directo a la percha con tu número. La función hash es la que «te da el número» a partir de la clave.',
+  note:'<b>Ya la usaste sin saberlo:</b> los arrays asociativos de PHP, como <code>$notas["Ana"] = 9</code>, están implementados por dentro con una tabla hash. Por eso <code>$notas["Ana"]</code> responde al instante aunque el array tenga miles de elementos.'},
+ {type:'concept', title:'¿Por qué es tan rápida?', file:'funcionamiento.php',
+  lead:'Las tablas hash se implementan sobre <b>arreglos</b>, generalmente unidimensionales (aunque también pueden ser multidimensionales). Como la función hash nos dice <b>directamente</b> la posición, no hace falta recorrer los datos.',
+  groups:[{h:'Caso promedio: O(1)',p:'Calculás la posición y vas directo. Tarda <b>lo mismo con 10 datos que con un millón</b>: el rendimiento no se ve afectado por la cantidad de elementos.'},
+          {h:'Peor caso: O(n)',p:'Si muchas claves distintas caen en la misma posición (<b>colisiones</b>), hay que revisarlas una por una. En el peor caso todas caen juntas y buscar es como recorrer una lista.'}],
+  note:'<b>¿Qué significan O(1) y O(n)?</b> Es la notación que usamos para medir cuánto trabajo hace un algoritmo según la cantidad de datos <i>n</i>. <b>O(1)</b> es «constante»: siempre la misma cantidad de pasos. <b>O(n)</b> es «lineal»: si se duplican los datos, se duplican los pasos.'},
+ {type:'demo', demo:'comparar', title:'Lista contra tabla hash', file:'comparar.php',
+  lead:'Los mismos 12 alumnos, guardados en una <b>lista</b> y en una <b>tabla hash</b> de 13 posiciones. La clave es el número de legajo. Elegí a quién buscar y contá cuántos lugares tiene que mirar cada una.'},
+ {type:'steps', title:'Cómo utilizar una tabla hash: paso a paso', file:'pasos.php', lead:'El proceso completo, desde crear la tabla hasta manipular los datos. Cada paso lo vemos en detalle a continuación.',
+  steps:[{t:'Definir la estructura',d:'Un arreglo donde cada posición se llama <b>bucket</b> o <b>ranura</b>.'},
+   {t:'Elegir una función hash',d:'La que convierte cada clave en un índice del arreglo.'},
+   {t:'Insertar un par clave-valor',d:'Calcular el índice y guardar el par en ese bucket.'},
+   {t:'Buscar un valor por clave',d:'Calcular el índice con la <b>misma</b> función e ir a ese bucket.'},
+   {t:'Eliminar un par clave-valor',d:'Calcular el índice, encontrar el par y sacarlo sin romper nada.'}]},
+ {type:'concept', title:'La estructura: buckets', file:'estructura.php',
+  lead:'Una tabla hash se implementa generalmente como un <b>arreglo</b> (array) donde cada posición se denomina <b>bucket</b> o <b>ranura</b>. Cada bucket puede contener <b>un único par clave-valor</b>, o una <b>lista de pares</b> cuando hay colisiones.',
+  points:[['El tamaño','del arreglo se fija al crear la tabla. Vamos a llamarlo <code>tamaño</code>.'],['Los índices','van de <code>0</code> a <code>tamaño − 1</code>, como en cualquier arreglo.'],['Un bucket vacío','todavía no tiene ningún par guardado.']],
+  analogy:'Los <b>casilleros de un gimnasio</b>, numerados del 0 al 6. Cada casillero es un bucket. Si te asignan el 4, vas directo al 4: no abrís los otros.'},
+ {type:'concept', title:'La función hash', file:'funcion.php',
+  lead:'La función hash es <b>crucial</b>: transforma la clave en un <b>índice</b> que determina la posición del valor en la tabla. Una buena función hash debe:',
+  points:[['Ser rápida de calcular:','si tardara mucho, perderíamos la ventaja de ir directo a la posición.'],['Distribuir las claves uniformemente:','repartirlas parejo entre todos los buckets, para minimizar las colisiones.'],['Dar siempre el mismo resultado:','la misma clave tiene que dar <b>siempre</b> el mismo índice. Si no, nunca encontraríamos lo que guardamos.']],
+  note:'<b>La función que usamos en los ejemplos:</b> sumamos el código de cada letra de la clave (en PHP, <code>ord()</code> da ese código: <code>ord("A")</code> es 65) y nos quedamos con el <b>resto</b> de dividir por el tamaño: <code>índice = suma % tamaño</code>. El módulo (<code>%</code>) garantiza que el resultado esté siempre entre 0 y tamaño − 1, o sea, que sea una posición válida del arreglo.'},
+ {type:'demo', demo:'funcion', title:'Calculá un hash', file:'funcion_demo.php',
+  lead:'Escribí una clave y mirá cómo se transforma en un índice, letra por letra. Abajo podés comparar una función hash <b>mala</b> con una <b>buena</b> repartiendo las mismas 12 claves.'},
+ {type:'concept', title:'Manejo de colisiones', file:'colisiones.php',
+  lead:'Una <b>colisión</b> ocurre cuando dos claves distintas dan el <b>mismo índice</b>. Las colisiones son <b>inevitables</b>, así que hay que gestionarlas para mantener la eficiencia. Las dos técnicas principales son:',
+  groups:[{h:'Encadenamiento',p:'Cada posición del arreglo contiene una <b>lista enlazada</b> con todos los pares que cayeron ahí. Si hay colisión, el nuevo par se agrega a esa lista.'},
+          {h:'Dirección abierta (sondeo)',p:'Si el bucket está ocupado, se buscan <b>otras posiciones disponibles</b> dentro del mismo arreglo hasta encontrar un espacio libre. La forma más simple es el <b>sondeo lineal</b>: probar el siguiente, y el siguiente... volviendo al 0 al llegar al final.'}],
+  analogy:'Llegás al estacionamiento y tu lugar está ocupado. Con <b>encadenamiento</b>, estacionás en fila detrás del auto que está ahí. Con <b>sondeo lineal</b>, avanzás hasta el próximo lugar libre de la fila.',
+  note:'<b>¿Por qué son inevitables?</b> Hay muchísimas más claves posibles que posiciones en el arreglo. Si la tabla tiene 7 buckets y guardás 8 claves, al menos dos tienen que compartir bucket (es el <b>principio del palomar</b>: 8 palomas en 7 agujeros). Y aunque sobre lugar, dos claves pueden dar el mismo índice por casualidad: con nuestra función, «Ana» y «Juan» dan las dos 6 en una tabla de 7.'},
+ {type:'steps', title:'Insertar un par clave-valor', file:'insertar.php', lead:'Insertar tiene dos etapas: calcular dónde va y guardarlo ahí.',
+  steps:[{t:'Calcular el índice',d:'Aplicar la función hash a la clave para obtener el valor hash.',sub:['Mapearlo al tamaño del arreglo con módulo: <code>índice = hash % tamaño</code>.']},
+   {t:'Bucket vacío',d:'Si el bucket que corresponde está vacío, guardar el par clave-valor ahí. Listo.'},
+   {t:'Bucket ocupado (colisión)',d:'Usar el método de resolución elegido:',sub:['<b>Encadenamiento:</b> agregar el par a la lista enlazada del bucket.','<b>Sondeo:</b> buscar el siguiente bucket disponible.']},
+   {t:'Clave repetida',d:'Si la clave ya estaba guardada, se <b>reemplaza su valor</b>: en un diccionario cada clave aparece una sola vez. Es lo mismo que hace PHP con <code>$notas["Ana"] = 10</code>.'}]},
+ {type:'concept', title:'Buscar y eliminar', file:'buscar_eliminar.php',
+  lead:'Buscar y eliminar empiezan igual que insertar: calculando el índice con <b>la misma función hash</b>. Por eso es tan importante que la función dé siempre el mismo resultado.',
+  groups:[{h:'Buscar un valor por clave',pts:[['1.','Aplicar la función hash a la clave para obtener el índice.'],['2.','Ir a ese bucket y verificar si contiene la clave buscada.'],['3.','Si hubo colisiones: recorrer la lista enlazada, o mirar los buckets siguientes, según el método.']]},
+          {h:'Eliminar un par clave-valor',pts:[['1.','Aplicar la función hash para encontrar el índice.'],['2.','Ir al bucket y buscar el par.'],['3.','Sacarlo manteniendo la integridad: en encadenamiento, desenganchar el nodo de la lista; en sondeo, dejar una marca de «borrado».']]}],
+  note:'<b>¿Por qué una marca al borrar en sondeo lineal?</b> Si al borrar dejamos el bucket <b>vacío</b>, rompemos las búsquedas: una clave que se había corrido más adelante por una colisión ya no se encontraría, porque la búsqueda se detiene en el primer bucket vacío. Por eso se deja una marca (se suele llamar <b>lápida</b>) que significa «acá hubo algo, seguí buscando». Lo vas a ver en la próxima demo.'},
+ {type:'demo', demo:'tabla', title:'Una tabla hash de verdad', file:'TablaHash_demo.php',
+  lead:'Una tabla de 7 buckets que guarda la <b>nota</b> de cada alumno. Elegí cómo resolver colisiones y probá insertar, buscar y eliminar. <b>Para probar:</b> cargá el ejemplo con sondeo lineal, eliminá «Sol» y después buscá «Leo».'},
+ {type:'code', title:'Una tabla hash en PHP', file:'TablaHash.php',
+  lead:'Una clase <code>TablaHash</code> que resuelve colisiones por <b>encadenamiento</b>: cada bucket es un array de pares <code>[clave, valor]</code>. Cambiá las claves o el tamaño y mirá cómo se reparten.',
+  controls:[{k:'keys',label:'Claves a insertar (separadas por comas)',type:'text',value:'Ana, Luis, Sol, Juan, Eva, Leo'},{k:'n',label:'Tamaño de la tabla',type:'range',min:1,max:13,value:7},{k:'q',label:'Clave a buscar',type:'text',value:'Juan'}],
+  code:v=>{ const K=parseKeys(v.keys), q=clean(v.q,'Juan'); return P`<?php
+class TablaHash {
+    private array $buckets;
+    private int $tamano;
+
+    public function __construct(int $tamano) {
+        $this->tamano = $tamano;
+        $this->buckets = array_fill(0, $tamano, []);  // cada bucket: lista vacía
+    }
+
+    private function hash(string $clave): int {
+        $suma = 0;
+        for ($i = 0; $i < strlen($clave); $i++) {
+            $suma += ord($clave[$i]);           // código de cada letra
+        }
+        return $suma % $this->tamano;           // siempre entre 0 y tamaño - 1
+    }
+
+    public function insertar(string $clave, mixed $valor): void {
+        $i = $this->hash($clave);
+        foreach ($this->buckets[$i] as $k => $par) {
+            if ($par[0] === $clave) {           // la clave ya estaba:
+                $this->buckets[$i][$k][1] = $valor;   // reemplazo el valor
+                return;
+            }
+        }
+        $this->buckets[$i][] = [$clave, $valor];      // la agrego a la lista
+    }
+
+    public function buscar(string $clave): mixed {
+        $i = $this->hash($clave);
+        foreach ($this->buckets[$i] as $par) {  // recorro SOLO este bucket
+            if ($par[0] === $clave) {
+                return $par[1];
+            }
+        }
+        return null;                            // no está
+    }
+
+    public function eliminar(string $clave): bool {
+        $i = $this->hash($clave);
+        foreach ($this->buckets[$i] as $k => $par) {
+            if ($par[0] === $clave) {
+                array_splice($this->buckets[$i], $k, 1);  // la saco de la lista
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function mostrar(): void {
+        foreach ($this->buckets as $i => $lista) {
+            $claves = array_map(fn($par) => $par[0], $lista);
+            echo "[$i] " . (count($claves) ? implode(" -> ", $claves) : "(vacío)") . "\n";
+        }
+    }
+}
+
+$t = new TablaHash(${v.n});
+${K.map((k, i) => `$t->insertar("${k}", ${[9, 7, 10, 6, 8, 7, 5, 9, 8, 6, 10, 7][i]});`).join('\n') || '// (sin claves)'}
+$t->mostrar();
+echo "Buscar \"${q}\": " . ($t->buscar("${q}") ?? "no está");`; },
+  run:v=>{ const K=parseKeys(v.keys), n=+v.n, q=clean(v.q,'Juan'); const B=Array.from({length:n},()=>[]);
+    K.forEach((k,i)=>{ const b=B[hidx(k,n)]; const f=b.find(p=>p[0]===k); if(f) f[1]=[9,7,10,6,8,7,5,9,8,6,10,7][i]; else b.push([k,[9,7,10,6,8,7,5,9,8,6,10,7][i]]); });
+    const f=B[hidx(q,n)].find(p=>p[0]===q);
+    return B.map((b,i)=>`[${i}] ${b.length?b.map(p=>p[0]).join(' -> '):'(vacío)'}`).join('\n')+`\nBuscar "${q}": ${f?f[1]:'no está'}`; },
+  after:v=>{ const K=parseKeys(v.keys), n=+v.n, q=clean(v.q,'Juan'); if(!K.length) return ''; const B=Array.from({length:n},()=>0); K.forEach(k=>B[hidx(k,n)]++);
+    const col=B.reduce((a,c)=>a+Math.max(0,c-1),0), mx=Math.max(...B), hq=hsum(q);
+    return `<div class="note"><b>«${q}» suma ${hq}</b> y ${hq} % ${n} = <b>${hq%n}</b>: <code>buscar()</code> va directo al bucket ${hq%n} y solo mira ${B[hq%n]||0} clave${B[hq%n]===1?'':'s'}. Con estos datos hubo <b>${col} colisi${col===1?'ón':'ones'}</b> y el bucket más cargado tiene ${mx}. ${n===1?'<b>Con tamaño 1 todo cae en el mismo bucket:</b> la tabla se convirtió en una lista y buscar es O(n).':'Probá con tamaño 1 para ver el peor caso.'} El <b>factor de carga</b> es claves / tamaño = ${K.length}/${n} ≈ ${(K.length/n).toFixed(2)}: cuanto más alto, más colisiones.</div>`; }},
+ {type:'table', title:'Ventajas y desventajas', file:'ventajas.php', lead:'Las tablas hash no son la mejor estructura para todo. Esto es lo que ganamos y lo que perdemos.',
+  head:['Característica','Qué significa','Por qué pasa'],
+  rows:[['Acceso rápido (ventaja)','Búsquedas en O(1) en promedio, si la función hash reparte bien las claves.','Se <b>calcula</b> la posición en vez de buscarla.'],
+        ['Eficiencia con mucho volumen (ventaja)','Con grandes volúmenes de datos son más efectivas que listas o árboles.','Una lista tarda O(n) y un árbol balanceado O(log n); la tabla hash sigue en O(1) aunque crezcan los datos.'],
+        ['Colisiones (desventaja)','Una función hash mal diseñada genera muchas colisiones y baja la eficiencia.','Si muchas claves caen en el mismo bucket, hay que revisarlas una por una.'],
+        ['Acceso ordenado lento (desventaja)','Los datos no quedan en orden: es una limitación si hay que recorrerlos ordenados.','La función hash los reparte «desordenados» a propósito. Hay que ordenarlos aparte. Un árbol binario de búsqueda, en cambio, los da ordenados con el recorrido inorden.']]},
+ {type:'concept', title:'Aplicaciones de las tablas hash', file:'aplicaciones_hash.php',
+  lead:'Las tablas hash se usan muchísimo. Estos son tres ejemplos del apunte:',
+  groups:[{h:'Bases de datos',p:'Los <b>índices hash</b> permiten encontrar un registro por su clave (un DNI, un código de producto) sin revisar toda la tabla. Aceleran la búsqueda y la recuperación de datos.'},
+          {h:'Sistemas de autenticación',p:'Las contraseñas no se guardan tal cual: se guarda su <b>hash</b>. Al iniciar sesión, se calcula el hash de lo que escribiste y se compara con el guardado. Se usan funciones que <b>no se pueden revertir</b> para obtener la contraseña original (en PHP, <code>password_hash()</code>).'},
+          {h:'Algoritmos de búsqueda',p:'<b>Shazam</b> convierte fragmentos de cada canción en «huellas» numéricas y las guarda en tablas hash. Cuando grabás unos segundos, calcula esas huellas y las busca directamente entre millones de canciones.'}],
+  note:'<b>No las confundas:</b> la función hash de una tabla busca ser <b>rápida y repartir bien</b>. La de contraseñas (llamada <b>criptográfica</b>) busca ser <b>imposible de revertir</b>, y hasta se diseña lenta a propósito para frenar a quien intente adivinar. Comparten la idea —entra una clave, sale un número— pero se diseñan para objetivos distintos.'},
+ {type:'quiz', title:'Cuestionario: tablas hash', file:'quiz_hash.php', questions:[
+  {q:'¿Qué guarda una tabla hash?',o:['Vértices y aristas','Pares clave → valor','Solo números ordenados','Nodos con hijo izquierdo y derecho'],a:1,why:'Implementa un diccionario: asocia claves con valores.'},
+  {q:'Una tabla tiene tamaño 10 y una clave da hash 47. ¿En qué índice va?',o:['4','7','47','10'],a:1,why:'47 % 10 = 7, el resto de dividir 47 por 10. El módulo siempre da un índice entre 0 y 9.'},
+  {q:'¿Qué es una colisión?',o:['Cuando la tabla se llena','Cuando dos claves distintas dan el mismo índice','Cuando se borra una clave','Cuando la clave buscada no existe'],a:1,why:'Dos claves distintas, mismo índice: las dos quieren el mismo bucket.'},
+  {q:'Con encadenamiento, si dos claves caen en el mismo bucket...',o:['La segunda se descarta','Se guardan las dos en una lista dentro del bucket','Se busca el siguiente bucket libre','Se borra la primera'],a:1,why:'Cada bucket tiene una lista enlazada. Buscar el siguiente bucket libre es el sondeo (dirección abierta).'},
+  {q:'¿Cuál es el tiempo de búsqueda promedio en una tabla hash bien diseñada?',o:['O(1)','O(n)','O(n²)','Depende del orden de inserción'],a:0,why:'Constante: se calcula la posición y se va directo, sin importar cuántos datos haya.'},
+  {q:'¿Cuál de estas es una desventaja de las tablas hash?',o:['Las búsquedas son lentas','No permiten guardar texto','No mantienen los datos en orden','Solo funcionan con números'],a:2,why:'La función hash desparrama las claves: recorrerlas en orden requiere ordenarlas aparte.'}]},
+ {type:'quiz', title:'Desafío final', file:'quiz_final.php', questions:[
+  {q:'Querés modelar las rutas entre las ciudades del Chaco para calcular el camino más corto. ¿Qué estructura usás?',o:['Tabla hash','Grafo','Pila','Cola'],a:1,why:'Ciudades (vértices) y rutas (aristas): es un grafo. Buscar el camino más corto es un problema clásico de grafos.'},
+  {q:'Querés encontrar al instante los datos de un alumno a partir de su legajo. ¿Qué estructura usás?',o:['Grafo','Tabla hash','Lista enlazada desordenada','Matriz de adyacencia'],a:1,why:'Legajo (clave) → datos (valor): un diccionario. La tabla hash lo resuelve en O(1) promedio.'},
+  {q:'En un grafo, el vértice D está unido a A, B, C, E y F. ¿Cuál es su grado y cómo se clasifica?',o:['5, impar','5, par','4, par','1, terminal'],a:0,why:'Cinco aristas inciden en D: grado 5, que es impar.'},
+  {q:'En sondeo lineal, ¿por qué al eliminar se deja una marca de «borrado» en vez de vaciar el bucket?',o:['Para ahorrar memoria','Para que las búsquedas no se detengan antes de tiempo','Porque PHP no permite borrar','Para mantener los datos ordenados'],a:1,why:'La búsqueda se detiene en el primer vacío. Si vaciáramos el bucket, no encontraríamos las claves que se habían corrido más adelante.'},
+  {q:'Un grafo simple, no dirigido y completo con 4 vértices tiene...',o:['4 aristas','6 aristas','8 aristas','16 aristas'],a:1,why:'4 × 3 / 2 = 6.'},
+  {q:'Una función hash que siempre devuelve 0, ¿qué provoca?',o:['Búsquedas en O(1) siempre','Que todas las claves colisionen y buscar sea O(n)','Un error de PHP','Que la tabla quede ordenada'],a:1,why:'Todo cae en el bucket 0: la tabla se comporta como una lista. Por eso una buena función debe distribuir uniformemente.'}]},
+ {type:'end', title:'Resumen final', file:'fin.php'}
+]}
+];
+
+</script>
+<script>
+/* ============ Motor de la presentación ============ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const sleep = ms => new Promise(r => setTimeout(r, RM.matches ? Math.min(ms, 30) : ms));
+const store = { get(k, d) { try { const v = localStorage.getItem('p2u5:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem('p2u5:' + k, JSON.stringify(v)); } catch {} } };
+
+const SLIDES = [];
+MODULES.forEach((m, mi) => m.slides.forEach((s, si) => { s.mi = mi; s.si = si; s.idx = SLIDES.length; if (s.type === 'quiz') s.qid = `m${mi}-${si}`; SLIDES.push(s); }));
+const QUIZZES = SLIDES.filter(s => s.type === 'quiz');
+const TOTALQ = QUIZZES.reduce((a, s) => a + s.questions.length, 0);
+let scores = store.get('scores', {});
+let cur = -1, NAV = 0;
+
+/* ---------- Resaltado de sintaxis PHP ---------- */
+const KW = new Set('abstract and array as break callable case catch class clone const continue declare default do echo else elseif empty extends final finally fn for foreach function global if implements include instanceof insteadof interface isset list match namespace new or print private protected public readonly require return static switch throw trait try unset use var while yield true false null void int float string bool mixed iterable object self parent never'.split(' '));
+function hl(code) {
+  const re = /(<\?php)|(\/\/[^\n]*|#(?!\[)[^\n]*)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    out += esc(code.slice(last, m.index)); const t = m[0];
+    if (m[1]) out += `<span class="t-tag">${esc(t)}</span>`;
+    else if (m[2]) out += `<span class="t-com">${esc(t)}</span>`;
+    else if (m[3]) out += `<span class="t-str">${esc(t).replace(/\$[A-Za-z_]\w*/g, v => `<span class="t-var">${v}</span>`)}</span>`;
+    else if (m[4]) out += `<span class="${t === '$this' ? 't-this' : 't-var'}">${t}</span>`;
+    else if (m[5]) out += `<span class="t-num">${t}</span>`;
+    else {
+      const before = code.slice(Math.max(0, m.index - 2), m.index), call = /^\s*\(/.test(code.slice(re.lastIndex));
+      if (before === '->' || before === '?>') out += call ? `<span class="t-fn">${t}</span>` : esc(t);
+      else if (KW.has(t.toLowerCase()) && !(call && !['function','fn','array','isset','unset','empty','match','list','echo','print','declare','if','foreach','for','while','switch','catch'].includes(t))) out += `<span class="t-kw">${t}</span>`;
+      else if (call) out += `<span class="t-fn">${t}</span>`;
+      else if (/^[A-Z]/.test(t)) out += `<span class="t-cls">${t}</span>`;
+      else out += esc(t);
+    }
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+const codeLines = code => hl(code).split('\n').map((l, i) => `<span class="ln" data-l="${i}">${l || ' '}</span>`).join('');
+
+/* ---------- Íconos ---------- */
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>',
+};
+
+/* ---------- Bloques reutilizables ---------- */
+const title = s => `<h2 class="stitle rv">${s.title}<span class="brace">{</span></h2>`;
+const close = d => `<div class="cbrace rv" style="--d:${d}">}</div>`;
+const lead = (s, d = 1) => s.lead ? `<p class="lead rv" style="--d:${d}">${s.lead}</p>` : '';
+const ptsHTML = pts => `<ul class="pts">${pts.map(([b, t]) => `<li><b>${b}</b> ${t}</li>`).join('')}</ul>`;
+const figsHTML = f => `<div class="gfig">${[].concat(f).map(x => `<figure>${graphSVG(x.G, x.o || {})}<figcaption>${x.cap}</figcaption></figure>`).join('')}</div>`;
+const groupsHTML = (g, d) => `<div class="groups rv" style="--d:${d}">${g.map(x => `<div class="group">${x.fig ? figsHTML(x.fig) : ''}<h3>${x.h}</h3>${x.p ? `<p>${x.p}</p>` : ''}${x.pts ? ptsHTML(x.pts) : ''}</div>`).join('')}</div>`;
+const analogyHTML = (a, d) => `<aside class="analogy rv" style="--d:${d}">${ICON.bulb}<p><strong>Pensalo así</strong>${a}</p></aside>`;
+const noteHTML = (n, d) => `<div class="note rv" style="--d:${d}">${n}</div>`;
+function extras(s, d) { let h = '';
+  if (s.figrow) h += `<div class="figrow rv" style="--d:${d++}">${s.figrow.title ? `<h3>${s.figrow.title}</h3>` : ''}${figsHTML(s.figrow.figs)}${s.figrow.p ? `<p>${s.figrow.p}</p>` : ''}</div>`;
+  if (s.groups) h += groupsHTML(s.groups, d++);
+  if (s.points) h += `<div class="rv" style="--d:${d++}">${s.ptitle ? `<div class="ptitle">${s.ptitle}</div>` : ''}${ptsHTML(s.points)}</div>`;
+  if (s.analogy) h += analogyHTML(s.analogy, d++);
+  if (s.note) h += noteHTML(s.note, d++);
+  return [h, d]; }
+
+/* ---------- Renderizadores ---------- */
+const R = {
+  cover(s) {
+    const m = MODULES[s.mi];
+    return `<div class="cover"><div class="unit rv">${m.unit}, ${m.part.replace('Parte','parte')}, módulo ${s.mi + 1} de ${MODULES.length}</div>
+      <h1 class="rv" style="--d:1">${s.title}<span class="brace">{ }</span></h1>
+      <p class="sub rv" style="--d:2">${s.sub}</p>
+      <ul class="topics rv" style="--d:3">${s.topics.map(t => `<li><button data-topic="${esc(t)}">${t}</button></li>`).join('')}</ul>
+      <button class="btn start rv" style="--d:4" data-go="next">Empezar ${ICON.chev.replace('class="chev"', 'width="16" height="16"')}</button></div>`;
+  },
+  concept(s) { const [x, d] = extras(s, 2); return title(s) + lead(s) + x + close(d); },
+  cards(s) {
+    const cards = s.cards.map((c, i) => s.flipcards
+      ? `<button class="flip rv" style="--d:${i + 2}" aria-pressed="false"><div class="flip-in"><div class="face"><h3>${c.t}</h3><p>${c.d}</p><small>Ver ejemplo</small></div><div class="face back"><h3>${c.t}</h3><p>${c.back}</p><small>Volver</small></div></div></button>`
+      : `<div class="card rv" style="--d:${i + 2}"><h3>${c.t}</h3>${c.d ? `<p>${c.d}</p>` : ''}${c.list ? `<ul>${c.list.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}${c.ex ? `<div class="ex">${hl(c.ex)}</div>` : ''}</div>`).join('');
+    const [x, d] = extras(s, s.cards.length + 2);
+    return title(s) + lead(s) + `<div class="cards ${s.flow ? 'flow' : ''}" style="--min:${s.min || '220px'}">${cards}</div>` + x + close(d);
+  },
+  steps(s) {
+    return title(s) + lead(s) + `<ol class="steps">${s.steps.map((st, i) => `<li class="rv" style="--d:${i + 2}"><h3>${st.t}</h3><p>${st.d}</p>${st.sub ? `<ul>${st.sub.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ol>` + close(s.steps.length + 2);
+  },
+  table(s) {
+    const t = `<div class="twrap rv" style="--d:2"><table><thead><tr>${s.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r => `<tr><th>${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const [x, d] = extras(s, 3); return title(s) + lead(s) + t + x + close(d);
+  },
+  code(s) {
+    return title(s) + lead(s) + `<div class="code-layout rv" style="--d:2"><pre class="code" tabindex="0" aria-label="Código PHP"></pre>
+      <div class="side">${s.controls ? `<div class="ctrls">${s.controls.map(ctrlHTML).join('')}</div>` : ''}
+      <div><button class="btn run">${ICON.play}Ejecutar</button></div>
+      <div class="term"><div class="term-h"><span class="p">$</span> php ${esc(s.file)}</div><pre class="term-out" aria-live="polite"><span class="dim">Tocá «Ejecutar» para ver la salida.</span></pre></div>
+      <div class="extra"></div></div></div>` + close(3);
+  },
+  gallery(s) {
+    return title(s) + lead(s) + `<div class="gal">${s.items.map((c, i) => `<article class="gcard rv" style="--d:${i + 2}"><div class="gfig">${c.figs.map(f => `<figure>${graphSVG(f.G, f.o)}<figcaption>${f.cap}</figcaption></figure>`).join('')}</div><h3>${c.t}</h3><p>${c.d}</p>${c.go ? `<button class="gmore" data-goto="${esc(c.go)}">Ver en detalle ${ICON.chev.replace('class="chev"', 'width="14" height="14"')}</button>` : ''}</article>`).join('')}</div>` + close(s.items.length + 2);
+  },
+  demo(s) { return title(s) + lead(s) + `<div class="demo rv" style="--d:2"></div>` + close(3); },
+  quiz(s) { return title(s) + `<div class="quiz rv" style="--d:1"></div>`; },
+  end(s) { return title(s) + `<p class="lead rv" style="--d:1">Terminaste la Unidad V: qué es un grafo, sus partes y sus tipos, cómo se programa en PHP, y cómo funcionan las tablas hash con sus colisiones. Este es tu resultado en los cuestionarios.</p><div class="final rv" style="--d:2"></div>` + close(3); },
+};
+
+function ctrlHTML(c) {
+  const id = 'c_' + c.k;
+  if (c.type === 'toggle') return `<label class="ctrl switch"><input type="checkbox" data-k="${c.k}" ${c.value ? 'checked' : ''}><span>${c.label}</span></label>`;
+  if (c.type === 'seg') return `<div class="ctrl"><span>${c.label}</span><div class="seg" role="group">${c.options.map(o => `<button type="button" data-k="${c.k}" data-v="${esc(o)}" aria-pressed="${o === c.value}">${esc(o)}</button>`).join('')}</div></div>`;
+  if (c.type === 'range') return `<label class="ctrl" for="${id}"><span>${c.label}: <output>${c.value}</output></span><input id="${id}" type="range" data-k="${c.k}" min="${c.min}" max="${c.max}" value="${c.value}"></label>`;
+  return `<label class="ctrl" for="${id}"><span>${c.label}</span><input id="${id}" type="${c.type}" data-k="${c.k}" value="${esc(c.value)}" ${c.min != null ? `min="${c.min}" max="${c.max}"` : ''} spellcheck="false" autocomplete="off"></label>`;
+}
+
+/* ---------- Terminal con efecto de tipeo ---------- */
+function colorize(text) {
+  return text.split('\n').map(l => { const e = esc(l);
+    if (/^(PHP )?Fatal error/.test(l)) return `<span class="e">${e}</span>`;
+    if (/^(Warning|Deprecated|Notice)/.test(l)) return `<span class="w">${e}</span>`;
+    return e; }).join('\n');
+}
+async function typeOut(el, text) {
+  const tk = ++el._tk || (el._tk = 1);
+  el.innerHTML = '<span class="caret"></span>';
+  if (!RM.matches) { await sleep(180); let i = 0; const step = Math.max(1, Math.ceil(text.length / 70));
+    while (i < text.length) { if (el._tk !== tk) return; i += step; el.innerHTML = esc(text.slice(0, i)) + '<span class="caret"></span>'; await sleep(14); } }
+  if (el._tk === tk) el.innerHTML = colorize(text) + '\n<span class="dim">— fin de la ejecución —</span>';
+}
+
+/* ---------- Hidratación ---------- */
+const H = {
+  cover(el, s) {
+    $$('[data-topic]', el).forEach(b => b.onclick = () => {
+      const t = b.dataset.topic.toLowerCase().replace(/[¿?]/g, '');
+      const words = t.split(/[\s,]+/).filter(w => w.length > 3);
+      const target = SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.title === b.dataset.topic) || SLIDES.find(x => x.mi === s.mi && x.idx > s.idx && x.type !== 'quiz' && words.some(w => x.title.toLowerCase().includes(w)));
+      go(target ? target.idx : s.idx + 1);
+    });
+  },
+  cards(el) { $$('.flip', el).forEach(f => f.onclick = () => { f.classList.toggle('on'); f.setAttribute('aria-pressed', f.classList.contains('on')); }); },
+  code(el, s) {
+    const v = {}; (s.controls || []).forEach(c => v[c.k] = c.value);
+    const pre = $('.code', el), out = $('.term-out', el), ex = $('.extra', el); let ran = false;
+    const paint = (flash) => { pre.innerHTML = codeLines(typeof s.code === 'function' ? s.code(v) : s.code);
+      if (flash) { pre.classList.remove('flash'); void pre.offsetWidth; pre.classList.add('flash'); }
+      if (s.after) ex.innerHTML = s.after(v); };
+    const run = () => { ran = true; typeOut(out, s.run(v)); };
+    paint(false);
+    $('.run', el).onclick = run;
+    let t;
+    const changed = () => { paint(true); clearTimeout(t); if (ran) t = setTimeout(run, 250); };
+    $$('input[data-k]', el).forEach(i => i.addEventListener('input', () => {
+      v[i.dataset.k] = i.type === 'checkbox' ? i.checked : (i.type === 'range' || i.type === 'number') ? (i.value === '' ? 0 : +i.value) : i.value;
+      const o = i.parentElement.querySelector('output'); if (o) o.textContent = i.value; changed(); }));
+    $$('.seg button', el).forEach(b => b.onclick = () => { $$(`.seg button[data-k="${b.dataset.k}"]`, el).forEach(x => x.setAttribute('aria-pressed', x === b)); v[b.dataset.k] = b.dataset.v; changed(); });
+  },
+  gallery(el, s) { $$('[data-goto]', el).forEach(b => b.onclick = () => { const t = SLIDES.find(x => x.idx > s.idx && x.title === b.dataset.goto); if (t) go(t.idx); }); },
+  demo(el, s) { DEMOS[s.demo]($('.demo', el), s); },
+  quiz(el, s) { runQuiz($('.quiz', el), s); },
+  end(el) {
+    const box = $('.final', el); let tc = 0;
+    box.innerHTML = MODULES.map((m, mi) => { const qs = QUIZZES.filter(q => q.mi === mi); const t = qs.reduce((a, q) => a + q.questions.length, 0); const c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0); tc += c;
+      return `<div class="frow"><span><b>${m.title}</b><br><span class="muted" style="font-size:.85rem">${m.unit}, ${m.part.replace("Parte","parte")}</span></span><div class="meter"><i style="width:0" data-w="${t ? c / t * 100 : 0}"></i></div><b class="mono">${c}/${t}</b></div>`; }).join('')
+      + `<div class="note"><b>Total: ${tc} de ${TOTALQ} respuestas correctas.</b> ${tc === TOTALQ ? '¡Impecable! Dominás todos los temas.' : tc >= TOTALQ * .7 ? 'Muy buen trabajo. Repasá los módulos con barras más cortas.' : 'Volvé a los cuestionarios que te costaron: podés reintentarlos cuantas veces quieras.'}</div>
+      <div><button class="btn ghost" id="resetAll">${ICON.redo}Borrar mi progreso</button></div>`;
+    requestAnimationFrame(() => setTimeout(() => $$('.meter i', box).forEach(i => i.style.width = i.dataset.w + '%'), 80));
+    $('#resetAll', box).onclick = () => { scores = {}; store.set('scores', scores); updateScore(); buildDrawer(); H.end(el); };
+  },
+};
+
+/* ---------- Cuestionarios ---------- */
+function runQuiz(box, s) {
+  let qi = 0, ok = 0; const marks = [];
+  const show = () => {
+    const q = s.questions[qi];
+    box.innerHTML = `<div class="qhead"><div class="qdots">${s.questions.map((_, i) => `<i class="${marks[i] === true ? 'ok' : marks[i] === false ? 'ko' : i === qi ? 'cur' : ''}"></i>`).join('')}</div><span>Pregunta ${qi + 1} de ${s.questions.length}</span></div>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">${q.o.map((o, j) => `<button class="opt" data-j="${j}"><span class="k">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div class="qfb"></div>`;
+    $$('.opt', box).forEach(b => b.onclick = () => answer(+b.dataset.j));
+    $('.opt', box).focus({ preventScroll: true });
+  };
+  const answer = j => {
+    const q = s.questions[qi], right = j === q.a; marks[qi] = right; if (right) ok++;
+    $$('.opt', box).forEach((b, k) => { b.disabled = true; if (k === q.a) b.classList.add('right'); else if (k === j) b.classList.add('wrong'); else b.classList.add('dim'); });
+    $$('.qdots i', box)[qi].className = right ? 'ok' : 'ko';
+    const last = qi === s.questions.length - 1;
+    $('.qfb', box).innerHTML = `<div class="why ${right ? 'ok' : 'ko'}"><b>${right ? '¡Correcto!' : 'No es correcto.'}</b>${esc(q.why)}</div>
+      <div class="qnav"><button class="btn nextq">${last ? 'Ver resultado' : 'Siguiente pregunta'}</button></div>`;
+    const nb = $('.nextq', box); nb.focus({ preventScroll: true });
+    nb.onclick = () => { if (last) result(); else { qi++; show(); } };
+  };
+  const result = () => {
+    const t = s.questions.length, prev = scores[s.qid]?.c || 0;
+    scores[s.qid] = { c: Math.max(prev, ok), t }; store.set('scores', scores); updateScore(); buildDrawer();
+    const pct = ok / t, C = 2 * Math.PI * 54;
+    const msg = pct === 1 ? ['¡Puntaje perfecto!', 'Respondiste todo bien. Seguí con el próximo tema.'] : pct >= .6 ? ['¡Bien hecho!', 'Repasá las explicaciones de las que fallaste y seguí adelante.'] : ['A repasar un poco', 'Volvé a las diapositivas anteriores y reintentá el cuestionario.'];
+    box.innerHTML = `<div class="result"><svg class="ring" viewBox="0 0 132 132" role="img" aria-label="${ok} de ${t} correctas"><circle class="bgc" cx="66" cy="66" r="54"/><circle class="fgc" cx="66" cy="66" r="54" stroke-dasharray="${C}" stroke-dashoffset="${C}"/><text x="66" y="74" text-anchor="middle" font-size="26">${ok}/${t}</text></svg>
+      <div><h3>${msg[0]}</h3><p class="muted" style="margin:0 0 14px">${msg[1]}${prev > ok ? ` Tu mejor puntaje sigue siendo ${prev}/${t}.` : ''}</p>
+      <div class="qnav"><button class="btn ghost retry">${ICON.redo}Reintentar</button><button class="btn" data-go="next">Continuar</button></div></div></div>`;
+    requestAnimationFrame(() => setTimeout(() => { const c = $('.fgc', box); if (c) c.style.strokeDashoffset = C * (1 - pct); }, 60));
+    if (pct === 1) confetti(box);
+    $('.retry', box).onclick = () => { qi = 0; ok = 0; marks.length = 0; show(); };
+  };
+  show();
+}
+function confetti(box) {
+  if (RM.matches) return;
+  const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:30;width:100%;height:100%'; document.body.appendChild(cv);
+  const ctx = cv.getContext('2d'), W = cv.width = innerWidth, Hh = cv.height = innerHeight, cs = getComputedStyle(document.documentElement);
+  const cols = ['--accent', '--amber', '--mint', '--coral'].map(v => cs.getPropertyValue(v).trim());
+  const ps = Array.from({ length: 110 }, () => ({ x: W / 2 + (Math.random() - .5) * 200, y: Hh * .45, vx: (Math.random() - .5) * 12, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * 4 | 0], a: Math.random() * 6 }));
+  let f = 0; (function tick() { ctx.clearRect(0, 0, W, Hh); ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += .2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * .6); ctx.restore(); });
+    if (++f < 110) requestAnimationFrame(tick); else cv.remove(); })();
+}
+
+/* ---------- Demos interactivas ---------- */
+const logLine = (log, text, cls = '') => { log.insertAdjacentHTML('beforeend', `<div class="${cls}">${esc(text)}</div>`); log.scrollTop = log.scrollHeight; };
+const legend = items => `<div class="legend">${items.map(([c, t]) => `<span><i style="border-color:var(--${c});background:var(--${c}-soft)"></i>${t}</span>`).join('')}</div>`;
+
+/* ---- Dibujo de grafos en SVG ----
+   G = { V: {id: [x, y]}, E: [[a, b], ...], dir: bool, w, h }
+   o = { cls: {id: clase}, ecls: {k: clase}, sub: {id: texto}, click: bool, eclick: bool } */
+function graphSVG(G, o = {}) {
+  const R = 20, P0 = G.V, W = G.w || 440, Hh = G.h || 280;
+  const key = (a, b) => a < b ? a + '|' + b : b + '|' + a;
+  const total = {}, seen = {};
+  G.E.forEach(([a, b]) => { if (a !== b) total[key(a, b)] = (total[key(a, b)] || 0) + 1; });
+  const loopsAt = {};
+  const arrow = (ex, ey, ux, uy, cls) => { const bx = ex - ux * 11, by = ey - uy * 11, nx = -uy, ny = ux;
+    return `<polygon class="ah" points="${ex.toFixed(1)},${ey.toFixed(1)} ${(bx + nx * 5.5).toFixed(1)},${(by + ny * 5.5).toFixed(1)} ${(bx - nx * 5.5).toFixed(1)},${(by - ny * 5.5).toFixed(1)}"/>`; };
+  let edges = '';
+  G.E.forEach(([a, b], k) => {
+    const cls = (o.ecls?.[k] || '') + (o.eclick ? ' click' : '');
+    if (a === b) {
+      const [x, y] = P0[a], m = loopsAt[a] = (loopsAt[a] || 0) + 1, s = 1 + (m - 1) * .45;
+      const d = `M${x - 9} ${y - R + 3} C${x - 32 * s} ${y - R - 44 * s} ${x + 32 * s} ${y - R - 44 * s} ${x + 9} ${y - R + 3}`;
+      let ah = ''; if (G.dir) { const ux = 9 - 32 * s, uy = (-R + 3) - (-R - 44 * s), L = Math.hypot(ux, uy); ah = arrow(x + 9, y - R + 3, ux / L, uy / L); }
+      edges += `<g class="ge ${cls}" data-k="${k}"><path class="hit" d="${d}"/><path class="ln2" d="${d}"/>${ah}</g>`; return;
+    }
+    const kk = key(a, b), n = total[kk], i = seen[kk] = (seen[kk] ?? -1) + 1;
+    const [lo, hi] = a < b ? [a, b] : [b, a], [x1, y1] = P0[lo], [x2, y2] = P0[hi];
+    const L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L, ny = (x2 - x1) / L;
+    const off = n === 1 ? 0 : (i - (n - 1) / 2) * 46;
+    const [px, py] = P0[a], [qx, qy] = P0[b];
+    const cx = (px + qx) / 2 + nx * off, cy = (py + qy) / 2 + ny * off;
+    const u1 = Math.hypot(cx - px, cy - py) || 1, u2 = Math.hypot(cx - qx, cy - qy) || 1, gap = G.dir ? R + 2 : R;
+    const sx = px + (cx - px) / u1 * R, sy = py + (cy - py) / u1 * R, ex = qx + (cx - qx) / u2 * gap, ey = qy + (cy - qy) / u2 * gap;
+    const d = off ? `M${sx.toFixed(1)} ${sy.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}` : `M${sx.toFixed(1)} ${sy.toFixed(1)} L${ex.toFixed(1)} ${ey.toFixed(1)}`;
+    let ah = ''; if (G.dir) { const ux = ex - cx, uy = ey - cy, l = Math.hypot(ux, uy) || 1; ah = arrow(ex, ey, ux / l, uy / l); }
+    edges += `<g class="ge ${cls}" data-k="${k}"><path class="hit" d="${d}"/><path class="ln2" d="${d}"/>${ah}</g>`;
+  });
+  let nodes = '';
+  Object.entries(P0).forEach(([id, [x, y]]) => {
+    const cls = (o.cls?.[id] || '') + (o.click ? ' click' : '');
+    nodes += `<g class="gv ${cls}" data-id="${esc(id)}" transform="translate(${x},${y})"><g class="in"><circle r="${R}"/><text text-anchor="middle" dy=".36em">${esc(G.label?.[id] ?? id)}</text>${o.sub?.[id] ? `<text class="sub" text-anchor="middle" y="${R + 15}">${esc(o.sub[id])}</text>` : ''}</g></g>`;
+  });
+  return `<svg class="graph" viewBox="0 0 ${W} ${Hh}" style="max-width:${Math.round(W * 1.3)}px" role="img" aria-label="Grafo">${edges}${nodes}</svg>`;
+}
+/* vecinos (no dirigido, o de salida si es dirigido) */
+const nbrs = (G, id) => { const out = []; G.E.forEach(([a, b], k) => { if (a === id) out.push({ v: b, k }); else if (!G.dir && b === id) out.push({ v: a, k }); }); return out; };
+const degree = (G, id) => G.E.reduce((t, [a, b]) => t + (a === id ? 1 : 0) + (b === id ? 1 : 0), 0);
+function bfs(G, s, t) { const prev = { [s]: null }, q = [s], order = [s];
+  while (q.length) { const u = q.shift(); if (u === t) break; for (const { v, k } of nbrs(G, u)) if (!(v in prev)) { prev[v] = { u, k }; q.push(v); order.push(v); } }
+  if (!(t in prev)) return { path: null, order }; const path = [t], ks = []; let c = t; while (prev[c]) { ks.unshift(prev[c].k); c = prev[c].u; path.unshift(c); } return { path, ks, order }; }
+const circle = (ids, cx, cy, r) => Object.fromEntries(ids.map((id, i) => [id, [Math.round(cx + r * Math.sin(2 * Math.PI * i / ids.length)), Math.round(cy - r * Math.cos(2 * Math.PI * i / ids.length))]]));
+const LET = 'ABCDEFGH'.split('');
+const ar = (a, b, dir) => dir ? `${a} → ${b}` : `${a} – ${b}`;
+
+const DEMOS = {
+  /* ---------------------------------------------- red social */
+  red(box) {
+    const NAMES = { A: 'Ana', B: 'Beto', C: 'Caro', D: 'Dani', E: 'Eli', F: 'Fede', G: 'Gabi', H: 'Hugo' };
+    const G = { w: 460, h: 290, V: { A: [70, 70], B: [200, 45], C: [130, 190], D: [320, 110], E: [260, 230], F: [400, 220], G: [420, 60], H: [60, 255] },
+      E: [['A', 'B'], ['A', 'C'], ['B', 'C'], ['B', 'D'], ['C', 'E'], ['D', 'E'], ['D', 'F'], ['E', 'F'], ['D', 'G']] };
+    let s1 = null, s2 = null;
+    box.innerHTML = `<div class="two"><div class="panel gr"></div><div class="side"><div class="panel"><h4>Lo que muestra el grafo</h4><div class="status"></div></div>${legend([['accent', 'Persona elegida'], ['mint', 'Sus amigos (vecinos)'], ['amber', 'Segunda persona']])}<div class="qnav" style="margin:0"><button class="btn ghost rst">${ICON.redo}Empezar de nuevo</button></div></div></div>`;
+    const draw = () => {
+      const cls = {}, ecls = {}, sub = { ...NAMES };
+      if (s1) { cls[s1] = 'sel'; nbrs(G, s1).forEach(({ v, k }) => { cls[v] = 'kid'; ecls[k] = 'hl'; }); }
+      if (s2) cls[s2] = 'cur';
+      $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, sub, click: true });
+      $$('.gv', box).forEach(g => g.onclick = () => { const id = g.dataset.id; if (!s1 || s2 || id === s1) { s1 = id; s2 = null; } else s2 = id; draw(); });
+      const st = $('.status', box);
+      if (!s1) { st.innerHTML = '<span class="muted">Tocá a una persona.</span>'; return; }
+      const f1 = nbrs(G, s1).map(x => x.v), n1 = NAMES[s1];
+      if (!s2) { st.innerHTML = f1.length ? `<b>${n1}</b> tiene <b>${f1.length} amigo${f1.length > 1 ? 's' : ''}</b>: ${f1.map(x => NAMES[x]).join(', ')}. Cada amistad es una arista que sale de su vértice.<br><br><span class="muted">Ahora tocá a otra persona.</span>`
+        : `<b>${n1}</b> no tiene ninguna arista: es un vértice <b>aislado</b>. Está en el grafo, pero no se relaciona con nadie.`; return; }
+      const f2 = nbrs(G, s2).map(x => x.v), common = f1.filter(x => f2.includes(x)), direct = f1.includes(s2), path = bfs(G, s1, s2).path;
+      st.innerHTML = `<ul class="pts"><li><b>¿Son amigos?</b> ${direct ? `Sí: hay una arista entre ${n1} y ${NAMES[s2]}.` : 'No: no hay una arista que los una directamente.'}</li>
+        <li><b>Amigos en común:</b> ${common.length ? common.map(x => NAMES[x]).join(', ') : 'ninguno'}.</li>
+        <li><b>¿Están conectados?</b> ${path ? `Sí, por el camino ${path.map(x => NAMES[x]).join(' → ')}.` : 'No: no hay ningún camino entre ellos.'}</li></ul>
+        ${!direct && common.length ? `<div class="msg ok">Una red social le sugeriría a ${n1} conocer a ${NAMES[s2]}: tienen ${common.length} amigo${common.length > 1 ? 's' : ''} en común.</div>` : ''}`;
+    };
+    $('.rst', box).onclick = () => { s1 = s2 = null; draw(); };
+    draw();
+  },
+
+  /* ---------------------------------------------- dirigido vs no dirigido */
+  direccion(box) {
+    const V = { A: [110, 60], B: [300, 60], C: [300, 220], D: [110, 220] };
+    const EE = [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A']];
+    let dir = false, sel = null;
+    box.innerHTML = `<div class="ctrls"><div class="ctrl"><span>Tipo de aristas</span><div class="seg"><button data-d="0" aria-pressed="true">no dirigido</button><button data-d="1" aria-pressed="false">dirigido</button></div></div></div>
+      <div class="two"><div class="panel gr"></div><div class="side"><div class="panel"><h4>Así se escribe el conjunto de aristas</h4><div class="mathline set"></div></div><div class="panel"><h4>Desde el vértice elegido</h4><div class="status"></div></div></div></div>`;
+    const draw = () => {
+      const G = { V, E: EE, dir, w: 410, h: 280 }, cls = {}, ecls = {};
+      if (sel) { cls[sel] = 'sel'; nbrs(G, sel).forEach(({ v, k }) => { cls[v] = 'kid'; ecls[k] = 'hl'; }); }
+      $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, click: true });
+      $$('.gv', box).forEach(g => g.onclick = () => { sel = g.dataset.id; draw(); });
+      $('.set', box).textContent = 'A = { ' + EE.map(([a, b]) => dir ? `(${a}, ${b})` : `{${a}, ${b}}`).join(', ') + ' }';
+      const st = $('.status', box);
+      if (!sel) { st.innerHTML = '<span class="muted">Tocá un vértice.</span>'; return; }
+      const nb = nbrs(G, sel).map(x => x.v);
+      if (!dir) st.innerHTML = `Desde <b>${sel}</b> podés ir directo a <b>${nb.join(' y ')}</b>. Como las aristas no tienen dirección, también podés volver por el mismo lugar: <code>{${sel}, ${nb[0]}}</code> es igual a <code>{${nb[0]}, ${sel}}</code>.`;
+      else { const back = bfs(G, nb[0], sel).path;
+        st.innerHTML = `Desde <b>${sel}</b> solo podés ir a <b>${nb[0]}</b>: la arista es el par ordenado <code>(${sel}, ${nb[0]})</code>. Para volver de ${nb[0]} a ${sel} no podés usar la misma flecha: tenés que dar toda la vuelta, <b>${back.join(' → ')}</b>.<br><br><span class="muted">Grado de salida de ${sel}: 1. Grado de entrada: 1.</span>`; }
+    };
+    $$('[data-d]', box).forEach(b => b.onclick = () => { dir = b.dataset.d === '1'; $$('[data-d]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); draw(); });
+    draw();
+  },
+
+  /* ---------------------------------------------- adyacentes, paralelas, lazo */
+  elementos(box) {
+    const G = { w: 460, h: 290, V: { A: [210, 95], B: [100, 240], C: [320, 240], D: [410, 120] },
+      E: [['A', 'A'], ['A', 'B'], ['B', 'C'], ['A', 'C'], ['A', 'C'], ['C', 'D']] };
+    let sel = null;
+    box.innerHTML = `<div class="two"><div class="panel gr"></div><div class="side"><div class="panel"><h4>Arista elegida</h4><div class="status"></div></div>${legend([['amber', 'Arista elegida'], ['mint', 'Adyacentes'], ['coral', 'Paralelas']])}</div></div>`;
+    const draw = () => {
+      const ecls = {}, cls = {};
+      if (sel != null) { const [a, b] = G.E[sel]; cls[a] = 'path'; cls[b] = 'path';
+        G.E.forEach(([x, y], k) => { if (k === sel) return; const same = (x === a && y === b) || (x === b && y === a); if (same && a !== b) ecls[k] = 'par'; else if ([x, y].some(v => v === a || v === b)) ecls[k] = 'adj'; else ecls[k] = 'dim'; });
+        ecls[sel] = 'sel'; }
+      $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, eclick: true });
+      const st = $('.status', box);
+      if (sel == null) { st.innerHTML = '<span class="muted">Tocá una de las líneas del grafo (o muy cerca de ella).</span>'; return; }
+      const [a, b] = G.E[sel], name = a === b ? `el lazo en ${a}` : `la arista {${a}, ${b}}`;
+      const pars = G.E.map((e, k) => k).filter(k => k !== sel && a !== b && ((G.E[k][0] === a && G.E[k][1] === b) || (G.E[k][0] === b && G.E[k][1] === a)));
+      const adj = G.E.map((e, k) => k).filter(k => k !== sel && !pars.includes(k) && G.E[k].some(v => v === a || v === b));
+      const lbl = k => G.E[k][0] === G.E[k][1] ? `lazo en ${G.E[k][0]}` : `{${G.E[k][0]}, ${G.E[k][1]}}`;
+      const uniq = ks => [...new Set(ks.map(lbl))].map(t => { const c = ks.map(lbl).filter(x => x === t).length; return c > 1 ? `${t} (×${c})` : t; });
+      st.innerHTML = `<div class="bigcard" style="margin:0 0 8px">${a === b ? `Lazo en ${a}` : `{${a}, ${b}}`}</div><ul class="pts">
+        <li><b>¿Es un lazo?</b> ${a === b ? `Sí: sale de ${a} y vuelve a ${a}. Suma 2 al grado de ${a}.` : `No: une dos vértices distintos, ${a} y ${b}.`}</li>
+        <li><b>¿Tiene paralelas?</b> ${pars.length ? `Sí: ${pars.map(lbl).join(', ')} une el mismo par de vértices. Por eso este grafo es un <b>multigrafo</b>.` : 'No: es la única arista entre esos vértices.'}</li>
+        <li><b>Adyacentes:</b> ${adj.length ? `${uniq(adj).join(', ')}. Comparten un vértice con ${name}.` : 'ninguna.'}</li></ul>`;
+    };
+    /* Toque o clic en cualquier parte del dibujo: si no cae justo sobre una línea, elijo la arista más cercana */
+    const pickAt = e => {
+      const svg = $('.gr svg', box); if (!svg) return;
+      const g = e.target.closest && e.target.closest('.ge'); if (g) { sel = +g.dataset.k; return draw(); }
+      const m = svg.getScreenCTM(); if (!m) return;
+      const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const q = pt.matrixTransform(m.inverse());
+      let best = -1, bd = Infinity;
+      $$('.ge .ln2', svg).forEach(path => { const L = path.getTotalLength(); for (let t = 0; t <= L; t += 3) { const a = path.getPointAtLength(t), d = Math.hypot(a.x - q.x, a.y - q.y); if (d < bd) { bd = d; best = +path.parentNode.dataset.k; } } });
+      const v = e.target.closest && e.target.closest('.gv');
+      if (!v && best >= 0 && bd < 30) { sel = best; return draw(); }
+      if (v) $('.status', box).innerHTML = `Tocaste el <b>vértice ${esc(v.dataset.id)}</b> (un círculo). Para esta demo tocá una de las <b>líneas</b> que salen de él.`;
+    };
+    $('.gr', box).addEventListener('click', pickAt);
+    draw();
+  },
+
+  /* ---------------------------------------------- caminos */
+  caminos(box) {
+    const G = { w: 470, h: 250, V: { A: [190, 55], E: [410, 40], B: [280, 115], F: [390, 165], D: [80, 150], C: [210, 205] },
+      E: [['A', 'E'], ['A', 'D'], ['A', 'B'], ['B', 'E'], ['D', 'B'], ['B', 'F'], ['E', 'F'], ['D', 'C'], ['C', 'B']] };
+    const ids = Object.keys(G.V).sort(); let path = [], ks = [], tk = 0, flash = null;
+    box.innerHTML = `<div class="two"><div class="panel"><div class="gr"></div></div><div class="side"><div class="panel"><h4>Tu camino</h4><div class="seq cells"></div><div style="height:22px"></div><div class="status"></div></div>
+      <div class="qnav" style="margin:0"><button class="btn ghost back">Quitar el último</button><button class="btn ghost rst">${ICON.redo}Borrar camino</button></div>
+      <div class="panel"><h4>Camino más corto</h4><div class="ctrls" style="grid-template-columns:1fr 1fr auto;align-items:end;margin:0"><label class="ctrl"><span>Desde</span><select class="s">${ids.map(i => `<option ${i === 'D' ? 'selected' : ''}>${i}</option>`).join('')}</select></label><label class="ctrl"><span>Hasta</span><select class="t">${ids.map(i => `<option ${i === 'F' ? 'selected' : ''}>${i}</option>`).join('')}</select></label><button class="btn go">${ICON.play}Buscar</button></div></div><div class="res"></div></div></div>`;
+    const draw = (cls = {}, ecls = {}) => { $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, click: true }); $$('.gv', box).forEach(g => g.onclick = () => pick(g.dataset.id)); };
+    const drawPath = () => { tk++; const cls = {}, ecls = {}; path.forEach(v => cls[v] = 'path'); if (path.length) cls[path.at(-1)] = 'sel'; ks.forEach(k => ecls[k] = 'hl'); if (flash) cls[flash] = 'err'; draw(cls, ecls); flash = null;
+      $('.seq', box).innerHTML = path.map((v, i) => `<div class="cell ${i === path.length - 1 ? 'cur' : ''}">${v}<small>${i}</small></div>`).join('') || '<span class="muted">Vacío.</span>';
+      const st = $('.status', box);
+      if (!path.length) { st.innerHTML = 'Tocá un vértice para empezar.'; return; }
+      const rep = ks.length !== new Set(ks).size, verts = new Set(path).size !== path.length, closed = path.length > 2 && path[0] === path.at(-1);
+      st.innerHTML = `Longitud: <b>${ks.length}</b> arista${ks.length === 1 ? '' : 's'}.<br>${!ks.length ? 'Ahora tocá un vértice vecino.' : rep ? '<b>Repite una arista:</b> ya no es un camino simple.' : verts ? `<b>Camino con ciclo:</b> ${closed ? `volvió al punto de partida (${path[0]}): es un camino cerrado.` : 'pasó dos veces por un mismo vértice.'}` : '<b>Camino simple:</b> no repite aristas.'}`; };
+    const pick = id => { $('.res', box).innerHTML = '';
+      if (!path.length) { path = [id]; return drawPath(); }
+      const last = path.at(-1), e = G.E.findIndex(([a, b]) => (a === last && b === id) || (b === last && a === id));
+      if (e < 0) { flash = id; drawPath(); $('.res', box).innerHTML = `<div class="msg ko"><b>${last} y ${id} no son vecinos:</b> no hay arista entre ellos. Un camino solo puede avanzar por aristas.</div>`; return; }
+      path.push(id); ks.push(e); drawPath(); };
+    $('.back', box).onclick = () => { path.pop(); ks.pop(); $('.res', box).innerHTML = ''; drawPath(); };
+    $('.rst', box).onclick = () => { path = []; ks = []; $('.res', box).innerHTML = ''; drawPath(); };
+    $('.go', box).onclick = async () => { const s = $('.s', box).value, t = $('.t', box).value, my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV;
+      path = []; ks = []; $('.seq', box).innerHTML = ''; $('.res', box).innerHTML = '';
+      if (s === t) { $('.res', box).innerHTML = `<div class="msg">Elegiste el mismo vértice: el camino más corto es quedarse en ${s} (longitud 0).</div>`; return; }
+      const r = bfs(G, s, t), dist = { [s]: 0 }; const q = [s]; while (q.length) { const u = q.shift(); nbrs(G, u).forEach(({ v }) => { if (!(v in dist)) { dist[v] = dist[u] + 1; q.push(v); } }); }
+      const cls = {}, sub = {};
+      for (let d = 0; d <= Math.max(...Object.values(dist)); d++) { const lvl = Object.keys(dist).filter(v => dist[v] === d); lvl.forEach(v => { cls[v] = d === 0 ? 'sel' : 'cur'; sub[v] = 'dist. ' + d; });
+        $('.gr', box).innerHTML = graphSVG(G, { cls, sub }); $('.status', box).innerHTML = d === 0 ? `Empiezo en <b>${s}</b> (distancia 0).` : `A distancia <b>${d}</b> de ${s}: ${lvl.join(', ')}.`;
+        await sleep(900); if (!alive()) return; lvl.forEach(v => { if (v !== s) cls[v] = 'path'; }); if (lvl.includes(t)) break; }
+      const ecls = {}; r.ks.forEach(k => ecls[k] = 'hl'); r.path.forEach(v => cls[v] = 'found'); cls[s] = 'sel';
+      $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, sub }); $$('.gv', box).forEach(g => g.onclick = () => pick(g.dataset.id));
+      $('.status', box).innerHTML = `Llegué a <b>${t}</b>.`;
+      $('.res', box).innerHTML = `<div class="msg ok"><b>Camino más corto: ${r.path.join(' → ')}</b> (longitud ${r.ks.length}). Busqué <b>por capas</b>: primero los vecinos de ${s}, después los vecinos de esos, y así. La primera vez que aparece ${t}, ese es el camino con menos aristas. Esta idea se llama <b>búsqueda en anchura</b> y es la base de lo que hace un GPS.</div>`; };
+    drawPath();
+  },
+
+  /* ---------------------------------------------- grado */
+  grado(box) {
+    const base = { w: 400, h: 300, V: { A: [200, 40], B: [110, 115], C: [290, 115], D: [200, 180], E: [120, 255], F: [280, 255] },
+      E: [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'D'], ['C', 'D'], ['D', 'E'], ['D', 'F']] };
+    let G, sub;
+    box.innerHTML = `<div class="two"><div class="panel gr"></div><div class="side"><div class="panel"><h4>Vértice elegido</h4><div class="status"></div></div>
+      <div class="qnav" style="margin:0"><button class="btn calc">${ICON.play}Calcular todos</button><button class="btn ghost iso">Agregar un vértice aislado</button></div><div class="res"></div></div></div>`;
+    const kind = d => [d % 2 ? 'impar' : 'par', d === 0 ? 'aislado' : d === 1 ? 'terminal' : ''].filter(Boolean);
+    const draw = (cls = {}, ecls = {}) => { $('.gr', box).innerHTML = graphSVG(G, { cls, ecls, sub, click: true }); $$('.gv', box).forEach(g => g.onclick = () => pick(g.dataset.id)); };
+    const pick = id => { const d = degree(G, id), nb = nbrs(G, id); sub[id] = 'grado ' + d; const cls = { [id]: 'sel' }, ecls = {}; nb.forEach(({ v, k }) => { cls[v] = 'kid'; ecls[k] = 'hl'; }); draw(cls, ecls); $('.res', box).innerHTML = '';
+      const k = kind(d);
+      $('.status', box).innerHTML = `<div class="bigcard" style="margin:0 0 6px">${id}: grado ${d}</div>${d ? `Inciden ${d} arista${d > 1 ? 's' : ''}: está conectado a <b>${nb.map(x => x.v).join(', ')}</b>.` : 'No incide ninguna arista.'}<br>Clasificación: <b>grado ${k[0]}</b>${k[1] ? ` y <b>vértice ${k[1]}</b>` : ''}.`; };
+    const reset = () => { G = { ...base, V: { ...base.V }, E: base.E.slice() }; sub = {}; draw(); $('.status', box).innerHTML = '<span class="muted">Tocá un vértice para ver su grado.</span>'; $('.res', box).innerHTML = ''; $('.iso', box).disabled = false; };
+    $('.iso', box).onclick = () => { G.V.G = [340, 190]; $('.iso', box).disabled = true; draw({ G: 'cur' }); $('.status', box).innerHTML = 'Agregué <b>G</b>, sin ninguna arista. Tocalo para ver su grado.'; };
+    $('.calc', box).onclick = async () => { const nav = NAV, ids = Object.keys(G.V); const parts = [];
+      for (const id of ids) { const d = degree(G, id); sub[id] = 'grado ' + d; parts.push(d); draw({ [id]: 'cur' }); $('.status', box).innerHTML = `Cuento las aristas de <b>${id}</b>: ${d}.`; await sleep(420); if (nav !== NAV) return; }
+      draw(); const s = parts.reduce((a, b) => a + b, 0);
+      $('.status', box).innerHTML = ids.map((id, i) => `<b>${id}</b>: ${parts[i]} (${kind(parts[i]).join(', ')})`).join('<br>');
+      $('.res', box).innerHTML = `<div class="msg ok"><b>Suma de grados: ${parts.join(' + ')} = ${s}.</b> El grafo tiene <b>${G.E.length} aristas</b>, y ${s} = 2 × ${G.E.length}. Cada arista se contó dos veces, una en cada extremo.${G.V.G ? ' El vértice aislado G suma 0: no cambia nada.' : ''}</div>`; };
+    reset();
+  },
+
+  /* ---------------------------------------------- grafo completo */
+  completo(box) {
+    box.innerHTML = `<div class="ctrls"><label class="ctrl"><span>Cantidad de vértices: <output>4</output></span><input type="range" class="n" min="1" max="8" value="4"></label></div>
+      <div class="two"><div class="panel gr"></div><div class="side"><div class="panel"><h4>¿Cuántas aristas hacen falta?</h4><div class="status"></div></div><div class="panel"><h4>Y si siguiera creciendo...</h4><div class="cmpbars big"></div></div></div></div>`;
+    const draw = () => { const n = +$('.n', box).value; $('output', box).textContent = n;
+      const ids = LET.slice(0, n), V = circle(ids, 200, 140, n === 1 ? 0 : 105), E = []; ids.forEach((a, i) => ids.slice(i + 1).forEach(b => E.push([a, b])));
+      const ecls = {}; E.forEach((_, k) => ecls[k] = 'new');
+      $('.gr', box).innerHTML = graphSVG({ V, E, w: 400, h: 285 }, { ecls });
+      const m = n * (n - 1) / 2;
+      $('.status', box).innerHTML = `<ul class="pts"><li>Cada uno de los <b>${n}</b> vértices se une con los otros <b>${n - 1}</b>: ${n} × ${n - 1} = ${n * (n - 1)} puntas de arista.</li><li>Pero cada arista tiene <b>dos</b> puntas, así que la contamos dos veces: ${n * (n - 1)} / 2 = <b>${m}</b>.</li></ul><div class="mathline">n·(n−1)/2 = ${n}·${n - 1}/2 = ${m} arista${m === 1 ? '' : 's'}</div>`;
+      const rows = [5, 10, 50, 100].map(k => [k, k * (k - 1) / 2]); const mx = rows.at(-1)[1];
+      $('.big', box).innerHTML = rows.map(([k, e]) => `<div class="row"><span>${k} vértices</span><div class="track"><i style="width:${Math.max(1.5, e / mx * 100)}%;background:var(--accent)"></i></div><b class="mono">${e}</b></div>`).join('')
+        + '<p class="muted" style="margin:6px 0 0;font-size:.88rem">Duplicar los vértices casi <b>cuadruplica</b> las aristas: por eso los grafos completos grandes ocupan mucha memoria.</p>'; };
+    $('.n', box).addEventListener('input', draw); draw();
+  },
+
+  /* ---------------------------------------------- constructor y clasificador */
+  constructor(box) {
+    let n = 5, dir = false, E = [], pick = null, fresh = -1, showBip = false;
+    const PRESETS = {
+      'Completo': () => { dir = false; n = 5; E = []; LET.slice(0, 5).forEach((a, i) => LET.slice(i + 1, 5).forEach(b => E.push([a, b]))); },
+      'Bipartito': () => { dir = false; n = 6; E = [['A', 'B'], ['A', 'D'], ['C', 'B'], ['C', 'F'], ['E', 'D'], ['E', 'F']]; },
+      'Triángulo': () => { dir = false; n = 3; E = [['A', 'B'], ['B', 'C'], ['C', 'A']]; },
+      'Multigrafo': () => { dir = true; n = 3; E = [['A', 'A'], ['A', 'B'], ['A', 'B'], ['A', 'C'], ['B', 'C']]; } };
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));align-items:end">
+        <div class="ctrl"><span>Tipo de aristas</span><div class="seg"><button data-d="0" aria-pressed="true">no dirigido</button><button data-d="1" aria-pressed="false">dirigido</button></div></div>
+        <label class="ctrl"><span>Vértices: <output>5</output></span><input type="range" class="n" min="2" max="6" value="5"></label>
+        <div class="ctrl"><span>Ejemplos listos</span><div class="btnrow">${Object.keys(PRESETS).map(p => `<button class="btn ghost sm" data-p="${p}">${p}</button>`).join('')}</div></div></div>
+      <div class="two"><div class="panel"><div class="gr"></div><div class="bipleg"></div><div class="status" style="margin-top:6px"></div><div class="qnav" style="margin-top:10px"><button class="btn ghost sm undo">Deshacer</button><button class="btn ghost sm clr">${ICON.redo}Vaciar</button></div></div>
+        <div class="side"><div class="panel"><h4>¿Qué tipo de grafo es?</h4><div class="verdict"></div></div></div></div>`;
+    const ids = () => LET.slice(0, n);
+    const classify = () => {
+      const V = ids(), loops = E.filter(([a, b]) => a === b), cnt = {}; E.forEach(([a, b]) => { if (a === b) return; const k = dir ? a + '>' + b : [a, b].sort().join('|'); cnt[k] = (cnt[k] || 0) + 1; });
+      const pars = Object.entries(cnt).filter(([, c]) => c > 1).map(([k]) => k.replace('>', ' → ').replace('|', ' – '));
+      const missing = []; V.forEach((a, i) => V.forEach((b, j) => { if (a === b || (!dir && j < i)) return; const k = dir ? a + '>' + b : [a, b].sort().join('|'); if (!cnt[k]) missing.push(dir ? `${a} → ${b}` : `${a} – ${b}`); }));
+      const total = dir ? n * (n - 1) : n * (n - 1) / 2;
+      // bipartito: pintar con dos colores (sin importar la dirección)
+      // Se pinta todo el grafo (el primer color asignado queda) y se anota el primer choque
+      let color = {}, parent = {}, bad = null;
+      for (const s of V) { if (s in color) continue; color[s] = 1; parent[s] = null; const q = [s];
+        while (q.length) { const u = q.shift(); for (const [a, b] of E) { if (a === b) continue; const v = a === u ? b : b === u ? a : null; if (v == null) continue;
+          if (!(v in color)) { color[v] = 3 - color[u]; parent[v] = u; q.push(v); } else if (color[v] === color[u] && !bad) bad = [u, v]; } } }
+      // Ciclo impar: subir desde los dos vértices del choque hasta su antecesor común
+      let cycle = null;
+      if (bad && !loops.length) { const up = x => { const r = []; while (x != null) { r.push(x); x = parent[x]; } return r; };
+        const pu = up(bad[0]), pv = up(bad[1]), lca = pu.find(x => pv.includes(x));
+        cycle = [...pu.slice(0, pu.indexOf(lca) + 1), ...pv.slice(0, pv.indexOf(lca)).reverse()];
+        const m = cycle.indexOf([...cycle].sort()[0]); cycle = [...cycle.slice(m), ...cycle.slice(0, m)]; }
+      const bip = !loops.length && !bad;
+      return { loops, pars, missing, total, bip, color, bad, cycle };
+    };
+    const draw = () => {
+      const c = classify(), cls = {}, ecls = {};
+      const edgeIdx = (x, y) => E.findIndex(([a, b]) => (a === x && b === y) || (a === y && b === x));
+      if (showBip && E.length) {
+        if (c.loops.length) c.loops.forEach(([v]) => { cls[v] = 'err'; ecls[E.findIndex(([a, b]) => a === v && b === v)] = 'par'; });
+        else { ids().forEach(v => cls[v] = c.color[v] === 1 ? 'g1' : 'g2');
+          if (c.cycle) { c.cycle.forEach(v => cls[v] = 'err'); c.cycle.forEach((v, i) => { const k = edgeIdx(v, c.cycle[(i + 1) % c.cycle.length]); if (k >= 0) ecls[k] = 'par'; });
+            E.forEach((_, k) => { if (!ecls[k]) ecls[k] = 'dim'; }); } } }
+      $('.bipleg', box).innerHTML = showBip && E.length ? (c.bip ? legend([['amber', 'Grupo naranja'], ['accent', 'Grupo azul']]) + '<p class="muted" style="margin:6px 4px 0;font-size:.86rem">Todas las aristas van de un grupo al otro: por eso es bipartito.</p>'
+        : c.loops.length ? legend([['coral', 'Lazo: impide que sea bipartito']])
+        : legend([['amber', 'Intento: grupo naranja'], ['accent', 'Intento: grupo azul'], ['coral', 'Ciclo impar que lo impide']]) + '<p class="muted" style="margin:6px 4px 0;font-size:.86rem">El rojo <b>no</b> es un error del grafo: solo muestra por qué no se puede separar en dos grupos.</p>') : '';
+      if (pick) cls[pick] = 'pick'; if (fresh >= 0) ecls[fresh] = 'new'; fresh = -1;
+      const V = circle(ids(), 210, 150, 108);
+      $('.gr', box).innerHTML = graphSVG({ V, E, dir, w: 420, h: 300 }, { cls, ecls, click: true, eclick: true });
+      $$('.gv', box).forEach(g => g.onclick = () => tap(g.dataset.id));
+      const simple = !c.loops.length && !c.pars.length, comp = !c.missing.length && simple;
+      const g1 = ids().filter(v => c.color[v] === 1), g2 = ids().filter(v => c.color[v] === 2);
+      const row = (st, t, d) => `<div class="vrow ${st === 'yes' ? 'yes' : ''}"><b>${st === 'yes' ? '✓' : st === 'no' ? '✗' : '•'} ${t}</b><span>${d}</span></div>`;
+      const sumg = E.length * 2;
+      $('.verdict', box).innerHTML =
+        row('info', dir ? 'Dirigido' : 'No dirigido', dir ? 'Las aristas son flechas: cada una va en un solo sentido.' : 'Las aristas no tienen sentido: se recorren para los dos lados.')
+        + row('info', simple ? 'Grafo simple' : 'Multigrafo', simple ? 'No tiene lazos ni aristas paralelas.' : `Tiene ${[c.loops.length ? `${c.loops.length} lazo${c.loops.length > 1 ? 's' : ''} (en ${[...new Set(c.loops.map(x => x[0]))].join(', ')})` : '', c.pars.length ? `aristas paralelas entre ${c.pars.join(', ')}` : ''].filter(Boolean).join(' y ')}.`)
+        + row(comp ? 'yes' : 'no', 'Completo', comp ? `Cada par de vértices está unido: tiene las ${c.total} aristas posibles${dir ? ' (una flecha en cada sentido)' : ''}.` : !simple && !c.missing.length ? 'Une todos los pares, pero «completo» se usa para grafos simples: sobran lazos o paralelas.' : `Faltan ${c.missing.length} de ${c.total}: ${c.missing.slice(0, 4).join(', ')}${c.missing.length > 4 ? '...' : ''}.`)
+        + row(c.bip ? 'yes' : 'no', 'Bipartito', (c.loops.length ? 'Un lazo une un vértice consigo mismo: ese vértice tendría que estar en los dos grupos a la vez.'
+            : c.cycle ? `Tiene un ciclo de <b>${c.cycle.length} vértices</b> (${[...c.cycle, c.cycle[0]].join(' → ')}). Con una cantidad impar de vértices no se pueden alternar dos colores: el último choca con el primero.${comp ? ' En un grafo completo con 3 o más vértices siempre hay triángulos, así que nunca es bipartito.' : ''}`
+            : !E.length ? 'Sí, porque no hay ninguna arista que lo impida.' : `Grupo naranja: {${g1.join(', ')}}. Grupo azul: {${g2.join(', ')}}. Ninguna arista queda dentro de un grupo.`)
+          + (E.length ? `<br><button class="gmore bipbtn" aria-pressed="${showBip}">${showBip ? 'Ocultar del dibujo' : 'Mostrar en el dibujo'}</button>` : ''))
+        + `<div class="muted" style="font-size:.88rem;padding:2px 4px">${E.length} arista${E.length === 1 ? '' : 's'} · ${dir ? `suma de grados de salida = ${E.length}` : `suma de grados = ${sumg} = 2 × ${E.length}`}</div>`;
+      const bb = $('.bipbtn', box); if (bb) bb.onclick = () => { showBip = !showBip; draw(); };
+    };
+    const tap = id => { if (!pick) { pick = id; $('.status', box).innerHTML = `Elegiste <b>${id}</b>. Ahora tocá el otro extremo (o ${id} de nuevo para un lazo).`; return draw(); }
+      if (E.length >= 20) { pick = null; $('.status', box).innerHTML = 'Llegaste a 20 aristas, suficiente para esta demo.'; return draw(); }
+      E.push([pick, id]); fresh = E.length - 1; $('.status', box).innerHTML = pick === id ? `Agregué un <b>lazo</b> en ${id}.` : `Agregué la arista <b>${ar(pick, id, dir)}</b>.`; pick = null; draw(); };
+    const sync = () => { $('.n', box).value = n; $('output', box).textContent = n; $$('[data-d]', box).forEach(x => x.setAttribute('aria-pressed', (x.dataset.d === '1') === dir)); };
+    $('.gr', box).addEventListener('click', e => { const g = e.target.closest && e.target.closest('.ge'); if (!g) return; E.splice(+g.dataset.k, 1); pick = null; $('.status', box).innerHTML = 'Borré la arista.'; draw(); });
+    $$('[data-d]', box).forEach(b => b.onclick = () => { dir = b.dataset.d === '1'; sync(); draw(); });
+    $('.n', box).addEventListener('input', () => { n = +$('.n', box).value; E = E.filter(e => e.every(v => ids().includes(v))); pick = null; sync(); draw(); });
+    $$('[data-p]', box).forEach(b => b.onclick = () => { PRESETS[b.dataset.p](); pick = null; sync(); $('.status', box).innerHTML = `Cargué el ejemplo «${b.dataset.p}». Mirá el panel de la derecha.`; draw(); });
+    $('.undo', box).onclick = () => { E.pop(); pick = null; draw(); };
+    $('.clr', box).onclick = () => { E = []; pick = null; $('.status', box).innerHTML = 'Tocá un vértice para empezar una arista.'; draw(); };
+    sync(); draw(); $('.status', box).innerHTML = 'Tocá un vértice para empezar una arista.';
+  },
+
+  /* ---------------------------------------------- matriz y lista de adyacencia */
+  matriz(box) {
+    const ids = LET.slice(0, 5); let dir = false, M;
+    const V = circle(ids, 160, 140, 100);
+    box.innerHTML = `<div class="ctrls"><div class="ctrl"><span>Tipo de grafo</span><div class="seg"><button data-d="0" aria-pressed="true">no dirigido</button><button data-d="1" aria-pressed="false">dirigido</button></div></div></div>
+      <div class="two"><div class="panel"><h4>Matriz de adyacencia</h4><div style="overflow-x:auto"><div class="mx"></div></div><div class="status" style="margin-top:10px"></div></div>
+      <div class="side"><div class="panel gr"></div><div class="panel"><h4>Lista de adyacencia (en PHP)</h4><div class="adjlist"></div></div></div></div>`;
+    const reset = () => { M = ids.map(() => ids.map(() => 0)); [['A', 'B'], ['A', 'C'], ['B', 'D'], ['C', 'D'], ['D', 'E']].forEach(([a, b]) => { const i = ids.indexOf(a), j = ids.indexOf(b); M[i][j] = 1; if (!dir) M[j][i] = 1; }); };
+    const draw = (hl) => {
+      $('.mx', box).style.gridTemplateColumns = `repeat(${ids.length + 1},40px)`;
+      $('.mx', box).innerHTML = '<div class="h"></div>' + ids.map(i => `<div class="h">${i}</div>`).join('') + ids.map((r, i) => `<div class="h">${r}</div>` + ids.map((c, j) => `<button class="${M[i][j] ? 'on' : ''} ${i === j ? 'diag' : ''}" data-i="${i}" data-j="${j}" aria-label="Fila ${r}, columna ${c}: ${M[i][j]}">${M[i][j]}</button>`).join('')).join('');
+      $$('.mx button', box).forEach(b => b.onclick = () => { const i = +b.dataset.i, j = +b.dataset.j, v = M[i][j] ? 0 : 1; M[i][j] = v; if (!dir) M[j][i] = v;
+        $('.status', box).innerHTML = `${v ? 'Agregué' : 'Quité'} ${i === j ? `el lazo en <b>${ids[i]}</b>` : `la arista <b>${ar(ids[i], ids[j], dir)}</b>`}. ${!dir && i !== j ? `En un grafo no dirigido también cambia la casilla espejo (fila ${ids[j]}, columna ${ids[i]}): la matriz es <b>simétrica</b>.` : dir && i !== j ? `En un dirigido, la casilla (fila ${ids[j]}, columna ${ids[i]}) es otra flecha distinta.` : ''}`; draw([i, j]); });
+      const E = []; ids.forEach((a, i) => ids.forEach((b, j) => { if (M[i][j] && (dir || j >= i)) E.push([a, b]); }));
+      const ecls = {}; if (hl) E.forEach(([a, b], k) => { if ((a === ids[hl[0]] && b === ids[hl[1]]) || (!dir && a === ids[hl[1]] && b === ids[hl[0]])) ecls[k] = 'new'; });
+      $('.gr', box).innerHTML = graphSVG({ V, E, dir, w: 320, h: 270 }, { ecls });
+      $('.adjlist', box).innerHTML = ids.map((a, i) => `<div>"<b>${a}</b>" => [${ids.filter((b, j) => M[i][j]).map(b => `"${b}"`).join(', ')}]</div>`).join('');
+    };
+    $$('[data-d]', box).forEach(b => b.onclick = () => { dir = b.dataset.d === '1'; $$('[data-d]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); reset(); draw(); $('.status', box).innerHTML = dir ? 'Modo dirigido: cada casilla es <b>una flecha</b> de la fila hacia la columna. La matriz ya no tiene que ser simétrica.' : 'Modo no dirigido: la matriz es simétrica respecto de la diagonal.'; });
+    reset(); draw(); $('.status', box).innerHTML = '<span class="muted">Tocá una casilla. La diagonal (punteada) son los lazos.</span>';
+  },
+
+  /* ---------------------------------------------- lista vs tabla hash */
+  comparar(box) {
+    const AL = [[25101, 'Ana'], [25117, 'Bruno'], [25132, 'Carla'], [25144, 'Diego'], [25158, 'Eva'], [25163, 'Facu'], [25179, 'Gime'], [25186, 'Hugo'], [25190, 'Inés'], [25204, 'Juan'], [25213, 'Lara'], [25227, 'Mateo']];
+    const N = 13, H = Array.from({ length: N }, () => []); AL.forEach(p => H[p[0] % N].push(p));
+    let tk = 0, tl = 0, th = 0, runs = 0;
+    box.innerHTML = `<div class="ctrl" style="margin-bottom:12px"><span>¿A quién buscamos? (clave: legajo)</span><div class="pickers">${AL.map(([l, n]) => `<button class="chip" data-l="${l}">${n} <span class="muted mono">${l}</span></button>`).join('')}<button class="chip" data-l="25150">Legajo que no existe <span class="muted mono">25150</span></button></div></div>
+      <div class="two"><div class="panel"><h4>Lista: miro de a uno, desde el principio</h4><div class="cells lst"></div><div style="height:22px"></div><div class="status s1"></div></div>
+      <div class="panel"><h4>Tabla hash de 13: índice = legajo % 13</h4><div class="hmini"></div><div class="status s2"></div></div></div><div class="res"></div>`;
+    const drawL = (cur = -1, found = -1) => { $('.lst', box).innerHTML = AL.map(([l, n], i) => `<div class="cell ${i === found ? 'found' : i === cur ? 'cur' : i < cur ? 'seen' : ''}">${l}<small>${i}</small></div>`).join(''); };
+    const drawH = (b = -1, cur = -1, found = false) => { $('.hmini', box).innerHTML = H.map((lst, i) => `<div class="cell ${i === b ? (found ? 'found' : 'cur') : b >= 0 ? 'seen' : ''}">${lst.length ? lst.map(([l], j) => `<span style="${i === b && j === cur ? 'font-weight:800' : ''}">${l}</span>`).join('') : '<span class="muted">—</span>'}<small>[${i}]</small></div>`).join(''); };
+    const run = async l => { const my = ++tk, nav = NAV, alive = () => my === tk && nav === NAV; $('.res', box).innerHTML = '';
+      $$('[data-l]', box).forEach(b => b.setAttribute('aria-pressed', +b.dataset.l === l));
+      // lista
+      let cl = 0, fi = -1; drawH();
+      $('.s2', box).innerHTML = '<span class="muted">Esperando...</span>';
+      for (let i = 0; i < AL.length; i++) { cl++; drawL(i); $('.s1', box).innerHTML = `Comparación ${cl}: ¿${AL[i][0]} es ${l}? ${AL[i][0] === l ? '<b>¡Sí!</b>' : 'No.'}`; await sleep(260); if (!alive()) return; if (AL[i][0] === l) { fi = i; break; } }
+      drawL(fi < 0 ? AL.length : fi, fi); $('.s1', box).innerHTML = fi >= 0 ? `<b>Encontrado</b> después de <b>${cl}</b> comparaciones.` : `<b>No está.</b> Tuve que mirar los <b>${cl}</b> para estar seguro.`;
+      // hash
+      const b = l % N; $('.s2', box).innerHTML = `${l} % 13 = <b>${b}</b>: voy directo al bucket ${b}.`; drawH(b); await sleep(800); if (!alive()) return;
+      let ch = 0, ok = false; for (let j = 0; j < H[b].length; j++) { ch++; drawH(b, j); $('.s2', box).innerHTML = `Bucket ${b}, comparación ${ch}: ¿${H[b][j][0]} es ${l}? ${H[b][j][0] === l ? '<b>¡Sí!</b>' : `No${H[b].length > 1 ? ' (hubo una colisión acá: sigo con el siguiente de la lista)' : ''}.`}`; await sleep(600); if (!alive()) return; if (H[b][j][0] === l) { ok = true; break; } }
+      drawH(b, -1, ok); $('.s2', box).innerHTML = ok ? `<b>Encontrado</b> con <b>${ch}</b> comparaci${ch === 1 ? 'ón' : 'ones'} (más el cálculo del índice).` : `<b>No está.</b> ${ch ? `Miré solo las ${ch} clave${ch > 1 ? 's' : ''} del bucket ${b}.` : `El bucket ${b} está vacío: lo supe sin comparar nada.`}`;
+      runs++; tl += cl; th += ch;
+      $('.res', box).innerHTML = `<div class="msg ok"><b>Lista: ${cl} comparaciones. Tabla hash: ${ch}.</b> ${runs > 1 ? `En tus ${runs} búsquedas, la lista promedió ${(tl / runs).toFixed(1)} y la tabla hash ${(th / runs).toFixed(1)}.` : ''} Con 12 datos la diferencia es chica; con 100.000 alumnos, la lista podría necesitar 100.000 comparaciones y la tabla hash seguiría necesitando una o dos. Eso es O(n) contra O(1).</div>`; };
+    $$('[data-l]', box).forEach(b => b.onclick = () => run(+b.dataset.l));
+    drawL(); drawH(); $('.s1', box).textContent = 'Elegí a quién buscar.'; $('.s2', box).textContent = 'Fijate que Ana y Gime comparten el bucket 11: es una colisión.';
+  },
+
+  /* ---------------------------------------------- función hash */
+  funcion(box) {
+    const KEYS = ['Ana', 'Andrea', 'Agustina', 'Alan', 'Mateo', 'Micaela', 'Marcos', 'Lucas', 'Luana', 'Bruno', 'Valentina', 'Camila'];
+    const FN = { 'primera letra': k => ENC.encode(k)[0], 'suma de letras': k => hsum(k), 'siempre 0': () => 0 };
+    let fn = 'primera letra';
+    box.innerHTML = `<div class="two"><div class="panel"><h4>Una clave, paso a paso</h4><div class="ctrls" style="grid-template-columns:minmax(0,1fr) 120px;align-items:end"><label class="ctrl"><span>Clave</span><input type="text" class="k" value="Ana" maxlength="14" spellcheck="false" autocomplete="off"></label><label class="ctrl"><span>Tamaño</span><input type="number" class="sz" min="2" max="20" value="7"></label></div><div class="letters"></div><div class="hcalc"></div><div class="res1" style="margin-top:10px"></div></div>
+      <div class="panel"><h4>¿Cómo reparte 12 claves?</h4><div class="ctrl" style="margin-bottom:12px"><span>Función hash</span><div class="seg">${Object.keys(FN).map(f => `<button data-f="${f}" aria-pressed="${f === fn}">${f}</button>`).join('')}</div></div><div class="dist"></div><div class="dlabels"></div><div class="res2" style="margin-top:12px"></div></div></div>
+      <p class="muted" style="margin:0;font-size:.88rem">Claves: ${KEYS.join(', ')}.</p>`;
+    const size = () => Math.max(2, Math.min(20, Math.round(+$('.sz', box).value) || 7));
+    const one = () => { const k = clean($('.k', box).value, ''), n = size();
+      if (!k) { $('.letters', box).innerHTML = ''; $('.hcalc', box).innerHTML = '<span class="muted">Escribí una clave.</span>'; $('.res1', box).innerHTML = ''; return; }
+      const chars = [...k].map(ch => ({ ch, c: [...ENC.encode(ch)].reduce((a, b) => a + b, 0), multi: ENC.encode(ch).length > 1 })), s = chars.reduce((a, x) => a + x.c, 0);
+      $('.letters', box).innerHTML = chars.map((x, i) => `<span class="ccell" style="animation-delay:${i * 40}ms"><b>${esc(x.ch === ' ' ? '␣' : x.ch)}</b><small>${x.c}${x.multi ? '*' : ''}</small></span>`).join('');
+      $('.hcalc', box).innerHTML = `suma = ${chars.map(x => x.c).join(' + ')} = <span class="r">${s}</span><br>índice = ${s} % ${n} = <span class="r">${s % n}</span>`;
+      $('.res1', box).innerHTML = `<div class="msg"><b>«${esc(k)}» va al bucket ${s % n}.</b> ${s} dividido ${n} da ${Math.floor(s / n)} y sobra ${s % n}: ese resto es el índice. Cambiá una sola letra y mirá cómo cambia.${chars.some(x => x.multi) ? '<br><span class="muted">* Las letras con tilde o la ñ ocupan 2 bytes en UTF-8; PHP con <code>ord()</code> suma cada byte.</span>' : ''}</div>`; };
+    const dist = () => { const n = size(), C = Array(n).fill(0); KEYS.forEach(k => C[FN[fn](k) % n]++); const mx = Math.max(...C), col = C.reduce((a, c) => a + Math.max(0, c - 1), 0), ideal = Math.ceil(KEYS.length / n);
+      $('.dist', box).innerHTML = C.map(c => `<div class="dcol"><em>${c || ''}</em><i class="${c > ideal ? 'bad' : ''}" style="height:${c / Math.max(mx, 1) * 82}%"></i></div>`).join('');
+      $('.dlabels', box).innerHTML = C.map((_, i) => `<span>${i}</span>`).join('');
+      $('.res2', box).innerHTML = `<div class="msg ${col <= KEYS.length - n + 1 && mx <= ideal + 1 ? 'ok' : 'ko'}"><b>${col} colisiones. El bucket más cargado tiene ${mx} clave${mx > 1 ? 's' : ''}</b>, así que en el peor caso una búsqueda compara ${mx} veces. ${fn === 'primera letra' ? 'Muchos nombres empiezan con A o con M, y todos esos chocan: la función <b>no distribuye uniformemente</b>.' : fn === 'siempre 0' ? 'Es la peor función posible: todo cae en el bucket 0 y la tabla se vuelve una lista. Buscar pasa a ser O(n).' : 'Usa <b>todas</b> las letras, así que dos claves parecidas suelen terminar en buckets distintos. Reparte mucho mejor.'}</div>`; };
+    $('.k', box).addEventListener('input', one); $('.sz', box).addEventListener('input', () => { one(); dist(); });
+    $$('[data-f]', box).forEach(b => b.onclick = () => { fn = b.dataset.f; $$('[data-f]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); dist(); });
+    one(); dist();
+  },
+
+  /* ---------------------------------------------- tabla hash completa */
+  tabla(box) {
+    const N = 7, EX = [['Ana', '9'], ['Luis', '7'], ['Sol', '10'], ['Juan', '6'], ['Eva', '8'], ['Leo', '7']];
+    let mode = 'encadenamiento', T, busy = false, tk = 0;
+    box.innerHTML = `<div class="ctrls" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));align-items:end">
+        <div class="ctrl"><span>Resolver colisiones con</span><div class="seg"><button data-m="encadenamiento" aria-pressed="true">encadenamiento</button><button data-m="sondeo" aria-pressed="false">sondeo lineal</button></div></div>
+        <label class="ctrl"><span>Clave (alumno)</span><input type="text" class="k" value="Mia" maxlength="12" spellcheck="false" autocomplete="off"></label>
+        <label class="ctrl"><span>Valor (nota)</span><input type="text" class="v" value="8" maxlength="6" spellcheck="false" autocomplete="off"></label></div>
+      <div class="btnrow" style="margin-bottom:14px"><button class="btn sm ins">${ICON.play}Insertar</button><button class="btn ghost sm bus">Buscar</button><button class="btn ghost sm eli">Eliminar</button><button class="btn ghost sm ej">Cargar ejemplo</button><button class="btn ghost sm vac">${ICON.redo}Vaciar</button></div>
+      <div class="two"><div class="panel"><h4>Tabla (7 buckets)</h4><div class="htab"></div><div style="height:12px"></div><div class="counters"><span>Claves: <b class="cnt">0</b></span><span>Factor de carga: <b class="lf">0</b></span></div><div class="meter" style="margin-top:6px"><i class="lfm" style="width:0"></i></div></div>
+        <div class="side"><div class="panel"><h4>Cálculo del índice</h4><div class="hcalc"></div><div style="height:10px"></div><div class="status"></div></div><div class="log" aria-live="polite"></div><div class="res"></div></div></div>`;
+    const log = $('.log', box), st = $('.status', box);
+    const count = () => mode === 'encadenamiento' ? T.reduce((a, b) => a + b.length, 0) : T.filter(x => x && !x.tomb).length;
+    const draw = (rowCls = {}, kvCls = {}) => {
+      $('.htab', box).innerHTML = T.map((b, i) => { let inner;
+        if (mode === 'encadenamiento') inner = b.length ? b.map((p, j) => `<span class="kv ${kvCls[i + ':' + j] || ''}"><b>${esc(p.k)}</b><span>${esc(p.v)}</span></span>`).join('<span class="chainar">→</span>') : 'vacío';
+        else inner = !b ? 'vacío' : b.tomb ? `<span class="kv tomb ${kvCls[i + ':0'] || ''}"><b>lápida (borrado)</b></span>` : `<span class="kv ${kvCls[i + ':0'] || ''}"><b>${esc(b.k)}</b><span>${esc(b.v)}</span></span>`;
+        const full = mode === 'encadenamiento' ? b.length : b; return `<div class="hrow ${rowCls[i] || ''}"><div class="hidx">${i}</div><div class="hslot ${full ? 'full' : ''}">${inner}</div></div>`; }).join('');
+      const c = count(); $('.cnt', box).textContent = c; $('.lf', box).textContent = `${c}/${N} ≈ ${(c / N).toFixed(2)}`; $('.lfm', box).style.width = Math.min(100, c / N * 100) + '%'; };
+    const showCalc = k => { const s = hsum(k); $('.hcalc', box).innerHTML = `hash("${esc(k)}") = ${[...k].map(ch => [...ENC.encode(ch)].reduce((a, b) => a + b, 0)).join(' + ')} = ${s}<br>índice = ${s} % ${N} = <span class="r">${s % N}</span>`; return s % N; };
+    const getKV = () => [clean($('.k', box).value, '').replace(/[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]/g, '').trim().slice(0, 12), clean($('.v', box).value, '—').slice(0, 6)];
+    const reset = () => { tk++; busy = false; T = mode === 'encadenamiento' ? Array.from({ length: N }, () => []) : Array(N).fill(null); log.innerHTML = `<div class="c">$t = new TablaHash(${N});  // ${mode}</div>`; $('.res', box).innerHTML = ''; $('.hcalc', box).innerHTML = '<span class="muted">Todavía no calculé nada.</span>'; st.textContent = 'Escribí una clave y elegí una operación.'; draw(); };
+    const quickInsert = (k, v) => { const i = hidx(k, N);
+      if (mode === 'encadenamiento') { const f = T[i].find(p => p.k === k); if (f) f.v = v; else T[i].push({ k, v }); return true; }
+      let free = -1; for (let t = 0; t < N; t++) { const j = (i + t) % N, b = T[j]; if (!b) { if (free < 0) free = j; break; } if (b.tomb) { if (free < 0) free = j; continue; } if (b.k === k) { b.v = v; return true; } }
+      if (free < 0) return false; T[free] = { k, v }; return true; };
+    const guard = fn => async () => { if (busy) return; const [k, v] = getKV(); if (!k) { st.innerHTML = '<b>Escribí una clave.</b> Solo letras, números y espacios.'; return; } busy = true; const my = ++tk, nav = NAV; $('.res', box).innerHTML = ''; try { await fn(k, v, () => my === tk && nav === NAV); } finally { if (my === tk) busy = false; } };
+    const ins = guard(async (k, v, alive) => { logLine(log, `$t->insertar("${k}", ${v});`, 'c'); const i = showCalc(k);
+      if (mode === 'encadenamiento') { const b = T[i]; st.innerHTML = `Voy al bucket <b>${i}</b>.${b.length ? ` Ya tiene ${b.length} clave${b.length > 1 ? 's' : ''}: reviso que «${esc(k)}» no esté repetida.` : ' Está vacío.'}`; draw({ [i]: 'cur' }); await sleep(800); if (!alive()) return;
+        for (let j = 0; j < b.length; j++) { draw({ [i]: 'cur' }, { [i + ':' + j]: 'cur' }); st.innerHTML = `¿«${esc(b[j].k)}» es «${esc(k)}»? ${b[j].k === k ? '<b>Sí:</b> la clave ya existe.' : 'No.'}`; await sleep(650); if (!alive()) return;
+          if (b[j].k === k) { b[j].v = v; draw({ [i]: 'found' }, { [i + ':' + j]: 'found' }); st.innerHTML = `<b>Reemplacé el valor</b> de «${esc(k)}» por ${esc(v)}. En un diccionario cada clave aparece una sola vez.`; logLine(log, `// clave repetida: valor reemplazado`, 'dim'); return; } }
+        b.push({ k, v }); draw({ [i]: 'found' }, { [i + ':' + (b.length - 1)]: 'new' });
+        st.innerHTML = b.length > 1 ? `<b>¡Colisión!</b> El bucket ${i} ya tenía datos, así que «${esc(k)}» se <b>encadenó</b> al final de su lista.` : `<b>Listo:</b> «${esc(k)}» quedó en el bucket ${i}.`; logLine(log, `// guardado en [${i}]${b.length > 1 ? ' (colisión: encadenado)' : ''}`, 'dim'); return; }
+      let free = -1, steps = 0;
+      for (let t = 0; t < N; t++) { const j = (i + t) % N, b = T[j]; steps++; draw({ [j]: 'cur' }, { [j + ':0']: 'cur' });
+        if (!b) { st.innerHTML = `Bucket <b>${j}</b>: vacío.${free >= 0 ? '' : ' Acá va.'}`; if (free < 0) free = j; await sleep(650); if (!alive()) return; break; }
+        if (b.tomb) { st.innerHTML = `Bucket <b>${j}</b>: tiene una lápida. Lo anoto como lugar libre, pero sigo mirando por si la clave ya está más adelante.`; if (free < 0) free = j; await sleep(900); if (!alive()) return; continue; }
+        if (b.k === k) { b.v = v; draw({ [j]: 'found' }, { [j + ':0']: 'found' }); st.innerHTML = `<b>«${esc(k)}» ya estaba</b> en el bucket ${j}: reemplacé su valor.`; logLine(log, '// clave repetida: valor reemplazado', 'dim'); return; }
+        st.innerHTML = `Bucket <b>${j}</b>: ocupado por «${esc(b.k)}». ${t === 0 ? '<b>¡Colisión!</b> ' : ''}Pruebo el siguiente${j === N - 1 ? ' (vuelvo al 0)' : ''}.`; await sleep(800); if (!alive()) return; }
+      if (free < 0) { draw(Object.fromEntries(T.map((_, j) => [j, 'err']))); st.innerHTML = '<b>La tabla está llena.</b> Con sondeo lineal, cada bucket guarda un solo par: no entra nada más.'; logLine(log, '// error: tabla llena', 'e'); return; }
+      T[free] = { k, v }; draw({ [free]: 'found' }, { [free + ':0']: 'new' }); st.innerHTML = free === i ? `<b>Listo:</b> «${esc(k)}» quedó en el bucket ${i}.` : `<b>Listo:</b> «${esc(k)}» debía ir al ${i}, pero quedó en el <b>${free}</b>, ${(free - i + N) % N} lugar${(free - i + N) % N > 1 ? 'es' : ''} más adelante.`;
+      logLine(log, `// guardado en [${free}]${free !== i ? ` (colisión: sondeo desde [${i}])` : ''}`, 'dim'); });
+    const bus = guard(async (k, v, alive) => { logLine(log, `echo $t->buscar("${k}");`, 'c'); const i = showCalc(k); let cmp = 0;
+      if (mode === 'encadenamiento') { const b = T[i]; draw({ [i]: 'cur' }); st.innerHTML = `Voy directo al bucket <b>${i}</b>.`; await sleep(700); if (!alive()) return;
+        for (let j = 0; j < b.length; j++) { cmp++; draw({ [i]: 'cur' }, { [i + ':' + j]: 'cur' }); st.innerHTML = `¿«${esc(b[j].k)}» es «${esc(k)}»? ${b[j].k === k ? '<b>¡Sí!</b>' : 'No, sigo por la lista.'}`; await sleep(700); if (!alive()) return;
+          if (b[j].k === k) { draw({ [i]: 'found' }, { [i + ':' + j]: 'found' }); st.innerHTML = `<b>Encontrado:</b> la nota de «${esc(k)}» es <b>${esc(b[j].v)}</b>. Hice ${cmp} comparaci${cmp > 1 ? 'ones' : 'ón'}.`; logLine(log, b[j].v); return; } }
+        draw({ [i]: 'err' }); st.innerHTML = `<b>«${esc(k)}» no está.</b> ${b.length ? `Revisé las ${b.length} clave${b.length > 1 ? 's' : ''} del bucket ${i} y ninguna coincide.` : `El bucket ${i} está vacío.`} No hizo falta mirar los otros buckets.`; logLine(log, 'null  // no está', 'dim'); return; }
+      for (let t = 0; t < N; t++) { const j = (i + t) % N, b = T[j]; draw({ [j]: 'cur' }, { [j + ':0']: 'cur' });
+        if (!b) { draw({ [j]: 'err' }); st.innerHTML = `Bucket <b>${j}</b> vacío: <b>«${esc(k)}» no está.</b> Si estuviera, habría quedado antes de este hueco.`; logLine(log, 'null  // no está', 'dim'); return; }
+        if (b.tomb) { st.innerHTML = `Bucket <b>${j}</b>: <b>lápida</b>. Acá hubo algo que se borró: <b>no me detengo</b>, sigo buscando.`; await sleep(1000); if (!alive()) return; continue; }
+        cmp++; st.innerHTML = `Bucket <b>${j}</b>: ¿«${esc(b.k)}» es «${esc(k)}»? ${b.k === k ? '<b>¡Sí!</b>' : 'No, pruebo el siguiente.'}`; await sleep(750); if (!alive()) return;
+        if (b.k === k) { draw({ [j]: 'found' }, { [j + ':0']: 'found' }); st.innerHTML = `<b>Encontrado</b> en el bucket ${j}: la nota de «${esc(k)}» es <b>${esc(b.v)}</b>.${j !== i ? ` Tuve que avanzar desde el ${i} porque hubo colisiones.` : ''}`; logLine(log, b.v); return; } }
+      st.innerHTML = `Recorrí toda la tabla: <b>«${esc(k)}» no está.</b>`; logLine(log, 'null  // no está', 'dim'); });
+    const eli = guard(async (k, v, alive) => { logLine(log, `$t->eliminar("${k}");`, 'c'); const i = showCalc(k);
+      if (mode === 'encadenamiento') { const b = T[i]; draw({ [i]: 'cur' }); await sleep(600); if (!alive()) return;
+        for (let j = 0; j < b.length; j++) { draw({ [i]: 'cur' }, { [i + ':' + j]: 'cur' }); st.innerHTML = `¿«${esc(b[j].k)}» es «${esc(k)}»? ${b[j].k === k ? '<b>Sí.</b>' : 'No.'}`; await sleep(650); if (!alive()) return;
+          if (b[j].k === k) { b.splice(j, 1); draw({ [i]: 'found' }); st.innerHTML = `<b>Eliminé «${esc(k)}».</b> ${b.length ? 'Los demás pares de la lista se reengancharon: la lista sigue entera.' : `El bucket ${i} quedó vacío.`}`; logLine(log, '// eliminado', 'dim'); return; } }
+        draw({ [i]: 'err' }); st.innerHTML = `<b>«${esc(k)}» no está</b>: no hay nada para eliminar.`; logLine(log, '// no estaba', 'dim'); return; }
+      for (let t = 0; t < N; t++) { const j = (i + t) % N, b = T[j]; draw({ [j]: 'cur' }, { [j + ':0']: 'cur' }); await sleep(650); if (!alive()) return;
+        if (!b) break; if (b.tomb || b.k !== k) { st.innerHTML = `Bucket ${j}: no es «${esc(k)}», sigo.`; continue; }
+        T[j] = { tomb: true }; draw({ [j]: 'found' }, { [j + ':0']: 'new' });
+        st.innerHTML = `<b>Eliminé «${esc(k)}» del bucket ${j}</b> y dejé una <b>lápida</b> en su lugar. Si lo dejara vacío, una búsqueda que pase por acá se detendría y no encontraría claves que se corrieron más adelante.`; logLine(log, `// eliminado: lápida en [${j}]`, 'dim'); return; }
+      draw(); st.innerHTML = `<b>«${esc(k)}» no está</b>: no hay nada para eliminar.`; logLine(log, '// no estaba', 'dim'); });
+    $('.ins', box).onclick = ins; $('.bus', box).onclick = bus; $('.eli', box).onclick = eli;
+    $('.k', box).addEventListener('keydown', e => { if (e.key === 'Enter') ins(); });
+    $('.ej', box).onclick = () => { reset(); EX.forEach(([k, v]) => { quickInsert(k, v); logLine(log, `$t->insertar("${k}", ${v});`, 'c'); }); draw();
+      st.innerHTML = mode === 'encadenamiento' ? 'Cargué 6 alumnos. Fijate los buckets <b>1</b> y <b>6</b>: hubo colisiones y se formaron listas.' : 'Cargué 6 alumnos. «Juan» debía ir al 6 (ocupado por Ana), dio la vuelta y quedó en el <b>2</b>. «Leo» debía ir al 1 y quedó en el <b>3</b>.';
+      $('.hcalc', box).innerHTML = 'Ana → 6 · Luis → 0 · Sol → 1 · Juan → 6 · Eva → 4 · Leo → 1'; };
+    $('.vac', box).onclick = reset;
+    $$('[data-m]', box).forEach(b => b.onclick = () => { if (busy) return; const old = mode === 'encadenamiento' ? T.flat() : T.filter(x => x && !x.tomb); mode = b.dataset.m; $$('[data-m]', box).forEach(x => x.setAttribute('aria-pressed', x === b)); reset(); old.forEach(p => quickInsert(p.k, p.v)); draw();
+      if (old.length) { logLine(log, `// se reinsertaron ${old.length} claves con ${mode}`, 'dim'); st.innerHTML = `Rearmé la tabla con <b>${mode}</b>, con las mismas claves. Compará dónde quedó cada una.`; } });
+    reset();
+  },
+};
+
+/* ---------- Navegación ---------- */
+const wrap = $('#wrap');
+function go(i, dir) {
+  i = Math.max(0, Math.min(SLIDES.length - 1, i)); if (i === cur) return;
+  dir = dir ?? (i > cur ? 1 : -1); NAV++;
+  const s = SLIDES[i], m = MODULES[s.mi];
+  const old = $('.slide:not(.leave)', wrap);
+  if (old) { old.style.setProperty('--dir', dir); old.classList.add('leave'); setTimeout(() => old.remove(), 230); }
+  const el = document.createElement('section'); el.className = 'slide enter'; el.style.setProperty('--dir', dir);
+  el.setAttribute('aria-label', s.title); el.innerHTML = R[s.type](s); wrap.appendChild(el);
+  H[s.type]?.(el, s);
+  $$('[data-go="next"]', el).forEach(b => b.onclick = () => go(cur + 1));
+  cur = i;
+  $('#tabName').textContent = s.file || 'slide.php';
+  $('#crumb').textContent = `${m.unit}, ${m.part.replace('Parte','parte')}`;
+  $('#modName').textContent = `${s.mi + 1}. ${m.title}`;
+  $('#pos').innerHTML = `<b>${i + 1}</b> de ${SLIDES.length}`;
+  $('#bar').style.width = ((i + 1) / SLIDES.length * 100) + '%';
+  $('#prev').disabled = i === 0; $('#next').disabled = i === SLIDES.length - 1;
+  store.set('pos', i);
+  try { history.replaceState(null, '', '#' + (i + 1)); } catch {}
+  markDrawer();
+}
+
+/* ---------- Índice lateral ---------- */
+function buildDrawer() {
+  const open = new Set($$('.dmod.open').map(d => +d.dataset.mi)); if (!open.size && cur >= 0) open.add(SLIDES[cur].mi);
+  $('#dlist').innerHTML = MODULES.map((m, mi) => {
+    const qs = QUIZZES.filter(q => q.mi === mi), t = qs.reduce((a, q) => a + q.questions.length, 0), c = qs.reduce((a, q) => a + (scores[q.qid]?.c || 0), 0);
+    return `<div class="dmod ${open.has(mi) ? 'open' : ''}" data-mi="${mi}"><button aria-expanded="${open.has(mi)}"><span class="num">${mi + 1}</span><span class="mt"><b>${m.title}</b><span>${m.unit}, ${m.part.replace('Parte','parte')}: ${c}/${t} correctas</span></span>${ICON.chev}</button>
+      <ul class="dslides">${m.slides.map(s => `<li><button data-i="${s.idx}">${s.type === 'quiz' ? 'Cuestionario' : s.type === 'cover' ? 'Portada' : s.title}${s.type === 'quiz' ? `<span class="qb ${scores[s.qid] ? 'done' : ''}">${scores[s.qid] ? scores[s.qid].c + '/' + scores[s.qid].t : s.questions.length + ' preg.'}</span>` : ''}</button></li>`).join('')}</ul></div>`;
+  }).join('');
+  $$('.dmod>button').forEach(b => b.onclick = () => { const d = b.parentElement; d.classList.toggle('open'); b.setAttribute('aria-expanded', d.classList.contains('open')); });
+  $$('.dslides button').forEach(b => b.onclick = () => { go(+b.dataset.i); drawer(false); });
+  markDrawer();
+}
+function markDrawer() { $$('.dslides button').forEach(b => b.classList.toggle('cur', +b.dataset.i === cur)); }
+function drawer(on) { $('#drawer').classList.toggle('on', on); $('#backdrop').classList.toggle('on', on); $('#menuBtn').setAttribute('aria-expanded', on);
+  if (on) { const s = SLIDES[cur]; const d = $(`.dmod[data-mi="${s.mi}"]`); if (d && !d.classList.contains('open')) d.firstElementChild.click(); setTimeout(() => $('.dslides button.cur')?.scrollIntoView({ block: 'center' }), 50); } }
+function updateScore() { const c = Object.values(scores).reduce((a, x) => a + x.c, 0); $('#scoreTxt').textContent = `${c}/${TOTALQ}`; }
+
+/* ---------- Tema ---------- */
+const root = document.documentElement;
+function setTheme(t) { root.setAttribute('data-theme', t); store.set('theme', t); }
+setTheme(store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#themeBtn').onclick = () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+/* ---------- Eventos globales ---------- */
+$('#prev').onclick = () => go(cur - 1);
+$('#next').onclick = () => go(cur + 1);
+$('#menuBtn').onclick = () => drawer(true);
+$('#closeDrawer').onclick = $('#backdrop').onclick = () => drawer(false);
+$('#scoreBtn').onclick = () => go(SLIDES.length - 1);
+if (!document.fullscreenEnabled) $('#fsBtn').style.display = 'none';
+$('#fsBtn').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : root.requestFullscreen(); } catch {} };
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea') || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'Escape') return drawer(false);
+  if ($('#drawer').classList.contains('on')) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0); else if (e.key === 'End') go(SLIDES.length - 1);
+  else if (SLIDES[cur].type === 'quiz' && /^[a-dA-D1-4]$/.test(e.key)) { const j = isNaN(e.key) ? 'abcd'.indexOf(e.key.toLowerCase()) : +e.key - 1; $$('.slide:not(.leave) .opt:not([disabled])')[j]?.click(); }
+});
+let tx = null, ty = 0;
+$('#stage').addEventListener('touchstart', e => { tx = e.target.closest('.code,.twrap,input,.bars,.cells,.log,.chart,.flip,.ll,.que,.stk,.graph,.htab,.mx,.dist,.pickers') ? null : e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; }, { passive: true });
+
+/* ---------- Inicio ---------- */
+const fromHash = parseInt(location.hash.slice(1), 10);
+updateScore(); buildDrawer();
+go(!isNaN(fromHash) ? fromHash - 1 : store.get('pos', 0), 1);
+</script>
+</body>
+</html>
