@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programación II · Unidad V — Actividades con grafos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF6;--surface:#FFFFFF;--surface-2:#F5F6FB;--line:#D6D9E8;--line-strong:#B9BDD6;
+  --text:#1D1F33;--muted:#585C7D;--accent:#4F5B93;--accent-ink:#FFFFFF;--accent-soft:#E2E5F4;
+  --amber:#8F5600;--amber-soft:#FBEFD9;--coral:#B83B30;--coral-soft:#FBE3E0;--mint:#17734F;--mint-soft:#DDF2E8;
+  --code-bg:#F7F8FC;--term-bg:#1C1D2B;--term-text:#E7E7F1;
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#171824;--surface:#202233;--surface-2:#282B40;--line:#34374F;--line-strong:#4A4E6E;
+  --text:#ECEBF5;--muted:#A4A6C2;--accent:#A3ACE6;--accent-ink:#171824;--accent-soft:#2E3252;
+  --amber:#F2BE5C;--amber-soft:#3A3122;--coral:#F3877A;--coral-soft:#3D2629;--mint:#72D3A8;--mint-soft:#1F3A30;
+  --code-bg:#1B1D2C;--term-bg:#11121C;}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+main{max-width:920px;margin:0 auto;padding:24px clamp(14px,4vw,28px) 60px}
+h1,h2,h3,h4{line-height:1.2;letter-spacing:-.01em}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);margin:.2em 0 .3em;letter-spacing:-.03em}
+h2{font-size:clamp(1.4rem,3.2vw,1.8rem);margin:0 0 .4em}
+h3{font-size:1.15rem;margin:1.6em 0 .5em;padding-top:.2em}
+h4{font-size:1rem;margin:1.3em 0 .4em}
+p{margin:.5em 0 .9em}
+a{color:var(--accent)}
+code{font-family:var(--mono);font-size:.88em;background:var(--code-bg);border:1px solid var(--line);padding:1px 5px;border-radius:5px}
+pre{font-family:var(--mono);font-size:.84rem;line-height:1.6;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;margin:.6em 0 1em}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+pre.out{background:var(--term-bg);color:var(--term-text);border-color:#2c2e44}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px clamp(16px,3vw,28px);margin-bottom:18px}
+.kicker{font-family:var(--mono);color:var(--accent);font-size:.9rem;margin:0}
+.sub{color:var(--muted);font-size:1.08rem;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px clamp(16px,3vw,28px);margin:18px 0}
+.num{display:inline-grid;place-items:center;min-width:34px;height:34px;padding:0 8px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.95rem;margin-right:10px;vertical-align:3px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.tags span{font-size:.8rem;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--text)}
+.box{border-radius:12px;padding:12px 16px;margin:1em 0;border:1px solid var(--line);background:var(--surface-2)}
+.box>b:first-child,.box>strong:first-child{display:block;margin-bottom:2px}
+.repaso{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.ojo{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 35%,transparent)}
+.ojo>b:first-child{color:var(--amber)}
+.error{background:var(--coral-soft);border-color:color-mix(in srgb,var(--coral) 35%,transparent)}
+.error>b:first-child{color:var(--coral)}
+.ejemplo{background:var(--mint-soft);border-color:color-mix(in srgb,var(--mint) 35%,transparent)}
+.ejemplo>b:first-child{color:var(--mint)}
+.box ul,.box ol{margin:.3em 0 .3em;padding-left:1.3em}
+.parte{display:inline-block;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:7px;margin-top:1.4em}
+.pa{background:var(--amber-soft);color:var(--amber)}
+.pb{background:var(--accent-soft);color:var(--accent)}
+li .parte{margin-top:0}
+table{border-collapse:collapse;width:100%;font-size:.93rem;margin:.6em 0 1em}
+.tw{overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{background:var(--surface-2)}
+td.blank{min-width:70px;height:34px}
+.metodo{border:1px solid var(--line);border-radius:12px;margin:.8em 0;overflow:hidden}
+.metodo .firma{font-family:var(--mono);font-size:.86rem;font-weight:600;padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+.metodo .cuerpo{padding:4px 14px 8px}
+.metodo .cuerpo ol,.metodo .cuerpo ul{padding-left:1.3em;margin:.4em 0}
+details{border:1px solid var(--line);border-radius:12px;margin:.8em 0;background:var(--surface-2)}
+details>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸";color:var(--accent);transition:transform .2s}
+details[open]>summary::before{transform:rotate(90deg)}
+details>div{padding:0 14px 10px}
+.fig{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:.6em 0}
+.fig figure{margin:0;text-align:center}
+.fig figcaption{font-size:.82rem;color:var(--muted)}
+svg.g{width:230px;height:auto}
+svg.g line,svg.g path{stroke:var(--line-strong);stroke-width:2.4;fill:none}
+svg.g circle{fill:var(--surface);stroke:var(--accent);stroke-width:2.4}
+svg.g text{font:700 15px var(--mono);fill:var(--text);text-anchor:middle;dominant-baseline:central}
+svg.g .ah{fill:var(--line-strong);stroke:none}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:8px;margin:.6em 0 0;padding:0;list-style:none}
+.toc a{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;color:var(--text);font-size:.95rem}
+.toc a:hover{border-color:var(--accent)}
+.toc b{font-family:var(--mono);color:var(--accent);min-width:22px}
+.pasos{counter-reset:p;list-style:none;padding:0;margin:.6em 0}
+.pasos>li{counter-increment:p;position:relative;padding:2px 0 8px 40px}
+.pasos>li::before{content:counter(p);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.check li{list-style:none;margin-left:-1.2em}
+.check li::before{content:"☐ ";color:var(--accent)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:30px}
+.back{font-size:.85rem;text-decoration:none;display:inline-block;margin-top:10px}
+@media print{
+  body{background:#fff}.card,.hero{border:0;padding:0;margin:0 0 24px;break-inside:auto}
+  details{border:0;background:none}details>div{display:block!important}
+  .back{display:none}pre.out{background:#f3f3f3;color:#000}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header class="hero">
+  <p class="kicker">Programación II · Unidad V · TAD Grafo</p>
+  <h1>Actividades con grafos</h1>
+  <p class="sub">UTN Facultad Regional Resistencia · Tecnicatura Universitaria en Programación</p>
+</header>
+
+<!-- ================================================================ INTRO -->
+<section class="card" id="intro">
+  <h2>Antes de empezar</h2>
+  <p>En estas actividades vas a practicar todo lo que vimos sobre grafos: vértices, aristas, grados, caminos, tipos de grafos y cómo guardarlos en un programa. Van <b>de lo más fácil a lo más difícil</b>, así que conviene hacerlas en orden: cada una usa algo que aprendiste en la anterior.</p>
+
+  <h3>Cómo está armada cada actividad</h3>
+  <ul>
+    <li><b>Repaso:</b> un recordatorio corto del tema, con un ejemplo resuelto sobre un grafo <i>distinto</i> al de la actividad.</li>
+    <li><span class="parte pa">Parte A · en papel</span> Dibujás el grafo y respondés a mano. <b>No te la saltees:</b> si no sabés resolverlo en papel, tampoco vas a saber programarlo.</li>
+    <li><span class="parte pb">Parte B · en PHP</span> Programás lo mismo. Para cada método te explicamos qué recibe, qué devuelve y cómo pensarlo paso a paso.</li>
+    <li><b>Pistas:</b> están escondidas. Abrilas solo si te trabás.</li>
+    <li><b>Salida esperada:</b> lo que tiene que mostrar tu programa. Usala para comprobar que tu código funciona y que tus respuestas de la Parte A eran correctas.</li>
+  </ul>
+
+  <h3>Cómo guardamos un grafo en PHP: la lista de adyacencia</h3>
+  <p>Como en el apunte, vamos a guardar el grafo en un <b>array asociativo</b>: cada <b>clave</b> es un vértice y su <b>valor</b> es un array con sus <b>vecinos</b> (los vértices con los que está conectado).</p>
+  <div class="fig">
+    <figure>
+      <svg class="g" viewBox="0 0 250 150" aria-label="Grafo de ejemplo con X, Y, Z y W">
+        <line x1="50" y1="35" x2="150" y2="35"/><line x1="50" y1="35" x2="100" y2="115"/><line x1="150" y1="35" x2="100" y2="115"/><line x1="100" y1="115" x2="210" y2="115"/>
+        <circle cx="50" cy="35" r="18"/><text x="50" y="35">X</text>
+        <circle cx="150" cy="35" r="18"/><text x="150" y="35">Y</text>
+        <circle cx="100" cy="115" r="18"/><text x="100" y="115">Z</text>
+        <circle cx="210" cy="115" r="18"/><text x="210" y="115">W</text>
+      </svg>
+      <figcaption>Grafo de ejemplo (no dirigido)</figcaption>
+    </figure>
+<pre><code>$ady = [
+    "X" =&gt; ["Y", "Z"],
+    "Y" =&gt; ["X", "Z"],
+    "Z" =&gt; ["X", "Y", "W"],
+    "W" =&gt; ["Z"],
+];</code></pre>
+  </div>
+  <p>Fijate que la arista <code>X–Y</code> aparece <b>dos veces</b>: Y está en la lista de X, y X está en la lista de Y. Eso pasa porque el grafo es <b>no dirigido</b>: la conexión vale para los dos lados. En un grafo <b>dirigido</b> (con flechas), cada flecha se anota una sola vez, en la lista del vértice de donde <b>sale</b>.</p>
+  <p>Vamos a usar este grafo de ejemplo (X, Y, Z, W) en varios repasos.</p>
+
+  <h3>Funciones de PHP que te van a servir</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Función</th><th>Qué hace</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>isset($a[$k])</code></td><td>¿Existe la clave <code>$k</code> en el array?</td><td><code>isset($ady["X"])</code> → <code>true</code></td></tr>
+      <tr><td><code>count($a)</code></td><td>Cantidad de elementos.</td><td><code>count($ady["Z"])</code> → <code>3</code></td></tr>
+      <tr><td><code>array_keys($a)</code></td><td>Array con todas las claves.</td><td><code>array_keys($ady)</code> → <code>["X","Y","Z","W"]</code></td></tr>
+      <tr><td><code>in_array($v, $a, true)</code></td><td>¿El valor <code>$v</code> está en el array? El <code>true</code> hace que compare de forma estricta (mismo tipo y valor).</td><td><code>in_array("W", $ady["Z"], true)</code> → <code>true</code></td></tr>
+      <tr><td><code>implode(", ", $a)</code></td><td>Une los elementos en un string.</td><td><code>implode(", ", ["X","Y"])</code> → <code>"X, Y"</code></td></tr>
+      <tr><td><code>$a ?? []</code></td><td>Si <code>$a</code> no existe o es <code>null</code>, usa <code>[]</code>. Evita errores con vértices que no están.</td><td><code>$ady["Q"] ?? []</code> → <code>[]</code></td></tr>
+      <tr><td><code>intdiv($a, $b)</code></td><td>División entera (sin decimales).</td><td><code>intdiv(14, 2)</code> → <code>7</code></td></tr>
+      <tr><td><code>array_intersect($a, $b)</code></td><td>Elementos que están en los dos arrays.</td><td><code>array_intersect(["X","Y"], ["Y","Z"])</code> → <code>["Y"]</code> (conserva la posición original)</td></tr>
+      <tr><td><code>array_values($a)</code></td><td>Renumera las posiciones desde 0.</td><td>Se usa después de <code>array_intersect</code>.</td></tr>
+      <tr><td><code>array_unique($a)</code></td><td>Quita los repetidos.</td><td><code>array_unique(["X","Y","X"])</code> → <code>["X","Y"]</code></td></tr>
+      <tr><td><code>sort($a)</code></td><td>Ordena el array (lo modifica).</td><td><code>["Y","X"]</code> → <code>["X","Y"]</code></td></tr>
+      <tr><td><code>array_shift($a)</code></td><td>Saca y devuelve el <b>primer</b> elemento.</td><td>Para usar un array como cola.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cómo ejecutar tu programa en el navegador</h3>
+  <ol class="pasos">
+    <li><b>Encendé el servidor local.</b> Abrí XAMPP (o el que usemos en clase) y tocá <b>Start</b> en <b>Apache</b>. Tiene que quedar en verde.</li>
+    <li><b>Guardá tus archivos dentro de la carpeta del servidor.</b> En XAMPP es <code>htdocs</code> (en Windows suele ser <code>C:\xampp\htdocs</code>). Creá ahí una carpeta para esta unidad, por ejemplo <code>grafos</code>, y guardá cada actividad en su propio archivo: <code>actividad1.php</code>, <code>actividad2.php</code>...</li>
+    <li><b>Abrí el navegador y escribí la ruta con <code>localhost</code>.</b> La dirección es <code>localhost</code> + la ruta de tu archivo <b>a partir de</b> <code>htdocs</code>:
+<pre><code>http://localhost/grafos/actividad1.php</code></pre>
+      Si tu carpeta tiene otro nombre, cambiá esa parte. Por ejemplo, para <code>htdocs/prog2/unidad5/actividad3.php</code> la dirección es <code>http://localhost/prog2/unidad5/actividad3.php</code>.</li>
+    <li><b>Cada vez que cambies el código, guardá el archivo y recargá la página</b> (F5) para ver el nuevo resultado.</li>
+  </ol>
+  <div class="box ojo"><b>Importante: poné esta línea al principio de cada archivo</b>
+    En las actividades imprimimos con <code>echo "...\n"</code>. El navegador, por defecto, lee la salida como una página web: ignora los <code>\n</code> y te muestra todo pegado en una sola línea. Para que respete los saltos de línea (y también las tildes), agregá esta línea justo después de <code>&lt;?php</code>:
+<pre><code>&lt;?php
+header("Content-Type: text/plain; charset=utf-8");</code></pre>
+    Con eso, lo que ves en el navegador queda igual que la «salida esperada» de cada actividad.
+  </div>
+  <div class="box error"><b>Si no funciona</b>
+    <ul>
+      <li><b>«No se puede acceder a este sitio»:</b> Apache no está encendido.</li>
+      <li><b>«Not Found» / 404:</b> la ruta está mal escrita o el archivo no está dentro de <code>htdocs</code>. Revisá mayúsculas, minúsculas y el nombre de la carpeta.</li>
+      <li><b>Ves el código en lugar del resultado:</b> abriste el archivo con doble clic (la dirección empieza con <code>file:///</code>). Tiene que empezar con <code>http://localhost/</code>.</li>
+      <li><b>Página en blanco:</b> probablemente hay un error de sintaxis. Revisá los <code>;</code>, las llaves y las comillas.</li>
+    </ul>
+  </div>
+
+  <h3>Índice</h3>
+  <ul class="toc">
+    <li><a href="#a1"><b>1</b>Rutas del Gran Resistencia</a></li>
+    <li><a href="#a2"><b>2</b>Grado de cada vértice</a></li>
+    <li><a href="#a3"><b>3</b>Seguidores en Instagram</a></li>
+    <li><a href="#a4"><b>4</b>«Personas que quizás conozcas»</a></li>
+    <li><a href="#a5"><b>5</b>¿Es un camino?</a></li>
+    <li><a href="#a6"><b>6</b>De lista a matriz de adyacencia</a></li>
+    <li><a href="#a7"><b>7</b>Torneo «todos contra todos»</a></li>
+    <li><a href="#d"><b>★</b>Desafío: el camino más corto</a></li>
+  </ul>
+</section>
+
+<!-- ================================================================ 1 -->
+<section class="card" id="a1">
+  <h2><span class="num">1</span>Rutas del Gran Resistencia</h2>
+  <div class="tags"><span>vértices</span><span>aristas</span><span>G = (V, A)</span><span>no dirigido</span></div>
+  <p><b>Objetivo:</b> representar un grafo real, identificar sus vértices y aristas, y crear la clase <code>Grafo</code> que vas a reutilizar en las demás actividades.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    Un grafo es <code>G = (V, A)</code>: un conjunto <b>V</b> de vértices (los objetos) y un conjunto <b>A</b> de aristas (las conexiones). Si las aristas no tienen dirección, se escriben como pares <b>no ordenados</b> con llaves: <code>{X, Y}</code> es lo mismo que <code>{Y, X}</code>.
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto (grafo X, Y, Z, W)</b>
+    V = { X, Y, Z, W } → 4 vértices.<br>
+    A = { {X, Y}, {X, Z}, {Y, Z}, {Z, W} } → 4 aristas.<br>
+    En la lista de adyacencia hay 2 + 2 + 3 + 1 = <b>8</b> anotaciones, porque cada arista se anotó dos veces. Por eso 8 / 2 = 4 aristas.
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Estas localidades están unidas por rutas de <b>doble mano</b>:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Desde</th><th>Hasta</th></tr></thead>
+    <tbody>
+      <tr><td>Resistencia</td><td>Barranqueras</td></tr>
+      <tr><td>Resistencia</td><td>Fontana</td></tr>
+      <tr><td>Resistencia</td><td>Puerto Tirol</td></tr>
+      <tr><td>Resistencia</td><td>Corrientes</td></tr>
+      <tr><td>Fontana</td><td>Puerto Tirol</td></tr>
+      <tr><td>Barranqueras</td><td>Puerto Vilelas</td></tr>
+    </tbody>
+  </table></div>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá el grafo.</b> Hacé un círculo por cada localidad (son los vértices) y una línea por cada ruta (son las aristas). No importa dónde ubiques cada círculo: lo que importa es <b>qué está conectado con qué</b>.</li>
+    <li><b>Escribí el conjunto V</b> con todas las localidades, sin repetir.</li>
+    <li><b>Escribí el conjunto A</b> con todas las rutas, usando llaves: <code>{Resistencia, Barranqueras}, ...</code></li>
+    <li><b>Contá</b> cuántos vértices y cuántas aristas tiene.</li>
+    <li><b>Respondé:</b> ¿es un grafo dirigido o no dirigido? Justificá con el enunciado.</li>
+    <li><b>Escribí la lista de adyacencia a mano</b>, como en el ejemplo de la introducción. Para cada localidad, anotá con quiénes está conectada.</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Creá la clase <code>Grafo</code> con dos atributos privados:</p>
+<pre><code>private array $ady = [];     // la lista de adyacencia
+private bool $dirigido;      // true si las aristas son flechas</code></pre>
+  <p>El constructor recibe <code>bool $dirigido = false</code> y lo guarda. Después programá estos métodos:</p>
+
+  <div class="metodo"><div class="firma">agregarVertice(string $v): void</div><div class="cuerpo">
+    <p>Agrega un vértice nuevo, que empieza <b>sin vecinos</b>.</p>
+    <ol><li>Preguntá si <code>$v</code> ya existe como clave en <code>$this-&gt;ady</code> (usá <code>isset</code>).</li>
+    <li>Si <b>no</b> existe, creala con un array vacío: <code>$this-&gt;ady[$v] = [];</code></li></ol>
+    <p><b>¿Por qué preguntar primero?</b> Si el vértice ya tenía vecinos y le asignás <code>[]</code>, los borrás todos.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">agregarArista(string $a, string $b): void</div><div class="cuerpo">
+    <ol><li>Llamá a <code>agregarVertice</code> con <code>$a</code> y con <code>$b</code>, para asegurarte de que existen.</li>
+    <li>Agregá <code>$b</code> a la lista de <code>$a</code>: <code>$this-&gt;ady[$a][] = $b;</code></li>
+    <li>Si el grafo <b>no</b> es dirigido, agregá también <code>$a</code> a la lista de <code>$b</code>.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">cantidadVertices(): int</div><div class="cuerpo">
+    <p>Cada vértice es una clave del array, así que alcanza con contar las claves de <code>$this-&gt;ady</code>.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">cantidadAristas(): int</div><div class="cuerpo">
+    <ol><li>Recorré la lista de adyacencia con <code>foreach</code> y sumá el <code>count</code> de cada lista de vecinos.</li>
+    <li>Si el grafo es dirigido, ese total ya es la cantidad de aristas.</li>
+    <li>Si es no dirigido, cada arista se contó <b>dos veces</b>: devolvé el total dividido por 2 (con <code>intdiv</code>).</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">mostrar(): void</div><div class="cuerpo">
+    <p>Recorré con <code>foreach ($this-&gt;ady as $v =&gt; $vecinos)</code> e imprimí cada vértice con sus vecinos separados por coma (usá <code>implode</code>).</p>
+  </div></div>
+
+  <p>Por último, fuera de la clase, creá el grafo, cargá las 6 rutas y mostrá el resultado:</p>
+<pre><code>$rutas = new Grafo();
+$rutas-&gt;agregarArista("Resistencia", "Barranqueras");
+// ... las otras 5 rutas
+$rutas-&gt;mostrar();
+echo "Vértices: " . $rutas-&gt;cantidadVertices() . "\n";
+echo "Aristas: " . $rutas-&gt;cantidadAristas() . "\n";</code></pre>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Olvidarse de anotar la arista en los dos sentidos: Corrientes aparecería sin vecinos.</li>
+    <li>Devolver la suma de los <code>count</code> sin dividir por 2: te daría 12 aristas en lugar de 6.</li>
+    <li>Escribir distinto un mismo nombre (<code>"Pto Tirol"</code> y <code>"Puerto Tirol"</code>): para PHP son dos vértices diferentes.</li></ul>
+  </div>
+
+  <details><summary>Pista: cómo imprimir una línea de mostrar()</summary><div>
+<pre><code>echo "$v -&gt; [" . implode(", ", $vecinos) . "]\n";</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">Resistencia -&gt; [Barranqueras, Fontana, Puerto Tirol, Corrientes]
+Barranqueras -&gt; [Resistencia, Puerto Vilelas]
+Fontana -&gt; [Resistencia, Puerto Tirol]
+Puerto Tirol -&gt; [Resistencia, Fontana]
+Corrientes -&gt; [Resistencia]
+Puerto Vilelas -&gt; [Barranqueras]
+Vértices: 6
+Aristas: 6</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 2 -->
+<section class="card" id="a2">
+  <h2><span class="num">2</span>Grado de cada vértice</h2>
+  <div class="tags"><span>grado</span><span>par / impar</span><span>aislado</span><span>terminal</span><span>suma de grados</span></div>
+  <p><b>Objetivo:</b> calcular el grado de cada vértice, clasificarlo y comprobar la regla de la suma de grados.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    <ul>
+      <li>El <b>grado</b> de un vértice es la cantidad de aristas que inciden en él (cuántas conexiones tiene).</li>
+      <li>Es <b>par</b> si el grado es 0, 2, 4...; es <b>impar</b> si es 1, 3, 5...</li>
+      <li>Un vértice <b>aislado</b> tiene grado 0: no está conectado con nadie.</li>
+      <li>Un vértice <b>terminal</b> tiene grado 1: es el final de una rama.</li>
+      <li><b>Regla:</b> la suma de los grados de todos los vértices es igual al <b>doble</b> de la cantidad de aristas, porque cada arista toca dos vértices y se cuenta una vez en cada extremo.</li>
+    </ul>
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto (grafo X, Y, Z, W)</b>
+    X: grado 2 (par) · Y: grado 2 (par) · Z: grado 3 (impar) · W: grado 1 (impar, terminal).<br>
+    Suma: 2 + 2 + 3 + 1 = <b>8</b>. El grafo tiene 4 aristas, y 8 = 2 × 4. ✓<br>
+    En la lista de adyacencia, el grado es simplemente <b>el largo de la lista</b>: <code>count($ady["Z"])</code> da 3.
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Grafo no dirigido con estas aristas:</p>
+<pre><code>A–B, A–C, A–D, B–D, C–D, D–E, D–F</code></pre>
+  <p>Además existe el vértice <b>G</b>, que <b>no tiene ninguna arista</b>.</p>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá el grafo</b>, incluido G (un círculo solo, sin líneas).</li>
+    <li><b>Para cada vértice, contá las líneas que salen de él.</b> Truco: tachá cada arista de la lista a medida que la contás para sus dos extremos.</li>
+    <li><b>Completá la tabla:</b>
+      <div class="tw"><table>
+        <thead><tr><th>Vértice</th><th>Grado</th><th>¿Par o impar?</th><th>¿Aislado / terminal / ninguno?</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>D</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>E</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>F</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>G</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        </tbody>
+      </table></div></li>
+    <li><b>Sumá todos los grados</b> y compará el resultado con la cantidad de aristas. ¿Se cumple la regla?</li>
+    <li><b>Pensá:</b> ¿puede existir un grafo cuya suma de grados sea un número impar? ¿Por qué?</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Partí de la clase <code>Grafo</code> de la Actividad 1 (este grafo es no dirigido) y agregale estos métodos:</p>
+
+  <div class="metodo"><div class="firma">grado(string $v): int</div><div class="cuerpo">
+    <p>Devolvé el <code>count</code> de la lista de vecinos de <code>$v</code>. Usá <code>?? []</code> para que, si el vértice no existe, devuelva 0 en lugar de dar un error.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">clasificar(string $v): string</div><div class="cuerpo">
+    <ol><li>Calculá el grado llamando a <code>$this-&gt;grado($v)</code>.</li>
+    <li>Si el resto de dividir por 2 (<code>% 2</code>) es 0, el texto empieza con <code>"par"</code>; si no, con <code>"impar"</code>.</li>
+    <li>Si el grado es 0, agregale <code>", aislado"</code>. Si es 1, agregale <code>", terminal"</code>.</li>
+    <li>Devolvé el texto.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">sumaDeGrados(): int</div><div class="cuerpo">
+    <p>Recorré todos los vértices (<code>array_keys($this-&gt;ady)</code>) y acumulá el grado de cada uno en una variable que empieza en 0.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">vertices(): array</div><div class="cuerpo">
+    <p>Devolvé <code>array_keys($this-&gt;ady)</code>. Como <code>$ady</code> es privado, necesitás este método para poder recorrer los vértices desde afuera de la clase.</p>
+  </div></div>
+
+  <p>Para cargar <b>G</b> sin aristas, usá <code>agregarVertice("G")</code>. Después recorré los vértices, mostrá el grado y la clasificación de cada uno, y verificá la regla de la suma.</p>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>No cargar G: si nunca llamás a <code>agregarVertice("G")</code>, G no existe en el grafo.</li>
+    <li>Pensar que 0 es impar: <b>0 es par</b> (0 % 2 da 0).</li></ul>
+  </div>
+
+  <details><summary>Pista: cómo armar el texto de clasificar()</summary><div>
+<pre><code>$texto = ($g % 2 === 0) ? "par" : "impar";
+if ($g === 0) {
+    $texto .= ", aislado";     // .= agrega al final del string
+}</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">A: grado 3 (impar)
+B: grado 2 (par)
+C: grado 2 (par)
+D: grado 5 (impar)
+E: grado 1 (impar, terminal)
+F: grado 1 (impar, terminal)
+G: grado 0 (par, aislado)
+Suma de grados: 14
+Aristas: 7
+¿Se cumple suma = 2 × aristas? Sí</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 3 -->
+<section class="card" id="a3">
+  <h2><span class="num">3</span>Seguidores en Instagram</h2>
+  <div class="tags"><span>grafo dirigido</span><span>pares ordenados</span><span>grado de entrada</span><span>grado de salida</span></div>
+  <p><b>Objetivo:</b> trabajar con un grafo dirigido y distinguir las flechas que salen de un vértice de las que llegan a él.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    En un grafo <b>dirigido</b> las aristas son <b>flechas</b>: van en un solo sentido. Se escriben como pares <b>ordenados</b> con paréntesis: <code>(P, Q)</code> va de P hacia Q y <b>no</b> es lo mismo que <code>(Q, P)</code>.
+    <ul>
+      <li><b>Grado de salida:</b> cuántas flechas <b>salen</b> del vértice.</li>
+      <li><b>Grado de entrada:</b> cuántas flechas <b>llegan</b> al vértice.</li>
+    </ul>
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto</b>
+    <div class="fig">
+      <figure>
+        <svg class="g" viewBox="0 0 250 150" aria-label="Grafo dirigido de ejemplo">
+          <defs><marker id="m" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+          <path d="M66 28 Q125 5 172 28" marker-end="url(#m)"/>
+          <path d="M172 46 Q125 68 68 46" marker-end="url(#m)"/>
+          <line x1="58" y1="54" x2="108" y2="103" marker-end="url(#m)"/>
+          <circle cx="50" cy="37" r="18"/><text x="50" y="37">P</text>
+          <circle cx="190" cy="37" r="18"/><text x="190" y="37">Q</text>
+          <circle cx="120" cy="118" r="18"/><text x="120" y="118">R</text>
+        </svg>
+        <figcaption>(P, Q), (Q, P), (P, R)</figcaption>
+      </figure>
+<pre><code>$ady = [
+    "P" =&gt; ["Q", "R"],
+    "Q" =&gt; ["P"],
+    "R" =&gt; [],
+];</code></pre>
+    </div>
+    P: salida 2, entrada 1 · Q: salida 1, entrada 1 · R: salida 0, entrada 1.<br>
+    P y Q se siguen <b>mutuamente</b> (hay flecha de ida y de vuelta). P y R no: solo hay flecha de P hacia R.<br>
+    Fijate que la <b>salida</b> es el largo de la lista, pero para la <b>entrada</b> hay que buscar en <b>todas</b> las listas: R aparece en la lista de P, así que tiene entrada 1.
+  </div>
+
+  <h4>Los datos</h4>
+  <p>La arista <code>(Ana, Beto)</code> significa <b>«Ana sigue a Beto»</b>:</p>
+<pre><code>(Ana, Beto), (Beto, Ana), (Ana, Caro), (Caro, Dani), (Dani, Ana), (Eli, Ana)</code></pre>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá el grafo con flechas.</b> La punta de la flecha va hacia la persona seguida.</li>
+    <li><b>Completá la tabla:</b>
+      <div class="tw"><table>
+        <thead><tr><th>Persona</th><th>Grado de salida (a cuántos sigue)</th><th>Grado de entrada (cuántos la siguen)</th></tr></thead>
+        <tbody>
+          <tr><td>Ana</td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>Beto</td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>Caro</td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>Dani</td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>Eli</td><td class="blank"></td><td class="blank"></td></tr>
+        </tbody>
+      </table></div></li>
+    <li>¿Quién es la persona <b>más seguida</b>?</li>
+    <li>¿Ana sigue a Caro? ¿Caro sigue a Ana?</li>
+    <li>¿Qué pares de personas se siguen <b>mutuamente</b>?</li>
+    <li>¿Hay alguien a quien <b>nadie</b> siga?</li>
+    <li><b>Comprobá:</b> sumá todos los grados de salida. ¿Cuánto da? ¿Coincide con la cantidad de aristas? ¿Por qué acá no se cumple «el doble»?</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Creá una clase nueva, <code>GrafoDirigido</code>. Es como <code>Grafo</code>, pero <b>siempre</b> es dirigido.</p>
+
+  <div class="metodo"><div class="firma">agregarArista(string $a, string $b): void</div><div class="cuerpo">
+    <p>Igual que en la Actividad 1, pero anotá <b>solamente</b> <code>$b</code> en la lista de <code>$a</code>. No hay que anotar la vuelta.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">gradoSalida(string $v): int</div><div class="cuerpo">
+    <p>Es el largo de la lista de <code>$v</code>, igual que el <code>grado</code> de la Actividad 2.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">gradoEntrada(string $v): int</div><div class="cuerpo">
+    <ol><li>Empezá un contador en 0.</li>
+    <li>Recorré <b>todas</b> las listas de vecinos de la clase.</li>
+    <li>Cada vez que <code>$v</code> aparezca en una lista (<code>in_array</code>), sumá 1: eso significa que hay una flecha que llega a <code>$v</code>.</li>
+    <li>Devolvé el contador.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">sigue(string $a, string $b): bool</div><div class="cuerpo">
+    <p>Devolvé si <code>$b</code> está en la lista de <code>$a</code>.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">seSiguenMutuamente(string $a, string $b): bool</div><div class="cuerpo">
+    <p>Reutilizá <code>sigue</code>: tiene que ser verdad que <code>$a</code> sigue a <code>$b</code> <b>y</b> que <code>$b</code> sigue a <code>$a</code> (operador <code>&amp;&amp;</code>).</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">masSeguido(): string</div><div class="cuerpo">
+    <p>Es el patrón clásico de <b>buscar el máximo</b>:</p>
+    <ol><li>Empezá con <code>$mejor = ""</code> y <code>$max = -1</code>.</li>
+    <li>Recorré los vértices. Si el grado de entrada del vértice actual es mayor que <code>$max</code>, actualizá <code>$max</code> y <code>$mejor</code>.</li>
+    <li>Al terminar, devolvé <code>$mejor</code>.</li></ol>
+  </div></div>
+
+  <p>Agregá también <code>vertices(): array</code> como en la Actividad 2 para poder recorrer las personas e imprimir la tabla.</p>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Anotar la arista en los dos sentidos: así el grafo deja de ser dirigido y todos «se siguen mutuamente».</li>
+    <li>Calcular el grado de entrada con <code>count</code> de la propia lista: eso es el grado de <b>salida</b>.</li></ul>
+  </div>
+
+  <details><summary>Pista: estructura de gradoEntrada()</summary><div>
+<pre><code>$cont = 0;
+foreach ($this-&gt;ady as $vecinos) {
+    if (in_array($v, $vecinos, true)) {
+        // ¿qué hacés acá?
+    }
+}
+return $cont;</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">Ana: sigue a 2, lo siguen 3
+Beto: sigue a 1, lo siguen 1
+Caro: sigue a 1, lo siguen 1
+Dani: sigue a 1, lo siguen 1
+Eli: sigue a 1, lo siguen 0
+Más seguido: Ana
+¿Ana sigue a Caro? Sí
+¿Caro sigue a Ana? No
+¿Ana y Beto se siguen mutuamente? Sí
+¿Ana y Caro se siguen mutuamente? No</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 4 -->
+<section class="card" id="a4">
+  <h2><span class="num">4</span>«Personas que quizás conozcas»</h2>
+  <div class="tags"><span>vecinos</span><span>no dirigido</span><span>redes sociales</span></div>
+  <p><b>Objetivo:</b> usar los vecinos de los vértices para responder preguntas reales, como hace una red social para sugerirte amigos.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    En una red de amistades, cada persona es un vértice y cada amistad es una arista <b>no dirigida</b> (si Ana es amiga de Beto, Beto es amigo de Ana). Los <b>amigos</b> de una persona son sus <b>vecinos</b>: la lista que ya guardamos en la lista de adyacencia.
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto (grafo X, Y, Z, W)</b>
+    <ul>
+      <li>Amigos de X: Y, Z. Amigos de W: Z.</li>
+      <li>¿X y W son amigos? No: W no está en la lista de X.</li>
+      <li>Amigos en común entre X y W: los que están en <b>las dos</b> listas → <b>Z</b>.</li>
+      <li>Sugerencias para X: miro a los amigos de X (Y y Z) y, a su vez, a los amigos de ellos: Y → X, Z; Z → X, Y, W. Descarto a X (es la misma persona) y a Y y Z (ya son amigos de X). Queda <b>W</b>.</li>
+    </ul>
+  </div>
+
+  <h4>Los datos</h4>
+<pre><code>Ana–Beto, Ana–Caro, Beto–Caro, Beto–Dani, Caro–Eli,
+Dani–Eli, Dani–Fede, Eli–Fede, Dani–Gabi</code></pre>
+  <p><b>Hugo</b> está en la red, pero no tiene amigos.</p>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá la red</b> (incluido Hugo).</li>
+    <li>¿Quiénes son los amigos de <b>Dani</b>?</li>
+    <li>¿Ana y Eli son amigas? ¿Qué amigos tienen en común?</li>
+    <li>¿Qué amigos tienen en común <b>Beto y Eli</b>?</li>
+    <li>¿A quiénes le sugeriría la red a <b>Ana</b>? Hacelo como en el ejemplo: anotá los amigos de Ana, después los amigos de cada uno de ellos, y tachá a Ana y a los que ya son sus amigos. No repitas nombres.</li>
+    <li>¿Y a <b>Hugo</b>? ¿Por qué?</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Creá la clase <code>RedSocial</code>. Por dentro es un grafo no dirigido, pero con nombres de métodos que hablan de personas y amistades.</p>
+
+  <div class="metodo"><div class="firma">agregarPersona(string $p): void</div><div class="cuerpo"><p>Es igual a <code>agregarVertice</code>.</p></div></div>
+  <div class="metodo"><div class="firma">agregarAmistad(string $a, string $b): void</div><div class="cuerpo"><p>Es igual a <code>agregarArista</code> no dirigida: se anota en las dos listas.</p></div></div>
+  <div class="metodo"><div class="firma">amigos(string $p): array</div><div class="cuerpo"><p>Devolvé la lista de vecinos de <code>$p</code> (o <code>[]</code> si no existe).</p></div></div>
+  <div class="metodo"><div class="firma">sonAmigos(string $a, string $b): bool</div><div class="cuerpo"><p>¿Está <code>$b</code> entre los amigos de <code>$a</code>?</p></div></div>
+
+  <div class="metodo"><div class="firma">amigosEnComun(string $a, string $b): array</div><div class="cuerpo">
+    <p>Usá <code>array_intersect</code> con las dos listas de amigos. Envolvelo en <code>array_values</code> para que las posiciones queden 0, 1, 2...</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">sugerencias(string $p): array</div><div class="cuerpo">
+    <p>Necesitás <b>dos <code>foreach</code>, uno adentro del otro</b>:</p>
+    <ol><li>Empezá con un array vacío <code>$sug = []</code>.</li>
+    <li>Recorré cada <code>$amigo</code> de <code>$p</code>.</li>
+    <li>Adentro, recorré cada <code>$candidato</code> entre los amigos de <code>$amigo</code>.</li>
+    <li>Agregá al candidato a <code>$sug</code> solamente si se cumplen las <b>tres</b> condiciones:
+      <ul><li>no es la misma persona (<code>$candidato !== $p</code>);</li>
+      <li>todavía no es amigo de <code>$p</code>;</li>
+      <li>no está ya en <code>$sug</code> (para no repetirlo).</li></ul></li>
+    <li>Devolvé <code>$sug</code>.</li></ol>
+  </div></div>
+
+  <p>Para imprimir las listas, un truco: si el array está vacío, mostrá <code>(ninguno)</code>.</p>
+<pre><code>$lista = fn(array $a) =&gt; count($a) ? implode(", ", $a) : "(ninguno)";
+echo "Sugerencias para Hugo: " . $lista($red-&gt;sugerencias("Hugo")) . "\n";</code></pre>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Olvidar la condición <code>$candidato !== $p</code>: Ana aparecería sugerida a sí misma, porque es amiga de sus amigos.</li>
+    <li>No controlar repetidos: Dani aparecería dos veces si llegara por dos amigos distintos.</li></ul>
+  </div>
+
+  <details><summary>Pista: la condición del if de sugerencias()</summary><div>
+<pre><code>if ($candidato !== $p
+    &amp;&amp; !$this-&gt;sonAmigos($p, $candidato)
+    &amp;&amp; !in_array($candidato, $sug, true)) {
+    $sug[] = $candidato;
+}</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">Amigos de Dani: Beto, Eli, Fede, Gabi
+¿Ana y Eli son amigas? No
+En común entre Ana y Eli: Caro
+En común entre Beto y Eli: Caro, Dani
+Sugerencias para Ana: Dani, Eli
+Sugerencias para Hugo: (ninguno)</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 5 -->
+<section class="card" id="a5">
+  <h2><span class="num">5</span>¿Es un camino?</h2>
+  <div class="tags"><span>camino</span><span>longitud</span><span>simple</span><span>con ciclo</span><span>cerrado</span></div>
+  <p><b>Objetivo:</b> decidir si una secuencia de vértices es un camino y clasificarlo.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    <ul>
+      <li>Un <b>camino</b> es una secuencia de vértices donde <b>cada uno está unido al siguiente por una arista</b>.</li>
+      <li><b>Longitud:</b> la cantidad de aristas que recorre. Siempre es la cantidad de vértices de la secuencia menos 1.</li>
+      <li><b>Camino simple:</b> no repite ninguna arista.</li>
+      <li><b>Camino con ciclo:</b> vuelve a pasar por un vértice por el que ya había pasado.</li>
+      <li><b>Camino cerrado:</b> termina en el mismo vértice donde empezó.</li>
+    </ul>
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto (grafo X, Y, Z, W)</b>
+    <ul>
+      <li><code>X → Y → Z → W</code>: X–Y existe, Y–Z existe, Z–W existe → <b>es camino</b>, longitud 3, simple, sin ciclo.</li>
+      <li><code>X → W</code>: no existe la arista X–W → <b>no es camino</b>. No importa que se pueda llegar dando una vuelta: cada paso tiene que ser una arista.</li>
+      <li><code>X → Y → Z → X</code>: es camino, longitud 3, simple, con ciclo (repite X) y cerrado.</li>
+      <li><code>Z → W → Z</code>: es camino, longitud 2, pero <b>repite la arista</b> Z–W (la usa de ida y de vuelta), así que no es simple. Además es cerrado.</li>
+    </ul>
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Grafo no dirigido (es el del apunte):</p>
+<pre><code>A–E, A–D, A–B, B–E, D–B, B–F, E–F, D–C, C–B</code></pre>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá el grafo.</b></li>
+    <li>Para cada secuencia, <b>revisá de a un paso</b>: ¿existe la arista entre el primer vértice y el segundo? ¿Y entre el segundo y el tercero? Si alguna falta, no es un camino.</li>
+    <li><b>Completá la tabla</b> (si no es camino, dejá vacías las otras columnas):
+      <div class="tw"><table>
+        <thead><tr><th>Secuencia</th><th>¿Camino?</th><th>Longitud</th><th>¿Simple?</th><th>¿Con ciclo?</th><th>¿Cerrado?</th></tr></thead>
+        <tbody>
+          <tr><td>D → C → B → F</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>A → C</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>A → B → E → A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>D → B → F → E → B</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+          <tr><td>A → B → A</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+        </tbody>
+      </table></div></li>
+    <li><b>Inventá</b> un camino de longitud 4 que sea simple y cerrado en este grafo.</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Partí de la clase <code>Grafo</code> no dirigida. Cada secuencia se guarda como un array: <code>["D", "C", "B", "F"]</code>.</p>
+
+  <div class="metodo"><div class="firma">hayArista(string $a, string $b): bool</div><div class="cuerpo"><p>¿Está <code>$b</code> en la lista de <code>$a</code>?</p></div></div>
+
+  <div class="metodo"><div class="firma">esCamino(array $secuencia): bool</div><div class="cuerpo">
+    <ol><li>Recorré la secuencia con un <code>for</code> desde <code>$i = 0</code> hasta <code>count($secuencia) - 2</code> (o sea, la condición es <code>$i &lt; count($secuencia) - 1</code>). Así comparás cada vértice con el siguiente sin salirte del array.</li>
+    <li>Si no hay arista entre <code>$secuencia[$i]</code> y <code>$secuencia[$i + 1]</code>, devolvé <code>false</code> en ese mismo momento.</li>
+    <li>Si terminó el <code>for</code> sin problemas, devolvé <code>true</code>.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">longitud(array $secuencia): int</div><div class="cuerpo"><p>Cantidad de vértices menos 1. Usá <code>max(0, ...)</code> para que una secuencia vacía no dé −1.</p></div></div>
+
+  <div class="metodo"><div class="firma">repiteAristas(array $secuencia): bool</div><div class="cuerpo">
+    <p>El problema: <code>{A, B}</code> y <code>{B, A}</code> son la misma arista, aunque se recorran en distinto orden. La solución es <b>normalizar</b> cada par:</p>
+    <ol><li>Empezá con un array vacío <code>$usadas</code>.</li>
+    <li>Para cada paso, armá el par <code>[$secuencia[$i], $secuencia[$i + 1]]</code> y ordenalo con <code>sort</code>. Así B, A queda A, B.</li>
+    <li>Convertilo en un texto como <code>"A-B"</code> con <code>implode("-", $par)</code>.</li>
+    <li>Si ese texto ya estaba en <code>$usadas</code>, devolvé <code>true</code>. Si no, agregalo.</li>
+    <li>Si terminó el recorrido, devolvé <code>false</code>.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">tieneCiclo(array $secuencia): bool</div><div class="cuerpo">
+    <p>Si al quitar los repetidos (<code>array_unique</code>) quedan <b>menos</b> elementos que en la secuencia original, es porque algún vértice se repitió.</p>
+  </div></div>
+
+  <div class="metodo"><div class="firma">esCerrado(array $secuencia): bool</div><div class="cuerpo">
+    <p>El primer elemento es igual al último (<code>end($secuencia)</code> devuelve el último), y la secuencia tiene más de 2 vértices.</p>
+  </div></div>
+
+  <p>En el programa principal, guardá las 5 secuencias en un array y recorrelo. Para cada una, si no es camino imprimí «NO es un camino» y pasá a la siguiente (<code>continue</code>); si es camino, imprimí su longitud y agregá los textos que correspondan.</p>
+<pre><code>$pruebas = [
+    ["D", "C", "B", "F"],
+    ["A", "C"],
+    // ... las otras tres
+];</code></pre>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Recorrer el <code>for</code> hasta <code>count($secuencia)</code>: en la última vuelta, <code>$secuencia[$i + 1]</code> no existe y PHP da un aviso.</li>
+    <li>Contar la longitud como cantidad de vértices: la longitud se mide en <b>aristas</b>.</li></ul>
+  </div>
+
+  <details><summary>Pista: cargar todas las aristas de una vez</summary><div>
+<pre><code>foreach ([["A","E"], ["A","D"], ["A","B"] /* ... */] as [$a, $b]) {
+    $g-&gt;agregarArista($a, $b);
+}</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">D → C → B → F: camino de longitud 3, simple
+A → C: NO es un camino
+A → B → E → A: camino de longitud 3, simple, con ciclo, cerrado
+D → B → F → E → B: camino de longitud 4, simple, con ciclo
+A → B → A: camino de longitud 2, repite aristas (no es simple), con ciclo, cerrado</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 6 -->
+<section class="card" id="a6">
+  <h2><span class="num">6</span>De lista a matriz de adyacencia</h2>
+  <div class="tags"><span>matriz de adyacencia</span><span>lista de adyacencia</span><span>simetría</span></div>
+  <p><b>Objetivo:</b> pasar un grafo de una representación a la otra y entender por qué la matriz de un grafo no dirigido es simétrica.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    La <b>matriz de adyacencia</b> es una tabla de <i>n</i> × <i>n</i>: en la fila del vértice <b>origen</b> y la columna del vértice <b>destino</b> va un <b>1</b> si hay arista, y un <b>0</b> si no.
+    <ul>
+      <li>La <b>diagonal</b> (fila X, columna X) representa los lazos. En estos grafos no hay, así que es todo 0.</li>
+      <li>En un grafo <b>no dirigido</b>, si hay arista de X a Y también la hay de Y a X, así que la matriz es <b>simétrica</b>: la casilla [X][Y] es igual a la casilla [Y][X].</li>
+      <li>En un grafo <b>dirigido</b> eso no tiene por qué pasar.</li>
+    </ul>
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto (grafo X, Y, Z, W)</b>
+    <div class="tw"><table style="width:auto">
+      <thead><tr><th></th><th>X</th><th>Y</th><th>Z</th><th>W</th></tr></thead>
+      <tbody>
+        <tr><th>X</th><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+        <tr><th>Y</th><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+        <tr><th>Z</th><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        <tr><th>W</th><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+      </tbody>
+    </table></div>
+    Cómo se arma la fila Z: los vecinos de Z son X, Y, W → pongo 1 en esas columnas y 0 en el resto.<br>
+    Comprobá la simetría: [X][Y] = 1 y [Y][X] = 1; [Z][W] = 1 y [W][Z] = 1.<br>
+    Dato útil: la cantidad de 1 de cada fila es el grado del vértice.
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Dos grafos ya guardados como lista de adyacencia. Copialos tal cual en tu archivo:</p>
+<pre><code>$noDirigido = [
+    "A" =&gt; ["B", "C"],
+    "B" =&gt; ["A", "D"],
+    "C" =&gt; ["A", "D"],
+    "D" =&gt; ["B", "C", "E"],
+    "E" =&gt; ["D"],
+];
+
+$dirigido = [
+    "A" =&gt; ["B", "C"],
+    "B" =&gt; ["D"],
+    "C" =&gt; ["D"],
+    "D" =&gt; ["E"],
+    "E" =&gt; [],
+];</code></pre>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá los dos grafos</b> (el segundo con flechas).</li>
+    <li><b>Armá la matriz del no dirigido</b>, fila por fila: por cada vértice, poné 1 en las columnas de sus vecinos y 0 en las demás.
+      <div class="tw"><table style="width:auto">
+        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead>
+        <tbody>
+          <tr><th>A</th><td class="blank" style="min-width:40px"></td><td class="blank" style="min-width:40px"></td><td class="blank" style="min-width:40px"></td><td class="blank" style="min-width:40px"></td><td class="blank" style="min-width:40px"></td></tr>
+          <tr><th>B</th><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>C</th><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>D</th><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>E</th><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table></div></li>
+    <li><b>Armá la matriz del dirigido</b> de la misma forma.</li>
+    <li>¿Cuál de las dos es <b>simétrica</b>? Explicá por qué con tus palabras.</li>
+    <li>Si el grafo tuviera 1000 vértices y solo 1500 aristas, ¿cuántas casillas tendría la matriz? ¿Qué representación conviene usar?</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>Esta vez no hace falta una clase: escribí <b>funciones</b>. La matriz va a ser un array de arrays asociativos, para poder escribir <code>$matriz["A"]["B"]</code>.</p>
+
+  <div class="metodo"><div class="firma">listaAMatriz(array $ady): array</div><div class="cuerpo">
+    <ol><li>Obtené los vértices con <code>array_keys($ady)</code>.</li>
+    <li>Recorré los vértices con un <code>foreach</code> (cada uno es una <b>fila</b>) y, adentro, otro <code>foreach</code> con los mismos vértices (cada uno es una <b>columna</b>).</li>
+    <li>En <code>$matriz[$fila][$col]</code> guardá 1 si <code>$col</code> está en la lista de <code>$fila</code>, o 0 si no.</li>
+    <li>Devolvé la matriz.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">mostrarMatriz(array $matriz): void</div><div class="cuerpo">
+    <ol><li>Imprimí una línea de encabezado con los nombres de las columnas.</li>
+    <li>Después, por cada fila, imprimí el nombre de la fila y sus valores separados por espacios (<code>implode(" ", $matriz[$fila])</code>).</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">esSimetrica(array $matriz): bool</div><div class="cuerpo">
+    <p>Recorré todas las casillas con dos <code>foreach</code>. Si encontrás alguna donde <code>$matriz[$i][$j]</code> sea distinto de <code>$matriz[$j][$i]</code>, devolvé <code>false</code>. Si no encontraste ninguna, devolvé <code>true</code>.</p>
+  </div></div>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Confundir fila con columna en el dirigido: la flecha A → B va en la <b>fila A, columna B</b>.</li>
+    <li>Guardar <code>true</code>/<code>false</code> en lugar de 1/0: al imprimir, <code>false</code> se ve vacío.</li></ul>
+  </div>
+
+  <details><summary>Pista: el operador ternario para el 1 o el 0</summary><div>
+<pre><code>$matriz[$fila][$col] = in_array($col, $ady[$fila], true) ? 1 : 0;</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">No dirigido:
+   A B C D E
+A  0 1 1 0 0
+B  1 0 0 1 0
+C  1 0 0 1 0
+D  0 1 1 0 1
+E  0 0 0 1 0
+¿Simétrica? Sí
+
+Dirigido:
+   A B C D E
+A  0 1 1 0 0
+B  0 0 0 1 0
+C  0 0 0 1 0
+D  0 0 0 0 1
+E  0 0 0 0 0
+¿Simétrica? No</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ 7 -->
+<section class="card" id="a7">
+  <h2><span class="num">7</span>Torneo «todos contra todos»</h2>
+  <div class="tags"><span>grafo completo</span><span>n·(n−1)/2</span></div>
+  <p><b>Objetivo:</b> reconocer un grafo completo, entender de dónde sale su fórmula y generar todas sus aristas con un programa.</p>
+
+  <div class="box repaso"><b>Repaso</b>
+    Un grafo es <b>completo</b> si <b>cada par de vértices</b> está unido por una arista. Con <i>n</i> vértices tiene <code>n·(n−1)/2</code> aristas.<br>
+    <b>¿De dónde sale?</b> Cada uno de los <i>n</i> vértices se une con los otros <i>n − 1</i>: eso da <i>n·(n−1)</i>. Pero así cada arista se contó <b>dos veces</b> (una desde cada extremo), por eso se divide por 2.
+  </div>
+  <div class="box ejemplo"><b>Ejemplo resuelto</b>
+    Con 3 equipos (Rojo, Verde, Azul): cada uno juega 2 partidos → 3 × 2 = 6, pero Rojo vs Verde es el mismo partido que Verde vs Rojo → 6 / 2 = <b>3 partidos</b>: Rojo–Verde, Rojo–Azul, Verde–Azul.<br>
+    Fijate en cómo los armamos: Rojo contra <b>todos los que vienen después</b> (Verde, Azul); Verde contra <b>los que vienen después</b> (Azul); Azul ya jugó con todos. Así no se repite ningún partido.
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Cuatro clubes de Resistencia juegan un torneo donde cada equipo se enfrenta <b>una vez</b> con cada uno de los otros: <b>Sarmiento, For Ever, Don Orione y Villa San Martín</b>. Cada equipo es un vértice y cada partido es una arista.</p>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li><b>Dibujá el grafo.</b> ¿Qué tipo de grafo es? ¿Es dirigido?</li>
+    <li><b>Escribí la lista de todos los partidos</b>, usando el método del ejemplo para no repetir ninguno.</li>
+    <li><b>Completá la tabla</b> con la fórmula:
+      <div class="tw"><table>
+        <thead><tr><th>Equipos (n)</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+        <tbody><tr><th>Partidos</th><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr></tbody>
+      </table></div></li>
+    <li>Si se duplican los equipos (de 4 a 8), ¿también se duplican los partidos? ¿Qué pasa?</li>
+    <li><b>¿Son completos estos grafos?</b> Si no lo son, ¿qué aristas les faltan?
+      <ul><li>Grafo 1: <code>A–B, A–C, B–C</code></li>
+      <li>Grafo 2: <code>A–B, B–C, C–D, D–A</code></li></ul></li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+  <p>En esta actividad el grafo se guarda como una <b>lista de aristas</b>: un array de pares, por ejemplo <code>[["A","B"], ["A","C"]]</code>.</p>
+
+  <div class="metodo"><div class="firma">partidosNecesarios(int $n): int</div><div class="cuerpo"><p>Aplicá la fórmula. Usá <code>intdiv</code> para que el resultado sea entero.</p></div></div>
+
+  <div class="metodo"><div class="firma">fixture(array $equipos): array</div><div class="cuerpo">
+    <p>Traducí a código el método del ejemplo con <b>dos <code>for</code></b>:</p>
+    <ol><li>El de afuera recorre cada equipo con el índice <code>$i</code>.</li>
+    <li>El de adentro empieza en <b><code>$j = $i + 1</code></b>: así cada equipo solo se cruza con los que vienen <b>después</b> y no se repiten partidos ni aparece un equipo contra sí mismo.</li>
+    <li>En cada vuelta, agregá el par <code>[$equipos[$i], $equipos[$j]]</code> al resultado.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">aristasFaltantes(array $vertices, array $aristas): array</div><div class="cuerpo">
+    <ol><li>Generá todos los pares posibles con <code>fixture($vertices)</code>: son las aristas que <b>debería</b> tener si fuera completo.</li>
+    <li>Para cada par <code>[$a, $b]</code>, fijate si está en <code>$aristas</code>. <b>Ojo:</b> como el grafo es no dirigido, puede estar escrito como <code>[$a, $b]</code> o como <code>[$b, $a]</code>: revisá los dos órdenes.</li>
+    <li>Si no está de ninguna de las dos formas, agregá <code>"$a – $b"</code> a la lista de faltantes.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">esCompleto(array $vertices, array $aristas): bool</div><div class="cuerpo">
+    <p>Reutilizá la función anterior: es completo si <b>no falta ninguna</b> arista.</p>
+  </div></div>
+
+  <div class="box error"><b>Errores comunes</b>
+    <ul><li>Empezar el <code>for</code> de adentro en 0: te aparecerían «Sarmiento vs Sarmiento» y todos los partidos repetidos.</li>
+    <li>Buscar el par en un solo orden: el Grafo 2 tiene <code>["D","A"]</code>, no <code>["A","D"]</code>, y lo darías por faltante.</li></ul>
+  </div>
+
+  <details><summary>Pista: buscar un par en los dos órdenes</summary><div>
+<pre><code>$esta = in_array([$a, $b], $aristas, true) || in_array([$b, $a], $aristas, true);</code></pre>
+  </div></details>
+
+  <details><summary>Pista: imprimir la tabla alineada</summary><div>
+<pre><code>echo str_pad($n, 7, " ", STR_PAD_LEFT) . " | " . partidosNecesarios($n) . "\n";</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">Fixture:
+  Partido 1: Sarmiento vs For Ever
+  Partido 2: Sarmiento vs Don Orione
+  Partido 3: Sarmiento vs Villa San Martín
+  Partido 4: For Ever vs Don Orione
+  Partido 5: For Ever vs Villa San Martín
+  Partido 6: Don Orione vs Villa San Martín
+Total: 6 partidos (fórmula: 6)
+
+Equipos | Partidos
+      2 | 1
+      3 | 3
+      4 | 6
+      5 | 10
+      6 | 15
+      7 | 21
+      8 | 28
+
+Grafo 1: ¿completo? Sí
+Grafo 2: ¿completo? No (faltan: A – C, B – D)</pre>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ DESAFÍO -->
+<section class="card" id="d">
+  <h2><span class="num">★</span>Desafío (opcional): el camino más corto</h2>
+  <div class="tags"><span>caminos</span><span>búsqueda en anchura</span><span>cola (FIFO)</span></div>
+  <p><b>Objetivo:</b> encontrar el camino con <b>menos aristas</b> entre dos vértices, como hace un GPS. Es más difícil que las anteriores: hacelo solo si terminaste las otras.</p>
+
+  <div class="box repaso"><b>La idea: buscar por capas</b>
+    Desde el vértice de origen, primero miramos sus vecinos (están a distancia 1). Después, los vecinos de esos (distancia 2). Y así, capa por capa. <b>La primera vez que aparece el destino, encontramos el camino más corto.</b><br>
+    Para recorrer en ese orden usamos una <b>cola</b> (la estructura FIFO que ya vieron): el primero que entra es el primero que sale. Además, para cada vértice anotamos <b>desde dónde llegamos</b>, para poder reconstruir el camino al final.
+  </div>
+
+  <div class="box ejemplo"><b>Ejemplo resuelto: de X a W (grafo X, Y, Z, W)</b>
+    <div class="tw"><table>
+      <thead><tr><th>Paso</th><th>Saco de la cola</th><th>Vecinos nuevos</th><th>Anoto en <code>$anterior</code></th><th>Cola después</th></tr></thead>
+      <tbody>
+        <tr><td>Inicio</td><td>—</td><td>—</td><td>X ← nadie</td><td>[X]</td></tr>
+        <tr><td>1</td><td>X</td><td>Y, Z</td><td>Y ← X, Z ← X</td><td>[Y, Z]</td></tr>
+        <tr><td>2</td><td>Y</td><td>(X y Z ya los vi)</td><td>—</td><td>[Z]</td></tr>
+        <tr><td>3</td><td>Z</td><td>W → ¡es el destino!</td><td>W ← Z</td><td>terminé</td></tr>
+      </tbody>
+    </table></div>
+    <b>Reconstrucción, de atrás para adelante:</b> W vino de Z, Z vino de X, X no vino de nadie. Dado vuelta: <b>X → Z → W</b> (longitud 2).
+  </div>
+
+  <h4>Los datos</h4>
+  <p>Usá el grafo de la Actividad 5 y agregale una «isla» separada: la arista <code>G–H</code>.</p>
+<pre><code>A–E, A–D, A–B, B–E, D–B, B–F, E–F, D–C, C–B, G–H</code></pre>
+
+  <span class="parte pa">Parte A · en papel</span>
+  <ol class="pasos">
+    <li>Dibujá el grafo.</li>
+    <li>Encontrá el camino más corto en cada caso. Para el primero, armá una tabla como la del ejemplo.
+      <ul><li>De D a F</li><li>De C a E</li><li>De A a F</li><li>De A a H</li></ul></li>
+    <li>En el caso de A a H, ¿qué pasa con la cola? ¿Cómo te das cuenta de que <b>no hay</b> camino?</li>
+  </ol>
+
+  <span class="parte pb">Parte B · en PHP</span>
+
+  <div class="metodo"><div class="firma">caminoMasCorto(string $desde, string $hasta): ?array</div><div class="cuerpo">
+    <p>El <code>?array</code> significa que devuelve un array <b>o</b> <code>null</code> (cuando no hay camino).</p>
+    <ol><li>Si <code>$desde</code> y <code>$hasta</code> son iguales, devolvé <code>[$desde]</code>.</li>
+    <li>Creá <code>$anterior = [$desde =&gt; null]</code> (el origen no vino de nadie) y <code>$cola = [$desde]</code>.</li>
+    <li>Mientras la cola no esté vacía:
+      <ul><li>Sacá el primero: <code>$actual = array_shift($cola);</code></li>
+      <li>Recorré los vecinos de <code>$actual</code>. Para cada vecino que <b>todavía no esté</b> en <code>$anterior</code> (usá <code>array_key_exists</code>):
+        <ul><li>anotá <code>$anterior[$vecino] = $actual;</code></li>
+        <li>si el vecino es <code>$hasta</code>, reconstruí el camino y devolvelo;</li>
+        <li>si no, agregalo al final de la cola: <code>$cola[] = $vecino;</code></li></ul></li></ul></li>
+    <li>Si la cola se vació sin encontrar el destino, devolvé <code>null</code>.</li></ol>
+  </div></div>
+
+  <div class="metodo"><div class="firma">private reconstruir(array $anterior, string $hasta): array</div><div class="cuerpo">
+    <p>Empezá en <code>$hasta</code> y andá «para atrás» con <code>$anterior</code> hasta llegar a <code>null</code>. Cada vértice que visites, agregalo <b>al principio</b> del camino con <code>array_unshift</code>, así queda en el orden correcto.</p>
+  </div></div>
+
+  <div class="box ojo"><b>¿Por qué <code>array_key_exists</code> y no <code>isset</code>?</b>
+    Porque <code>$anterior[$desde]</code> vale <code>null</code>, e <code>isset</code> devuelve <code>false</code> para las claves que valen <code>null</code>. Con <code>isset</code>, el programa creería que nunca visitó el origen.
+  </div>
+
+  <details><summary>Pista: el for de reconstruir()</summary><div>
+<pre><code>$camino = [];
+for ($v = $hasta; $v !== null; $v = $anterior[$v]) {
+    array_unshift($camino, $v);
+}
+return $camino;</code></pre>
+  </div></details>
+
+  <details><summary>Salida esperada</summary><div>
+<pre class="out">D hasta F: D → B → F (longitud 2)
+C hasta E: C → B → E (longitud 2)
+A hasta F: A → E → F (longitud 2)
+A hasta H: no hay camino</pre>
+    <p>A veces hay <b>más de un</b> camino con la misma longitud mínima: de A a F, <code>A → B → F</code> también mide 2. Cualquiera es correcto. El que encuentra tu programa depende del orden en que cargaste las aristas.</p>
+  </div></details>
+  <a class="back" href="#intro">↑ Volver al índice</a>
+</section>
+
+<!-- ================================================================ CIERRE -->
+<section class="card">
+  <h2>Antes de entregar, revisá</h2>
+  <ul class="check">
+    <li>Hice la Parte A de cada actividad <b>antes</b> de programar.</li>
+    <li>Cada programa se abre en el navegador con <code>http://localhost/...</code> sin errores ni avisos.</li>
+    <li>Todos mis archivos tienen la línea <code>header("Content-Type: text/plain; charset=utf-8");</code> al principio.</li>
+    <li>La salida de mi programa coincide con la salida esperada.</li>
+    <li>Si mi respuesta de la Parte A no coincidía con la salida, encontré dónde estaba el error.</li>
+    <li>Los atributos de mis clases son <code>private</code>, y desde afuera solo uso métodos.</li>
+    <li>Puedo explicar con mis palabras qué hace cada método que escribí.</li>
+  </ul>
+</section>
+
+<footer>Programación II · UTN FRRe · Tecnicatura Universitaria en Programación</footer>
+</main>
+</body>
+</html>
